@@ -1,0 +1,142 @@
+<systemtpl file="header" />
+<style>
+input{width:280px;}
+a{cursor:pointer;}
+.table .search_input{
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+input[name=user]{
+	margin:8px 5px;
+	text-indent: 20px;
+}
+.myModal3.leave{
+	position: absolute;
+	top:12px;
+	left:15px;
+	font-size: 14px;
+}
+tr td img{ max-width:200px;max-height:60px;}
+</style>
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('CompanyContribute/detail')}">{:L('SYSTEM_COMPANYCONTRIBUTE_DETAIL')}</a></li>
+	</ul>
+	<table class="table table-bordered ">
+		<tbody>
+		<tr>
+			<td class="sel">授权单号</td>
+			<td>{$info.contribute_no}</td>
+			<td class="sel">合同编号</td>
+			<td>{$info.contract_sn}</td>
+		</tr>
+		<tr>
+			<td class="sel">商户名称</td>
+			<td>{$info.company_name}</td>
+			<td class="sel">服务年限</td>
+			<td>{$info.service_year}</td>
+		</tr>
+		<tr>
+			<td class="sel">增加店铺</td>
+			<td>{$info.shop_num}</td>
+			<td class="sel">增加加盟商</td>
+			<td>{$info.company_num}</td>
+		</tr>
+		<tr>
+			<td class="sel">缴纳金额</td>
+			<td>{$info.price}</td>
+			<td class="sel">制单人</td>
+			<td>{$info.user_nicename}</td>
+		</tr>
+		<tr>
+			<td>申请时间</td>
+			<td>{$info.create_time|date="Y-m-d H:i:s",###}</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td class="sel">备注</td>
+			<td colspan="3">{$info.memo}</td>
+		</tr>
+		<tr>
+			<td class="sel">审核备注</td>
+			<td colspan="3">{$info.check_memo}</td>
+		</tr>
+		</tbody >
+	</table>
+	<div class="form-actions text-center">
+		<if condition="$info.status eq 0">
+			<a class="btn btn-danger del" href="#myModal" name="{$info.id}" data-value="{$info.id}" class="del" role="button" data-toggle="modal">撤销</a>
+		</if>
+		<button class="btn js-ajax-back-btn" type="submit">{:L('BACK')}</button>
+	</div>
+</div>
+
+<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog-div">
+		<div class="modal-content-div">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h3 id="myModalLabel">取消警告</h3>
+			</div>
+			<div class="modal-body">
+				<p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要撤销吗?</p>
+			</div>
+			<div class="modal-footer">
+				<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+				<button id="del" class="btn btn-danger" data-dismiss="modal">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/jquery-form.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<include file="./Application/Home/View/Public/footer.html" />
+<script>
+	$(function(){
+		setUser();
+	});
+	function setUser(){
+		$(".del").each(function(index, obj) {
+			$(this).unbind().click(function(){
+				var id=$(this).attr('name');
+				delUser(id);
+			})
+		});
+	}
+	function delUser(id){
+		$('#myModal').find('button').each(function(index, element) {
+			$(this).unbind().click(function(){
+				if($(this).attr('id')=='del'){
+					$.ajax({
+						url: "{:U('CompanyContribute/detail')}",
+						type: 'post',
+						data:{id:id},
+						success: function(data) {
+							if(data.status==1){
+								alert(data.msg);
+								self.location=document.referrer;
+								//jump_refer();
+							}
+							else{
+								alert(data.msg);
+							}
+						}
+					})
+				}
+			})
+		});
+	}
+</script>
+
+
+
+
+
+
+

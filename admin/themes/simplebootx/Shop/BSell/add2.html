@@ -1,0 +1,215 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BSell/add2.css">
+</head>
+<body class=" theme-blue">
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<!--<li><a href="{:U('sells/index')}">销售列表</a></li>-->
+		<li class="active"><a href="{:U('sells/add')}">{:L('SHOP_BSELL_ADD')}</a></li>
+	</ul>
+     <input type="hidden" name="currency0_exchange_rate" value="{$currency[0]['exchange_rate']}">
+	<table class="table table-bordered" id="order_base">
+		<tr>
+			<td class="sel" width="20%">日期</td>
+			<td width="25%">
+			{$today}
+			</td>
+			<td class="sel" width="20%">会员姓名</td>
+			<td class="search_input" width="25%">
+				<input  type="text" id="mobile"  class="form-control" onclick="$('#myModal3').modal('show');"> <!--style="display: none;"-->
+				<input type="hidden" id="uid"  class="form-control" value="">
+				<a href="#myModal3" class="myModal3 leave" data-toggle="modal" name="{$v.id}" role="button"><span><i class="fa fa-search normal"></i></span></a>
+			</td>
+		</tr>
+		<tr>
+			<td class="sel">销售员</td>
+			<td width="25%" >{$user_nicename}</td>
+			<td class="sel">销售数量</td>
+			<td width="25%" id="total_num"></td>
+		</tr>
+        <tr>
+            <td class="sel">门店</td>
+            <td width="25%" >
+                <select id="shop" name="shop_id" data-live-search="true">
+                    <option value="0" checked default_rate="{$currency[0]['exchange_rate']}" unit="{$currency[0]['unit']}">总部</option>
+                    <volist name="shop" id="v">
+                            <option value="{$v.id}" in_user="{$v.user_nicename}" unit="{$v.unit}" default_rate="{$v.exchange_rate}"  checked>{$v.shop_name}</option>
+                    </volist >
+                </select>
+            </td>
+            <td class="sel" style="border-bottom: 1px solid #ddd;" class="gold">销售总价</td>
+            <td width="25%" style="border-bottom: 1px solid #ddd;"><input id="count" type="text" style="margin-bottom:0px;" value=""></td>
+        </tr>
+		<tr>
+			<td class="sel">备注</td>
+			<td width="25%" ><textarea type="text" id="remark"></textarea></td>
+		</tr>
+	</table>
+	<div class="main-content" >
+		<div class="ta" id="order_product" style="overflow-x: auto;">
+			<table class="table table-bordered  table-hover" >
+				<thead >
+				<tr>
+					<th>序</th>
+					<th style="width: 160px;">品目编号</th>
+					<th>品目</th>
+					<th>含金量</th>
+					<th>规格</th>
+					<th hidden="hidden">零售价/金价</th>
+					<th style="width: 80px;">件/克工费</th>
+					<th style="width: 80px;">克单价</th>
+					<th>重量(克)</th>
+                    <th style="width: 80px;">应销售</th>
+                    <th style="width: 80px;">单品优惠</th>
+					<th style="width: 80px;">销售价</th>
+					<th>计价方式</th>
+					<th hidden="hidden">id</th>
+					<th >操作</th>
+				</tr>
+				</thead>
+				<tbody id="tbody">
+				<tr id="last">
+					<td class="text-center"></td>
+					<td class="text-center"></td>
+					<td></td>
+					<td class="text-center"></td>
+					<td class="text-center"></td>
+					<td class="price"></td>
+					<td class="text-center"></td>
+					<td class="text-center"></td>
+					<td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+					<td class="text-center"></td>
+					<td class="text-center myModal2 on" href="#myModal2" style="cursor:pointer;" data-toggle="modal" role="button"><a href="javascript:void(0);">+</a></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="javascript:void(0);">收款明细</a></li>
+        </ul>
+        默认币种：<span class="count_unit">{$currency[0]['currency_name']}</span>&nbsp;&nbsp;&nbsp;汇率：<span class="default_rate">{$currency[0]['exchange_rate']}</span>‰
+        <div class="ta">
+            <table class="table table-bordered  table-hover">
+                <thead >
+                <tr>
+                    <th>序</th>
+                    <th style="width:220px;">收款方式</th>
+                    <th >币种</th>
+                    <th style="width:220px;">流水号</th>
+                    <th >收款金额</th>
+                    <th style="width:220px;">计算单位</th>
+                    <th style="width:220px;">汇率％</th>
+                    <th >收款类型</th>
+                    <th style="width:220px;">计算金额</th>
+                    <th style="width:160px;">操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody" class="pay_tbody">
+                <tr id="last" class="pay_type_tr">
+                    <td class="text-center"></td>
+                    <td class="text-center pay_id">
+                        <select name="pay_id"  >
+                            <option value="0" pay_type="{$vo.pay_type}">选择收款方式</option>
+                            <volist name="payment" id="vo">
+                                <option value="{$vo.id}" pay_type="{$vo.pay_type}">{$vo.pay_name}</option>
+                            </volist>
+                        </select>
+                    </td>
+                    <td class="text-center currency" >
+                        <select name="currency" >
+                            <option value="0" >选择币种</option>
+                            <volist name="currency" id="vo">
+                                <option value="{$vo.id}" exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                            </volist>
+                        </select>
+                    </td>
+                    <td class="text-right flow_id"><input type="text" autocomplete="off" name="flow_id" value="" placeholder="流水号"></td>
+                    <td class="text-right pay_price"><input type="text" autocomplete="off" name="pay_price" value="0"></td>
+                    <td class="text-center unit" ></td>
+                    <td class="text-center exchange_rate" ></td>
+                    <td class="text-center pay_type" ></td>
+                    <td class="text-center actual_price" >0.00</td>
+                    <td class="text-center" id="add_pay_type" style="color: #3daae9;cursor:pointer;" >+添加收款方式</td>
+                </tr>
+                <tr id="count_pay">
+                    <td class="text-center"></td>
+                    <td class="text-center" colspan="3">计算金额=收款金额*汇率/默认汇率</td>
+                    <td class="text-center" colspan="3">总计：<span id="count_price">0.00</span><span class="count_unit">{$currency[0]['unit']}</span></td>
+                    <td class="text-center" colspan="3">还需支付：<span id="need_price">0.00</span><span  class="count_unit">{$currency[0]['unit']}</span></td>
+                   <!-- <td class="text-center" colspan="5">还需支付：<span id="need_price">0.00</span>{$currency[0]['unit']}</td>-->
+                </tr>
+                </tbody>
+            </table>
+            <!--收款方式html-->
+            <div id="pay_html" hidden="hidden">
+                <select name="pay_id"  >
+                    <option value="0" pay_type="0">选择收款方式</option>
+                    <volist name="payment" id="vo">
+                        <option value="{$vo.id}" pay_type="{$vo.pay_type}">{$vo.pay_name}</option>
+                    </volist>
+                </select>
+            </div>
+            <!--币种方式html-->
+            <div id="currency_html" hidden="hidden">
+                <select name="currency"  >
+                    <option value="0" >选择币种</option>
+                    <volist name="currency" id="vo">
+                        <option value="{$vo.id}" exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+		<div class="form-actions">
+			<div class="center-block" style="width:260px; margin: 0 auto;">
+				<button type="button" class="btn btn-primary baocun" id="baocun">{:L('SAVE')}</button>
+				<div class="tishi" style="color: red;"></div>
+				<div>
+				</div>
+				<div class="modal small fade" style="width:80%;left:400px;top:2%;bottom: 2%;display:none" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+								<b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">货品列表</b>
+							</div>
+							<div class="modal-body" style="max-height: 500px;padding: 0px;margin:0px">
+								<iframe  frameborder="0" class="appiframe" src="{:U('BSell/product_list')}" id="goods_index" name="goods_index">
+
+								</iframe>
+							</div>
+							<div class="modal-footer">
+								<button id="check" class="btn btn-primary pull-left" >选中</button>
+								<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+								<button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+								<b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">选择会员</b>
+							</div>
+							<div class="modal-body" style="max-height: 500px;padding: 0px;">
+								<iframe  frameborder="0" class="appiframe" src="{:U('BSell/client_list')}" id="goods_index2" name="goods_index2">
+
+								</iframe>
+
+							</div>
+							<div class="modal-footer">
+								<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+								<button id="add-2" class="btn btn-primary" data-dismiss="modal">选中</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+				<script src="__PUBLIC__/js/common.js"></script>
+				<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+                <script src="__PUBLIC__/js/shop_common.js"></script>
+                <script src="__PUBLIC__/shop/BSell/js/add2.js"></script>

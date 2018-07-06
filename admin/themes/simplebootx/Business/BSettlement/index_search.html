@@ -1,0 +1,78 @@
+<style>
+    .row-fluid .span4{
+        width: 250px;
+        line-height: 30px;
+        margin-left: 0;
+    }
+    .row-fluid .span8{
+        width: 150px;
+    }
+    .row-fluid .span10{
+       float: none;
+        display: inline-block;
+    }
+</style>
+<form class="well form-search form-horizontal" method="POST" action="{:U('BSettlement/'. $action_name)}">
+    <div class="row-fluid">
+        <div class="span4">
+            <label class="row-fluid">综合搜索：
+                <input type="text" autocomplete="off" class="span8" name="search_value" value="{$request_data['search_value']}" placeholder="结算单号/结算人员/供应商">
+            </label>
+        </div>
+        <if condition="$action_name neq 'check_index' && $action_name neq 'check_payment'">
+        <div class="span4">
+            <label class="row-fluid">订单状态：
+                <select name="status" class="span8" style="width:150px;">
+                    <option value="">--请选择状态--</option>
+                    <volist name="status" id="vo">
+                    <option <?php if($request_data['status'] == "$key"){?> selected="selected"<?php }?> value="{$key}">{$vo}</option>
+                    </volist>
+                </select>
+            </label>
+        </div>
+        </if>
+        <div class="span4"  style="width:500px;">
+            <label class="row-fluid">结算日期：
+                <div class="span10" style="width:420px;">
+                    <div class="input-prepend">
+                <span class="add-on input-group-addon">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                </span>
+                        <input style="width: inherit;" class="js-date" name="settle_begin_time" value="{$request_data['settle_begin_time']}" type="text"  >
+                    </div>
+                    ~
+                    <div class="input-prepend">
+                <span class="add-on input-group-addon">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                </span>
+                        <input style="width: inherit;" class="js-date" name="settle_end_time" value="{$request_data['settle_end_time']}" type="text">
+                    </div>
+                </div>
+            </label>
+        </div>
+        <div class="span4"  style="width:500px;">
+            <label class="row-fluid">创建时间：
+                <div class="span10"  style="width:420px;">
+                    <div class="input-prepend">
+                <span class="add-on input-group-addon">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                </span>
+                        <input style="width: inherit;" class="js-date" name="begin_time" value="{$request_data['begin_time']}" type="text"  >
+                    </div>
+                    ~
+                    <div class="input-prepend">
+                <span class="add-on input-group-addon">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                </span>
+                        <input style="width: inherit;" class="js-date" name="end_time" value="{$request_data['end_time']}" type="text"  >
+                    </div>
+                </div>
+            </label>
+        </div>
+        <div class="span4">
+            <input class="btn btn-primary" value="搜索" type="submit">
+            <button class="btn btn-primary" type="submit" name="submit" value="excel_out">导出</button>
+            <a class="btn btn-danger" href="{:U('BSellReturn/index')}">清空</a>
+        </div>
+    </div>
+</form>

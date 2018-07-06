@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>添加员工信息</title>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+	<include file="./public/common/js_css.html" />
+	<link href="./public/pic_upload/css/cropper.min.css" rel="stylesheet"/>
+	<link href="./public/pic_upload/css/main.css" rel="stylesheet"/>
+
+	<script src="./public/pic_upload/js/cropper.min.js"></script>
+	<!--<script src="./public/pic_upload/js/noty.js"></script>-->
+	<script src="./public/pic_upload/js/main.js"></script>
+	<script src="./public/js/common.js?t={:time()}"></script>
+	<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<style>
+	.form-control {width:50%;}
+ 	.mobile_area { position: absolute; left: 0; width: 60px;}
+ 	.mobile_code { position: absolute; left: 0; right: 0; top: 36px; border: rgb(204, 204, 204) 1px solid; border-radius: 5px; display: none; overflow: hidden;}
+ 	.mobile_code ul, .mobile_code ul li { list-style: none; padding: 0; margin: 0; background-color: white;}
+ 	.mobile_code ul { border-radius: 5px;}
+ 	.mobile_code li { line-height: 34px; padding-left: 10px !important; border-radius: 5px;}
+ 	.mobile_code li:hover { background-color: #27a0e5; color: white;}
+</style>
+<body class=" theme-blue">
+	<!--头部模块-->
+    
+
+<div class="content">
+	<ul class="nav nav-tabs">
+		<li ><a href="{:U('Employee/index')}">{:L('SYSTEM_EMPLOYEE_INDEX')}</a></li>
+		<li class="active"><a href="{:U('Employee/add')}">{:L('SYSTEM_EMPLOYEE_ADD')}</a></li>
+	</ul>
+	<div class="main-content">
+	<!--           
+	<ul class="nav nav-tabs">
+	<li class="active"><a href="#home" data-toggle="tab">Profile</a></li>
+	<li><a href="#profile" data-toggle="tab">Password</a></li>
+	</ul>
+	<br/>
+	-->
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+        	<div class="col-md-3" style="width: 15%;">
+				<div class="row">
+					<div class="col-md-12 col-sm-3"></div>
+					<div class="col-md-12 col-sm-5 center-block" id="crop-avatar">
+						
+						<div style="text-align:center;color:red;margin:5px 0">提示：点击上传照片</div>
+						<div class="avatar-view " title="更换照片">
+							<div class="" >
+								<img id="img_s" class="center-block" src="<?php echo $result['avatar']?$result['avatar']:'/public/images/1.png'; ?>" style="max-width:100%;border-top-left-radius: 3px;border-top-right-radius: 3px;">
+							</div>
+							<div class="label label-primary img-label padding-top-small padding-bottom-small">上传照片</div>
+						</div>
+						
+						 
+						<div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+									<form class="avatar-form" action="{:U('Employee/upload')}" enctype="multipart/form-data" method="post">
+										<div class="modal-header">
+											<button class="close" data-dismiss="modal" type="button" style="padding:10px 20px">&times;</button>
+											<h4 class="modal-title" id="avatar-modal-label">更换照片</h4>
+										</div>
+										<div class="modal-body">
+											<div class="avatar-body">
+
+												
+												<div class="avatar-upload">
+													<input class="avatar-src" name="avatar_src" type="hidden"/>
+													<input class="avatar-data" name="avatar_data" type="hidden"/>
+													<label for="avatarInput">图片上传</label>
+													<input class="avatar-input" id="avatarInput" name="avatar_file" type="file"/>
+												</div>
+
+												<!-- Crop and preview -->
+												<div class="row">
+													<div class="col-md-9">
+														<div class="avatar-wrapper"></div>
+													</div>
+													<div class="col-md-3">
+														<div class="avatar-preview preview-lg"></div>
+														<div class="avatar-preview preview-md"></div>
+														<div class="avatar-preview preview-sm"></div>
+													</div>
+												</div>
+									
+												<div class="row avatar-btns">
+											
+													<div class="col-md-3">
+														<button class="btn btn-primary btn-block avatar-save" type="submit">上传</button>
+													</div>
+												</div>
+											</div>
+										</div>
+										
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="loading" aria-label="Loading" role="img" tabindex="-1"></div>
+					</div>
+					
+				</div>
+			</div>
+<div class="col-md-9">
+<form class="form-horizontal form_nowrap user_bc" role="form"><!--action="{:U('User/user_add_post')}" method="post"-->
+   <div class="form-group" style="width: auto" id="show">
+      <label for="lastname" class="col-sm-3 control-label">手机号</label>
+      <div class="input-group col-sm-5" style="width: 28.4%; min-width: 280px; position: relative;">
+  		 <input type="hidden" autocomplete="off" name="mobile_area">
+         <input type="text" autocomplete="off" name="mobile" placeholder="请输入手机号" class="form-control mobile" style="padding-left: 60px;">
+         <button type="button" class="btn btn-default mobile_area" style="border: 0px; left: 1px; top: 1px;">86</button>
+         <div class="input-group-btn" id="baidu">
+            <button type="button" class="btn btn-default pull-right">
+                添加
+            </button>
+        </div>
+        <div class="mobile_code">
+        	<ul>
+        		<li data-title="86" data-value="1" class="active">中国大陆（86）</li>
+        		<li data-title="852" data-value="2">中国香港（852）</li>
+        		<li data-title="853" data-value="3">中国澳门（853）</li>
+        	</ul>
+        </div>
+	</div>
+	<div id="tishi" style="color: red;margin:0 350px;"></div>
+   </div>
+   
+   <div class="aaa" hidden="hidden" style="" >
+       <div class="form-group">
+      <label for="lastname" class="col-sm-3 control-label">登录账号</label>
+      <div class="col-sm-5" style="width: 41.4%;position: relative;display: table;border-collapse: separate;">
+         <div class="mobile" class="form-control pull-left" ></div> 
+ 		<input type="text" autocomplete="off" class="form-control" id="mobile" name="mobile" disabled value="">
+      </div>
+      <label  class="mob" style="color:red;display:inline;margin: 0 350px;" class="control-label" ></label>
+    </div>
+     
+   	<div class="form-group" class="pass">
+      <label for="lastname" class="col-sm-3 control-label">登录密码</label>
+      <div class=" col-sm-5" style="width:41.4%;position: relative;display: table;border-collapse: separate;">
+         <div class="mobile"  class="form-control pull-left" ></div> 
+ 			 <input type="text" autocomplete="off" class="form-control" value="123456" disabled>
+      </div>
+      <label id="pass"  style="color:red;display:inline;margin: 0 350px;" class="control-label"></label>
+     </div>
+     <div class="form-group">
+      <label for="lastname" class="col-sm-3 control-label">姓名</label>
+      <div class=" col-sm-5" style="width:41.4%;position: relative;display: table;border-collapse: separate;">
+         <div class="mobile"  class="form-control pull-left" ></div> 
+ 			 <input type="text" autocomplete="off" class="form-control" name="user_nicename" id="user_nicename">
+      </div>
+      <label class="user_nicename"  class="control-label" style="color:red;display:inline;margin: 0 350px;"></label>
+     </div>
+   <div class="form-group">
+	   <label for="lastname" class="col-sm-3 control-label">员工工号</label>
+	   <div class="input-group col-sm-5" style="padding:0 15px;width: 22.4%;">
+		   <input class="form-control" type="text"  placeholder="请输入工号" name="workid" id="workid" >
+		   <div class="input-group-btn">
+			   <button type="button" class="btn btn-default" id="work">自动生成</button><span class="form-required">*</span>
+		   </div>
+	   </div>
+	   <label id="workwar" class="control-label" style="color:red;display:inline;margin: 0 350px;"></label>
+   </div>
+    <div class="form-group">
+      <label for="lastname" class="col-sm-3 control-label">员工状态</label>
+      <div class="col-sm-5">
+         <select class="form-control" name="status" id="ygzt">
+                <option value="1">在职</option>
+                <option value="0">离职</option>
+         </select>
+      </div>
+      <label id="gwwar" class="control-label" style="color:red"></label>
+   </div>
+
+   <div class="form-group">
+      <label for="lastname" class="col-sm-3 control-label">性别</label>
+      <div class="col-sm-5">
+         <select class="form-control" name="sex" id="sex">
+           		<!-- <option value="0">保密</option> -->
+                <option value="1">男</option>
+                <option value="2">女</option>
+              
+         </select>
+      </div>
+      <label id="gwwar" class="control-label" style="color:red"></label>
+   </div>
+   
+    <div class="form-group">
+      <label for="lastname" class="col-sm-3 control-label">部门</label>
+      <div class="col-sm-5">
+         <select class="form-control" name="sector_id" id="bm">
+         	<option value="-1">--请选择部门--</option>
+           <volist name="bmlist" id="v">	
+            <option value="{$v.id}">{$v.sector_name}</option>
+           </volist>
+         </select>
+      </div>
+      <label id="bmwar" class="control-label" style="color:red;margin: 0 350px"></label>
+   </div>
+   
+    <div class="form-group">
+      <label for="lastname" class="col-sm-3 control-label">岗位</label>
+      <div class="col-sm-5">
+         <select class="form-control" name="job_id" id="gw">
+           	<option value="0">--请选择岗位--</option>
+         </select>
+      </div>
+      <label id="gwwar" class="control-label" style="color:red"></label>
+   </div>
+    <input type="hidden" class="form-control" name="pic" id="pic">
+     <div class="form-group" style="text-align:center;">
+      <button type="button" class="btn btn-primary baocun">保存</button>
+    </div>
+    </div>
+</form>
+</div>
+    <script type="text/javascript">
+         laydate({
+             elem: '#rzsj'
+         });
+		 laydate({
+             elem: '#bysj'
+         });
+		 laydate({
+             elem: '#worktime'
+         });
+		 laydate({
+             elem: '#csny'
+         });
+
+    </script>
+
+	<script>
+	$(function(){
+			$.ajax({				//页面加载完后就开始加载省份
+				url: "/ChineseCities.json",
+				dataType: 'json',
+				success: function (data) {
+					var str='<option value="0">请选择省份</option>';
+					$.each(data,function(index,obj){
+						str+='<option value="'+obj.id+'">'+obj.name+'</option>';
+					})
+					$('#province').html(str);
+				}
+			})
+		
+		})
+		
+		function format(date){
+			if(date<10){
+				date=('0'+date);
+			}
+			else{
+				date=date;
+			}
+			return date;
+		}
+			
+		getcity();
+		function getcity(){
+			$('#province').change(function(){    //省市两级联动
+				var id=parseInt($('#province').val())-1;
+				$.ajax({
+					url: "/ChineseCities.json",
+					dataType: 'json',
+					success: function (data) {
+						var str='';
+						if(id!=-1){
+							if(data[id]['city'].length>0){
+								$.each(data[id]['city'],function(index,obj){
+									str+='<option value="'+obj.id+'">'+obj.name+'</option>';
+								})
+							}
+						}
+						$('#city').html(str);
+					}
+				})
+			})
+		}
+
+        $(".baocun").click(function(){
+            if(checkwork()&&checkbmgw()&&user_nicename()){
+				if($('#img').attr('src')!='/Public/images/1.png'){
+					$('#pic').val($('#img').attr('src'));
+				}
+				$.ajax({
+                    url: "{:U('Employee/add')}",
+                    type: 'post',
+                    data: $('.user_bc').serialize(),
+                    beforeSend:function(){
+                        $(".baocun").attr("disabled",true);
+                    },
+                    success: function (data) {
+                        if(data.status==1){
+							window.location.href = "{:U('Employee/index')}";//+"&p="+data.page;
+                        }
+						else{
+							$('#tishi').html('该用户是白板用户，请联系管理员');
+						}
+						$(".baocun").attr("disabled",false);
+                    }
+                })
+            }
+        })
+		function checkwork(){
+			if(!$.trim($('#workid').val())){
+				//alert('请填写工号');
+				$('#workwar').html('请填写工号');
+				return false;
+			}else{
+				$('#workwar').html("");
+				return true;
+			}
+		}
+		function user_nicename(){
+			if(!$.trim($('#user_nicename').val())){
+				//alert('请填写姓名');
+				$('.user_nicename').html('请填写姓名');
+				return false;
+			}else{
+				$('.user_nicename').html('');
+				return true;
+			}
+		}
+		
+		$('#baidu').click(function(){
+			var mobile = $('.mobile').val();
+			var mobile_area = $('input[name=mobile_area]').val();
+
+			if(mobile == ""){
+				$('#tishi').html('请输入手机号码');
+				$('.mobile').focus();
+				return false;
+			}else if(!is_mobile(mobile, mobile_area)) {
+				$('#tishi').html('请输入有效的手机号码！');
+				$('.mobile').focus();
+				return false;
+			}
+			$.ajax({
+				url: "{:U('Employee/user_exist')}",
+				type: 'POST',
+				dataType: 'json',
+				data: {mobile:mobile},
+				success: function (obj) {
+				if(obj.status ==1){
+					$('#tishi').html('用户已经存在');
+					return false;
+				}else{
+					$('#id').text(mobile);
+					$('#mobile').val(mobile);
+					$('#user_nicename').val(obj.user_nicename);
+					$('.aaa').show();
+					$('#show').hide();
+				}
+			  }
+			})
+		})
+		
+		function checkpostcode(){			//判断邮编格式是否正确
+			if($.trim($('#postcode').val())){
+				var myreg = /^[1-9][0-9]{5}$/;
+				if(!myreg.test($('#postcode').val())){
+					 $('#codewar').text('邮编格式错误');
+					 return false;
+				}
+				else{
+					$('#codewar').text('');
+					return true;
+				}
+			}
+			else{
+				$('#phonewar').text('');
+				return true;
+			}
+		}
+
+		function checkbmgw(){
+			if($('#bm').val()*1 == 0){
+				//alert('请选择部门');
+				$('#bmwar').html('请选择部门！');
+				return false;
+			}else{
+				return true;
+			}
+			if($('#gw').val()*1 == 0){
+				//alert('请选择岗位');
+				$('#gwwar').html('请选择岗位！');
+				return false;
+			}else{
+				return true;
+			}
+		}
+		
+		$('#work').click(function(){
+			$.ajax({
+				url: "{:U('Employee/getlastwork')}",
+				type: 'post',
+				data:{getlastwkid:'getlastwkid'},
+				success: function (data) {
+					$('#workid').val(data);
+				}
+			})
+		})
+		
+		$('#bm').change(function(){
+			$.ajax({
+				url: "{:U('Employee/bm_gw')}",
+				type: 'post',
+				dataType: 'json',
+				data:{bm_id:$('#bm').val()},
+				success: function (data) {
+					if(data.status==1){
+						var str = '<option value="0">--请选择岗位--</option>';
+						$.each(data.data,function(index,obj){
+							str += '<option value="'+obj.id+'">'+obj.job_name+'</option>';
+						})
+						$('#gw').html(str);
+					}else{
+						$('#gw').html('<option value="0">--请选择岗位--</option>');
+					}
+				}
+			})
+		})
+		
+    </script>
+     <script>
+     	// 手机号区号
+     	$('.mobile_area').on("click", function(){
+     		$('.mobile_code').toggle();
+     	});
+     	$('.mobile_code li').on("click", function(){
+     		var title = $(this).data('title');
+     		var value = $(this).data('value');
+
+     		$('input[name=mobile_area]').val(value);
+     		$('.mobile_area').text(title);
+     		$('.mobile_code').toggle();
+     	});
+     </script>
+
+</div>
+</div>
+</div>
+		<include file="./public/common/footer.html" />

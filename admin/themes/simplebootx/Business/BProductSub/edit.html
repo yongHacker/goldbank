@@ -1,0 +1,83 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li ><a href="{:U('BProductSub/index')}">{:L('BUSINESS_BPRODUCTSUB_INDEX')}</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BPRODUCTSUB_EDIT')}</a></li>
+
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BProductSub/edit')}">
+		<input type="hidden" value="{$info.id}" name='id'>
+			<div class="control-group">
+				<label class="control-label">类别:</label>
+				<div class="controls">
+					<select name="sub_type">
+						<option value="">-类别-</option>
+						<volist name="sub_types" id="v" key="k">
+							<option value="{$v.value}" <if condition="$v['value'] eq $info['sub_type']">selected="selected"</if>>{$v.comment}</option>
+						</volist>
+					</select>
+					<span class="form-required">*</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">附属信息值:</label>
+				<div class="controls">
+					<input type="text" autocomplete="off" name="sub_value" id="sub_value" value="{$info.sub_value}">
+					<span class="form-required">*</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">注释:</label>
+				<div class="controls">
+					<input type="text" autocomplete="off" name="sub_note" id="sub_note" value="{$info.sub_note}">
+					<span class="form-required">*</span>
+				</div>
+			</div>
+			</fieldset>
+			<div class="form-actions">
+				<p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+				<a class="btn js-ajax-back-btn">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script>
+	$('.js-ajax-submit').unbind().click(function(){
+		var id=$('input[name=id]').val();
+		var sub_type=$('select[name=sub_type]').val();
+		var sub_value=$('input[name=sub_value]').val();
+		var sub_note=$('input[name=sub_note]').val();
+		if(empty(sub_type)){
+			error_appear('请选择类别');
+			return false;
+		}
+		if(empty(sub_value)){
+			error_appear('请填写附属信息值');
+			return false;
+		}
+		if(empty(sub_note)){
+			error_appear('请填写注释');
+			return false;
+		}
+		$.ajax({
+			url:$('form').attr('action'),
+			data:{id:id,sub_type:sub_type,sub_value:sub_value,sub_note:sub_note},
+			type:'post',
+			dataType:'json',
+			success:function(result){
+				if(result.status==1){
+					error_appear(result.msg);
+					setTimeout(function(){jump_refer();},800);
+				}else if(result.status==0){
+					error_appear(result.msg);
+				}
+			}
+		});
+		
+	});
+	</script>
+</body>
+</html>

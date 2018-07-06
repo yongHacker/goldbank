@@ -1,0 +1,118 @@
+		<form method="post" id="form" class="form-horizontal js-ajax-form" >
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">来源</label>
+					<div class="controls">
+						<select id="shop_id" name="shop_id" data-live-search="true">
+							<if condition="$shop_id"><else/><option value="0" checked>总部</option></if>
+							<volist name="shopdata" id="v">
+								<option value="{$v.id}" in_user="{$v.shop_name}"  checked>{$v.shop_name}</option>
+							</volist >
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">姓名</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" id ='user_nicename' name="user_nicename">
+					</div>
+			
+				</div>
+				<div class="control-group">
+					<label class="control-label">身份证号</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" id ='client_idno' name="client_idno">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">手机号码</label>
+					<div class="controls">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle area-title" data-toggle="dropdown" style="width: 60px; text-align: left; border: 1px solid #ccc;">
+								86
+								<span class="caret" style="right: 4px; position: absolute;"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu" style="width: 218px;">
+								<li><a class="area_code" data-code="1" data-title="86" href="#">中国大陆（86）</a></li>
+								<li><a class="area_code" data-code="2" data-title="852" href="#">中国香港（852）</a></li>
+								<li><a class="area_code" data-code="3" data-title="853" href="#">中国澳门（853）</a></li>
+							</ul>
+						</div>
+						<input type="hidden" autocomplete="off" name="mobile_area" value="1">
+						<input type="text" autocomplete="off" id='mobile' name="mobile" style="width: 142px;">
+					</div>
+
+				</div>
+				<div class="control-group">
+			      <label  class="control-label">性别</label>
+			      <div class="controls" style="padding: 5px 0">
+			         <!-- <input type="radio" name="sex" id="sex" value="0">保密 &nbsp; -->
+			         <input type="radio" name="sex" id="sex" value="1" checked="">男 &nbsp;
+			          <input type="radio" name="sex" id="sex" value="2">女
+			      </div>
+			   </div>
+					
+				<label class="tishi" style="color: red;margin:0 200px;"></label>
+			
+			</fieldset>
+			<div class="form-actions">
+				<button2 type="submit" id="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button2>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script>
+	$('#submit').click(function(){
+		var myreg1 = /^1[3|4|5|7|8]\d{9}$/;
+		var myreg2 = /^[5|6|9]\d{7}$/;
+		var myreg3 = /^[6]\d{7}$/;
+		var c_id=$('#c_id').val();
+		var sourc=$('#source').val();
+		var sex=$('input[name="sex"]:checked ').val();
+
+		var user_nicename=$('#user_nicename').val();
+		var mobile=$('#mobile').val();
+		var mobile_area=$('#mobile_area').val();
+		var __hash__=$('input[name="__hash__"]').val();
+		if(user_nicename ==''){
+			$('.tishi').html('请输入姓名!');
+            $('#user_nicename').focus();
+			return false; 
+		}
+		if(mobile ==''){
+		 	$('.tishi').html('手机号不能为空!');
+            $('#mobile').focus();
+		 	return false; 
+		}else if((mobile_area==1 && !myreg1.test(mobile)) || (mobile_area==2 && !myreg2.test(mobile)) || (mobile_area==3 && !myreg3.test(mobile))) { 
+			$('.tishi').html('请输入有效的手机号！');
+            $('#mobile').focus();
+			return false; 
+		}
+		var url =$("#action").find('a').attr('href');
+		var client_idno=$('input[name="client_idno"]').val();
+		$.ajax({
+			type:'post',
+			data:{__hash__:__hash__,c_id:c_id,sourc:sourc,user_nicename:user_nicename,
+				mobile:mobile,mobile_area:mobile_area,sex:sex,client_idno:client_idno},
+			dataType:'json',
+			url:url,
+			success:function(result){
+				if(result.status==1){
+					$('.tishi').html(result.info);
+					window.location.href=result.referer;
+				}else{
+					$('.tishi').html(result.info);
+				}
+			}
+		});
+	});
+	</script>
+	<!-- 手机号区号切换js -->
+	<script type="text/javascript">
+		$('.area_code').click(function(){
+			$(this).closest('.btn-group').find('.area-title').html($(this).data('title') +'<span class="caret" style="right: 4px; position: absolute;"></span>');
+			$('input[name=mobile_area]').val($(this).data('code'));
+		});
+	</script>
+</body>
+</html>

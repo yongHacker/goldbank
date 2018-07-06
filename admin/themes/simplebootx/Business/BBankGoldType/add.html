@@ -1,0 +1,42 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BBankGoldType/index')}">{:L('BUSINESS_BBANKGOLDTYPE_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BBankGoldType/add')}">{:L('BUSINESS_BBANKGOLDTYPE_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BBankGoldType/add')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">贵金属分类</label>
+					<div class="controls">
+						<select name="b_metal_type_id">
+							{$terms_tree}
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">价格类型名称</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="name">
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label">是否启用</label>
+					<div class="controls">
+						<input type="radio" name="status" value="1" checked="">是 &nbsp; &nbsp;&nbsp;
+						<input type="radio" name="status" value="0">否
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

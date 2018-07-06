@@ -1,0 +1,87 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li ><a href="{:U('BMetalType/index')}">{:L('BUSINESS_BMETALTYPE_INDEX')}</a></li>
+	        <li class="active"><a href="#A" data-toggle="tab">{:L('BUSINESS_BMETALTYPE_ADD')}</a></li>
+	    </ul>
+		<form class="form-horizontal js-ajax-form" action="{:U('BMetalType/add')}" method="post">
+			<div class="tabbable">
+		        <div class="tab-content">
+		          <div class="tab-pane active" id="A">
+						<fieldset>
+							<div class="control-group">
+								<label class="control-label">关联分类</label>
+								<div class="controls">
+									<select name="agc_id">
+										<volist name="cate_list" id="v" style="width: 60px;">
+											<option value="{$v.id}">{$v.name}</option>
+										</volist >
+									</select>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">上级分类</label>
+								<div class="controls">
+									<select name="pid">
+										<option value="0">{:L('ROOT')}</option>
+										{$terms_tree}
+									</select>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">{:L('NAME')}</label>
+								<div class="controls">
+									<input type="text" autocomplete="off" name="name" value=""><span class="form-required">*</span>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">{:L('CATEGORY_DESCRIPTION')}</label>
+								<div class="controls">
+									<textarea name="description" rows="5" cols="57"></textarea>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">状态:</label>
+								<div class="controls">
+									<select name="status" aria-invalid="false">
+										<option value="1">启用</option>
+										<option value="0">禁用</option>
+									</select>
+									<span class="form-required">*</span>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">关联:</label>
+								<div class="controls">
+									<select name="is_relation" aria-invalid="false">
+										<option value="0">否</option>
+										<option value="1">是</option>
+									</select>
+									<span class="form-required">*(关联平台接口金价后将自动更新为平台金价)</span>
+								</div>
+							</div>
+						<!--	<div class="control-group">
+								<label class="control-label">{:L('CATEGORY_TYPE')}</label>
+								<div class="controls">
+									<select name="taxonomy">
+										<foreach name="taxonomys" item="vo">
+								        	<option value="{$key}">{$vo}</option>
+										</foreach>
+									</select>
+								</div>
+							</div>-->
+						</fieldset>
+		          </div>
+		        </div>
+		    </div>
+		    <div class="form-actions">
+		     	<button class="btn btn-primary js-ajax-submit"type="submit">{:L('ADD')}</button>
+		      	<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+		    </div>
+		</form>
+	</div>
+	<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

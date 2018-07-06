@@ -1,0 +1,341 @@
+<businesstpl file="header" />
+<style>
+	.cancel-licence{
+		display: inline-block;
+		width: 80px;
+		height: 30px;
+		line-height: 30px;
+		margin-left: 20px;
+		padding: 0;
+		border: 1px solid #ccc;
+		background: #f2f2f2;
+		border-radius: 6px;
+		color: #555;
+		text-align: center;
+	}
+	.hide{
+		display: none;
+	}
+	.attach_pic{
+		margin-right:20px;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BSupplier/index')}">{:L('BUSINESS_BSUPPLIER_INDEX')}</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BSUPPLIER_EDIT')}</a></li>
+		</ul>
+		<input type="file"  id="thumb" value="{$data.supplier_license}" style="display: none" accept="image/jpeg,image/png">
+		<input type="file"  id="attach"  style="display: none" value="{$data.attachment}" multiple="multiple">
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BSupplier/edit')}">
+			<fieldset>
+				<table class="table table-bordered">
+					<tbody>
+						<tr>
+							<td class="sel">供应商编号</td>
+							<td width="25%"><input type="text" autocomplete="off" name="supplier_code" value="{$data.supplier_code}">*</td>
+							<td class="sel">公司名称</td>
+							<td width="25%"><input type="text" autocomplete="off" name="company_name" value="{$data.company_name}">*</td>
+						</tr>
+						<tr>
+
+							<td class="sel">公司简称</td>
+							<td width="25%"><input type="text" autocomplete="off" name="company_short_name" value="{$data.company_short_name}"></td>
+							<td class="sel">法人代表</td>
+							<td width="25%"><input type="text" autocomplete="off" name="legal_person" value="{$data.legal_person}"></td>
+						</tr>
+						<tr>
+
+
+							<td class="sel">社会信用代码</td>
+							<td width="25%"><input type="text" autocomplete="off" name="credit_code" value="{$data.credit_code}"></td>
+							<td class="sel">业务联系人</td>
+							<td width="25%"><input type="text" autocomplete="off" name="contact_member" value="{$data.contact_member}"></td>
+						</tr>
+						<tr>
+							<td class="sel">联系人电话</td>
+							<td width="25%"><input type="text" autocomplete="off" name="contact_phone" value="{$data.contact_phone}">[*]</td>
+							<td class="sel">联系人邮箱</td>
+							<td width="25%"><input type="text" autocomplete="off" name="supplier_email" value="{$data.supplier_email}"></td>
+						</tr>
+						<tr>
+							<td class="sel">公司电话</td>
+							<td width="25%"><input type="text" autocomplete="off" name="supplier_phone" value="{$data.supplier_phone}">[*]</td>
+							<td class="sel">传真</td>
+							<td width="25%"><input type="text" autocomplete="off" name="fax" value="{$data.fax}"></td>
+						</tr>
+						<tr>
+							<td class="sel">营业执照</td>
+							<td width="25%">
+								<input id="pic" type="text" name="supplier_licence"  value="{$data.supplier_licence}" style="display: none"/>
+								<input id="pic_del" type="text" name="del_licence_pic"  value="" style="display: none"/>
+								<a href="javascript:upload_supplier_image();">
+									<if condition="$data.supplier_licence eq ''">
+										<img src="/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png" id="thumb-preview" width="60" style="cursor: hand">
+										<else/>
+										<img src="{$data.supplier_licence}" id="thumb-preview" width="60" style="cursor: hand">
+									</if>
+
+								</a>
+
+								<span <if condition="$data.supplier_licence eq ''">class="cancel-licence hide" <else/>class="cancel-licence"</if> >取消图片</span>
+							</td>
+							<td class="sel">附件</td>
+							<td width="25%">
+								<input id="attachment" type="text" name="attachment" data-edit="{$data.attachment}"  value="{$data.attachment}" style="display: none"/>
+								<input id="attachment_del" type="text" name="del_attachment_pic"   value="" style="display: none"/>
+								<a id="add" href="javascript:upload_attachment()" >添加附件
+									<span style="color:#ff5656">(右击附件可删除该附件)</span>
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<td class="sel">经营范围</td>
+							<td colspan="3"><input type="text" autocomplete="off" name="business_area" value="{$data.business_area}"></td>
+
+						</tr>
+
+						<tr>
+							<td class="sel">地址</td>
+							<td colspan="3"><input type="text" autocomplete="off" name="address" value="{$data.address}"></td>
+						</tr>
+						<tr>
+							<td class="sel">备注</td>
+							<td colspan="3"><input type="text" autocomplete="off" name="comment" value="{$data.comment}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</fieldset>
+			<div class="form-actions">
+				<input type="hidden" value="{$data.id}" name="id">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+		<!--删除弹出框-->
+		<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"  data-href="">
+			<div class="modal-dialog-div">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h3 id="myModalLabel">删除警告</h3>
+					</div>
+					<div class="modal-body">
+						<p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要删除该附件吗?</p>
+					</div>
+					<div class="modal-footer">
+						<button id="can" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+						<button id="del" class="btn btn-primary" data-dismiss="modal" onclick="del_attach()">删除</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+    <script>
+        //JS屏蔽鼠标右键
+        document.oncontextmenu=new Function("event.returnValue=false;");
+        document.onselectstart=new Function("event.returnValue=false;");
+	//初步渲染附件
+		var i=1;//全局变量（附件基数）
+		var attach=$("#attachment").attr("data-edit");
+		attachFun(attach);
+		function attachFun(attach_s){
+            if(attach_s!=""){
+                var tmp=attach_s.split(",");
+				i=tmp.length;
+                for(var j=0;j<i;j++){
+                    $("#add").before('<a class="attach_pic" target="_blank" href="'+tmp[j]+'">附件'+(parseInt(j)+1)+'</a>');
+                }
+                i++;
+
+            }
+            else{
+                i=1;
+
+            }
+		}
+
+
+      //上传营业执照
+        function upload_supplier_image() {
+            $("#thumb").click();//触发选择文件
+
+        }
+	 //上传附件
+        function upload_attachment(){
+            if(i<4){
+                console.log(i);
+                $("#attach").click();
+			}
+			else {
+                alert("上传附件不能超过三个")
+			}
+
+		}
+		//上传营业执照（选择图片之后）
+            $("#thumb").change(function(){
+                var del_str=$("#pic").val();
+                var file =document.getElementById("thumb").files[0];
+                var size=file.size;
+                console.log(size);
+                // console.log(file);
+				if(size>1024*1024){
+				    alert("上传图片不能超过1M")
+				}
+				else{
+                    var formdata=new FormData();
+                    formdata.append("upload_licence_pic",file);
+                    // formdata.append("del_licence_pic",del_str);
+                    $.ajax({
+                        type: 'post',
+                        url: GV.ROOT + 'index.php?g=Business&m=BSupplier&a=upload_licence_pic',
+                        data: formdata,
+                        processData:false,
+                        contentType:false,
+                        dataType: "json",
+                        success: function (res) {
+                            if(res.status!=0){
+                                var pic= res.upload_pic;
+                                $("#thumb-preview").attr("src",pic);
+                                $("#pic").val(pic);
+                                //删除之前上传的图文件
+                                var del_licence_str=$("#pic_del").val(); //营业执照删除图片空间
+                                var value="";
+                                if(del_licence_str!=""){
+                                    if(empty(del_str)){
+                                        value=del_licence_str;
+                                    }
+                                    else{
+                                        value=del_licence_str+del_str;
+                                    }
+                                }
+                                else{
+                                    value=del_str;
+                                }
+                                $("#pic_del").val(value);
+                                $(".cancel-licence").removeClass("hide")
+							}
+							else{
+                                alert(res.info
+								  )
+							}
+
+                        }
+                    })
+				}
+
+        });
+		//上传附件（选择附件之后）
+        $("#attach").change(function(){
+            var file =document.getElementById("attach").files[0];
+            var formdata=new FormData();
+            formdata.append("upload_attachment_pic",file);
+            $.ajax({
+                type: 'post',
+                url: GV.ROOT + 'index.php?g=Business&m=BSupplier&a=upload_attachment_pic',
+                data: formdata,
+                processData:false,
+                contentType:false,
+                dataType: "json",
+                success: function (res){
+                    if(res.status==1){
+                        $("#add").before('<a class="attach_pic" target="_blank" href="'+res.upload_pic+'">附件'+i+'</a>');
+                        var old_v=$("#attachment").val();
+                        var value="";
+                        if(old_v!=""){
+                            value=$("#attachment").val()+","+res.upload_pic;
+                        }
+                        else{
+							value=res.upload_pic;
+                        }
+
+                        $("#attachment").val(value);
+                        i++;
+
+					}
+                }
+            })
+        });
+
+        //取消营业执照图片
+		$(".cancel-licence").click(function () {
+            //删除之前上传的图文件
+			var del_str=$("#pic").val();
+            var del_licence_str=$("#pic_del").val(); //营业执照删除图片空间
+            var value="";
+            if(del_licence_str!=""){
+                if(empty(del_str)){
+                    value=del_licence_str;
+                }
+                else{
+                    value=del_licence_str+del_str;
+                }
+            }
+            else{
+                value=del_str;
+            }
+            $("#pic_del").val(value);
+			//页面处理图片
+			$("#pic").val("");
+            $("#thumb-preview").attr("src","/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png");
+            $(this).addClass("hide");
+        })
+		//删除附件（删除服务器失效附件文件）
+		$(document).on("mousedown",".attach_pic",function (e) {
+		    if(e.button== 2){
+                var del_str=$(this).attr("href");
+                $("#myModal").attr("data-href",del_str);
+                $("#myModal").modal('show');
+			}
+        });
+		function del_attach(){
+            var del_str=$("#myModal").attr("data-href");
+            var del_attach_str=$("#attachment_del").val();
+            var value="";
+            if(del_attach_str!=""){
+                value=del_attach_str+","+del_str;
+            }
+            else{
+                value=del_str;
+            }
+            $("#attachment_del").val(value);
+            $(".attach_pic").remove();
+            var old_attach=$("#attachment").val();
+            var new_attach="";
+            var del_str_new=del_str+",";
+            var del_str_new2=","+del_str;
+            console.log(del_str_new);
+            if(old_attach.indexOf(del_str_new) != -1){
+                new_attach=old_attach.replace(del_str_new,"");
+            }
+            else if(old_attach.indexOf(del_str_new2) != -1) {
+                new_attach=old_attach.replace(del_str_new2,"");
+            }
+            else{
+                new_attach=old_attach.replace(del_str,"");
+            }
+            console.log(new_attach);
+            $("#attachment").val(new_attach);
+            attachFun(new_attach);
+          /*  var formdata=new FormData();
+            formdata.append("upload_attachment_pic","");
+            formdata.append("del_attachment_pic",del_str);
+            $.ajax({
+                type: 'post',
+                url: GV.ROOT + 'index.php?g=Business&m=BSupplier&a=upload_attachment_pic',
+                data: formdata,
+                processData:false,
+                contentType:false,
+                dataType: "json",
+                success: function (res){
+                }
+            })*/
+            console.log(i);
+		}
+    </script>
+
+</body>
+</html>

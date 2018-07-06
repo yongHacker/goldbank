@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+	<html>
+	<head>
+		<title>金行文章三 金行管家 </title>
+		<meta name="keywords" content="金行文章3.1" />
+		<meta name="description" content="金行文章3.3">
+					<meta name="author" content="ThinkCMF">
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+    <!-- Set render engine for 360 browser -->
+    <meta name="renderer" content="webkit">
+
+   	<!-- No Baidu Siteapp-->
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <!-- HTML5 shim for IE8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <![endif]-->
+	<link rel="icon" href="/themes/simplebootx/Public/assets/images/favicon.ico" type="image/x-icon">
+	<link rel="shortcut icon" href="/themes/simplebootx/Public/assets/images/favicon.ico" type="image/x-icon">
+    <link href="/themes/simplebootx/Public/assets/simpleboot/themes/simplebootx/theme.min.css" rel="stylesheet">
+    <link href="/themes/simplebootx/Public/assets/simpleboot/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/themes/simplebootx/Public/assets/simpleboot/font-awesome/4.4.0/css/font-awesome.min.css"  rel="stylesheet" type="text/css">
+	<!--[if IE 7]>
+	<link rel="stylesheet" href="/themes/simplebootx/Public/assets/simpleboot/font-awesome/4.4.0/css/font-awesome-ie7.min.css">
+	<![endif]-->
+	<link href="/themes/simplebootx/Public/assets/css/style.css" rel="stylesheet">
+	<style>
+		/*html{filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);-webkit-filter: grayscale(1);}*/
+		#backtotop{position: fixed;bottom: 50px;right:20px;display: none;cursor: pointer;font-size: 50px;z-index: 9999;}
+		#backtotop:hover{color:#333}
+		#main-menu-user li.user{display: none}
+	</style>
+	
+		<style>
+			#article_content img{height:auto !important}
+			#article_content {word-wrap: break-word;}
+    		.btn {margin-top: 33px;}
+		</style>
+	<meta name="__hash__" tmplContent="0092e37003c62ac1849fd535e188647f_784f04006718381f4e07e2b4bf474f31" /></head>
+<body class="" style="padding-top:0px;">
+
+<div class="container tc-main">
+	<div class="row">
+		<div class="span12">
+			
+			<div class="tc-box first-box article-box">
+		    	<h2 style="text-align:center;font-size: 30px;">{$article_title}</h2>
+				<if condition="$article_sub_title neq ''">
+					<div style="text-align:center;font-size:18px;color:#333;margin-bottom:22px;">{$article_sub_title}</div>
+				</if>
+		    	<div class="article-infobox" style="text-align:center">
+		    		<span style="font-size: 16px;color:#999;">更新&nbsp;&nbsp;{:date("Y-m-d",$update_time)} by {$user_nicename|default=$user_login}</span>
+		    		<span>
+		    			<a href="javascript:;"><i class="fa fa-eye"></i><span>{$article_hits}</span></a>
+						<!--<a href="{:U('article/do_like',array('id'=>$article_id))}" class="js-count-btn"><i class="fa fa-thumbs-up"></i><span class="count">{$article_like}</span></a>
+						<a href="{:U('user/favorite/do_favorite',array('id'=>$article_id))}" class="js-favorite-btn" data-title="{$article_title}" data-url="{:leuu('article/index',array('id'=>$article_id,'cid'=>$term_id))}" data-key="{:sp_get_favorite_key('articles',$article_id)}">
+							<i class="fa fa-star-o"></i>
+						</a>-->
+					</span>
+		    	</div>
+		    	<hr>
+		    	<div id="article_content">
+		    	{$article_content}
+				<!--<div style="color:#999;font-size:16px;text-align:right;">{:date("Y-m-d",$create_time)} by {$user_nicename|default=$user_login}</div>-->
+		    	</div>
+                <if condition="!empty($article_source)">
+                    <div>
+                        <b>注：本文转载自{$article_source}，转载目的在于传递更多信息，并不代表本网赞同其观点和对其真实性负责。如有侵权行为，请联系我们，我们会及时删除。</b>
+                    </div>
+    			</if>
+		    	<div>
+					<if condition="!empty($prev)">
+					<a href="{:leuu('BArticle/show',array('id'=>$prev['id'],'cid'=>$prev['ac_id']))}" class="btn btn-primary pull-left">上一篇</a>
+					</if>
+					<if condition="!empty($next)">
+					<a href="{:leuu('BArticle/show',array('id'=>$next['id'],'cid'=>$next['ac_id']))}" class="btn btn-warning pull-right">下一篇</a>
+					</if>
+    	            <script type="text/javascript" src="__TMPL__Public/assets/js/qrcode.min.js"></script>
+                    <div id="qrcode" style="width: 100px;margin:0 auto"></div>
+    					<script type="text/javascript">
+                        var qrcode = new QRCode(document.getElementById("qrcode"), {
+                        width : 100,
+                        height : 100
+                        });
+                        function makeCode () {		
+                        qrcode.makeCode("http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+                        }
+                        makeCode();
+                        </script>
+					<div class="clearfix"></div>
+				</div>
+		    	
+		    	
+		    	{:hook('comment',array(
+		    		'article_id'=>$article_id,
+		    		'article_table'=>'articles',
+		    		'article_title'=>$article_title
+		    	))}
+		    </div>
+		    
+		    					    
+		</div>
+		
+		
+	</div>
+              
+
+</div>
+
+<tc_include file="Public:scripts"/>
+</body>
+</html> 

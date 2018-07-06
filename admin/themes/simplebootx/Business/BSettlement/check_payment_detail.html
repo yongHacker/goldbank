@@ -1,0 +1,372 @@
+<businesstpl file="header" />
+<style>
+	.js-check-wrap>form,.js-check-wrap>form>table{margin-bottom:10px;}
+	.my_page{text-align:left;}
+	.my_page a{position: relative;padding: 6px 12px;margin-left: -1px;line-height: 1.42857143;color: #428bca;text-decoration: none;background-color: #fff;border: 1px solid #ddd;}
+	.my_page span{position: relative;padding: 6px 12px;margin-left: -1px;line-height: 1.42857143;color:#fff;text-decoration: none;background-color:  #6f80a1;border: 1px solid #ddd;}
+	.my_page li{margin-top: 10px;display:none;}
+	.table tr th{text-align:center;}
+	input{width: 163px;margin-bottom:0px;}
+	.table {text-overflow: ellipsis;white-space: nowrap;overflow: hidden;}
+	.ta {overflow-x: auto;width: 100%;margin-bottom: 20px;}
+	.ta td{position:relative;}
+	/*.ta input{width: 177px;margin-bottom:0px;border:none;border-bottom:0px;padding:8px 0;box-shadow:none;border-radius:none;width:90%;text-align:center;}
+	.ta input:focus{box-shadow: none;outline:none;}*/
+	.td_border{border:solid 1px #157ab5;}
+	.select_goods{display:inline-block;background:#fff url('public/images/icon-select.gif') no-repeat scroll 55% 55%;width:10%;height:36px;position:absolute;top:0;right:0;}
+	tr td img{ width:200px;height:60px;}
+	input.left{text-align:left;}
+	input.right{text-align:right;}
+	td.left{text-align:left;}
+	td.right{text-align:right;}
+	/*#tr_bill{display:none}*/
+	.myModal{display:block;position:absolute;width:100%;height:100%;left:0;top:0;line-height:35px;}
+	.sel{background: #f4f4f4;}
+</style>
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li><a href="{:U('BSettlement/check_payment')}">{:L('BUSINESS_BSETTLEMENT_CHECK_PAYMENT')}</a></li>
+		<li class="active"><a href="#">上传</a></li>
+		<span style="float: right">
+			<if condition="$info['status'] eq 1">
+				<p type="text" class="btn btn-primary js-ajax-submit" operate="pass">保存</p>
+				<!--<p type="text" class="btn btn-danger js-ajax-submit" operate="unpass">审核不通过</p>-->
+			</if>
+			<p class="btn js-ajax-back-btn" type="text">{:L('BACK')}</p>
+		</span>
+	</ul>
+
+	<form id="form" class="form form-search" method="post" action="{:U('BSettlement/change_pic')}" >
+		<input id="id" type="hidden" name="id" value="{$info.id}">
+		<input id="supplier_id" type="hidden" name="supplier_id" value="{$info['supplier_info'] ? $info['supplier_info']['id'] : 0}">
+		
+		<div class="main-content">
+
+			<div class="ta">
+				<p>结算单信息</p>
+				<table class="table table-bordered table-hover">
+			        <tr>
+			        	<td>状态：
+			        		<if condition="$info[status] eq -1">未提交
+			        		<elseif condition="$info[status] eq 0" />待审核
+		        			<elseif condition="$info[status] eq 1" />审核通过
+		        			<elseif condition="$info[status] eq 2" />审核不通过
+		        			<elseif condition="$info[status] eq 3" />已撤销
+	        				<elseif condition="$info[status] eq 4" />已结算
+	        				<else />异常
+			        		</if>
+			        	</td>
+			        	<td>类型：<if condition="$info['type'] neq 3">{$info['type']==2 ? '批发采购' : '零售采购'}<else/>批发销售</if></td>
+			            <td>结算日期：{:date('Y-m-d', $info['settle_time'])}</td>
+			            <td>创建时间：{:date('Y-m-d H:i:s', $info['create_time'])}</td>
+			        </tr>
+			        <tr>
+			        	<td colspan="4">备注：{$info['memo']}</td>
+			        </tr>
+				</table>
+
+				<p>供应商信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<tr>
+						<td>供应商：{$info['supplier_info'] ? $info['supplier_info']['company_name'] : ''}</td>
+						<td>上次结欠克重：
+							<!-- <if condition="$info[status] eq 1">{:numberformat($info[before_weight], 2, '.', ',')}
+							<else/>{:numberformat($info[supplier_info][weight], 2, '.', ',')}</if> -->{:numberformat($info[before_weight], 2, '.', ',')}g</td>
+						<td>上次结欠金额：
+							<!-- <if condition="$info[status] eq 1">{:numberformat($info[before_price], 2, '.', ',')}
+							<else/>{:numberformat($info[supplier_info][price], 2, '.', ',')}</if> -->{:numberformat($info[before_price], 2, '.', ',')}元</td>
+					</tr>
+				</table>
+
+				<p>结算信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<tr>
+						<td>结算金额：{:numberformat(abs($info['caccount_record']['price']), 2, '.', ',')} 元</td>
+						<td>抹零金额：{:numberformat($info['caccount_record']['extra_price'], 2, '.', ',')} 元</td>
+					</tr>
+				</table>
+				<businesstpl file="process" />
+				<p>来料信息</p>
+				<table class="table table-bordered table-hover table-striped">
+					<if condition="count($info[material_record_2][mproduct_list]) gt 0">
+						<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">金料编码</th>
+							<th class="text-center">金料名称</th>
+							<th class="text-center">克重</th>
+							<th class="text-center">折存克重</th>
+						</tr>
+						</thead>
+					</if>
+					<tbody>
+	                    <volist name="info.material_record_2.mproduct_list" id="v">
+		    				<!-- <tr>
+		    					<td class="text-center">{$key+1}</td>
+		    					<td class="text-center">{$v.product_code}</td>
+		    					<td class="text-center">{$v.goods_name}</td>
+		    					<td class="text-center">{$v.weight}</td>
+		    					<td class="text-center">{$v.d_weight}</td>
+		    				</tr> -->
+		    				<tr>
+		    					<td class="text-center">{$key+1}</td>
+		    					<td class="text-center">{$v.rproduct_code}</td>
+		    					<td class="text-left">{$v.recovery_name}</td>
+		    					<td class="text-right">{$v.total_weight}</td>
+		    					<td class="text-right">{$v.gold_weight}</td>
+		    				</tr>
+
+	                    </volist>
+	                    <tr>
+							<td colspan="5">总克重：{:numberformat($info['material_record_2']['weight'], 2, '.', ',')} 克</td>
+						</tr>
+					</tbody>
+				</table>
+				<p>去料信息</p>
+				<table class="table table-bordered table-hover table-striped">
+					<if condition="count($info[material_record][mproduct_list]) gt 0">
+						<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">货品编码</th>
+							<th class="text-center">商品名称</th>
+							<th class="text-center">克重</th>
+							<th class="text-center">折存克重</th>
+						</tr>
+						</thead>
+					</if>
+					<tbody>
+	                    <volist name="info.material_record.mproduct_list" id="v">
+	    				<tr>
+	    					<td class="text-center">{$key+1}</td>
+	    					<td class="text-center">{$v.rproduct_code}</td>
+	    					<td class="text-left">{$v.recovery_name}</td>
+	    					<td class="text-right">{$v.total_weight}</td>
+	    					<td class="text-right">{$v.gold_weight}</td>
+	    				</tr>
+	                    </volist>
+	                    <tr>
+							<td colspan="5">总克重：{:numberformat(abs($info['material_record']['weight']), 2, '.', ',')} 克</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p>买卖料信息</p>
+				<table class="table table-bordered table-hover table-striped">
+					<tr>
+						<td>买料：<if condition="$info['material_order']['weight'] gt 0">{:numberformat($info['material_order']['weight'], 2, '.', ',')} 克<else />-</if>
+						</td>
+						<td>买料金价：<if condition="$info['material_order']['weight'] gt 0">{:numberformat($info['material_order']['mgold_price'], 2, '.', ',')} 元/克<else />-</if>
+						</td>
+						<td>总价：<if condition="$info['material_order']['weight'] gt 0">{:numberformat($info['material_order']['weight'] * $info['material_order']['mgold_price'], 2, '.', ',')} 元<else />-</if>
+						</td>
+					</tr>
+					<tr>
+						<td>卖料：<if condition="$info['material_order']['weight'] lt 0">{:numberformat($info['material_order']['weight'], 2, '.', ',')} 克<else />-</if>
+						</td>
+						<td>卖料金价：<if condition="$info['material_order']['weight'] lt 0">{:numberformat($info['material_order']['mgold_price'], 2, '.', ',')} 元/克<else />-</if>
+						</td>
+						<td>总价：<if condition="$info['material_order']['weight'] lt 0">{:numberformat($info['material_order']['weight'] * $info['material_order']['mgold_price'], 2, '.', ',')} 元<else />-</if>
+						</td>
+					</tr>
+				</table>
+				<p>审核信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<td>审核备注</td>
+					<td colspan="3">
+						{$info.check_memo}
+					</td>
+				</table>
+				<if condition="$info[status] eq 4">
+					<p>付款信息</p>
+					<table class="table table-bordered  table-hover table-striped">
+						<td>付款时间</td>
+						<td>
+							<if condition="$info[payment_time]">
+								{:date('Y-m-d H:i:s', $info['payment_time'])}
+							</if>
+						</td>
+						<td>付款凭证</td>
+						<td  >
+							<if condition="$info[payment_pic] neq ''">
+								<volist name="info.payment_pic_list" id="v">
+									<p class="click_pic"><img src="{$v}"></p>
+								</volist>
+							</if>
+						</td>
+					</table>
+				<else/>
+					<p>付款信息</p>
+					<table class="table table-bordered  table-hover table-striped">
+						<td>付款时间</td>
+						<td>
+							<div class="input-prepend input-group">
+						<span class="add-on input-group-addon">
+							<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+						</span>
+								<input id="payment_time" class="form-control datepicker js-datetime" name="payment_time" value="{$today}" type="text">
+							</div>
+						</td>
+						<td>付款凭证</td>
+						<td  id="upload_payment_td">
+							<input type="hidden" value="" name="payment_pic">
+							<p class="btn btn-primary upload_click" data-valueTo="payment_pic" onclick="upload_pic($(this),'upload_payment_pic')" type="text">上传凭证</p>
+						</td>
+					</table>
+				</if>
+				<if condition="$info[status] eq 1">
+					<p>结算后结欠信息</p>
+					<table class="table table-bordered  table-hover table-striped">
+						<tr>
+							<td>结欠克重：
+								{:numberformat($info[after_weight], 2, '.', ',')} g</td>
+							<td>结欠金额：
+								{:numberformat($info[after_price], 2, '.', ',')} 元</td>
+						</tr>
+					</table>
+				</if>
+				<businesstpl file="operate" />
+			</div>
+
+		</div>
+
+		<div class="form-actions text-center">
+			<if condition="$info['status'] eq 1">
+			<p type="text" class="btn btn-primary js-ajax-submit" operate="pass">保存</p>
+			<!--<p type="text" class="btn btn-danger js-ajax-submit" operate="unpass">审核不通过</p>-->
+			</if>
+			<p class="btn js-ajax-back-btn" type="text">{:L('BACK')}</p>
+		</div>
+	</form>
+</div>
+<form  action="{:U('BSettlement/upload_pic')}" method="post">
+	<input type="file" name="upload_payment_pic" id="upload_payment_pic" style="opacity:0;position:absolute;">
+	<input type="hidden" name="del_payment_pic" id="del_payment_pic">
+</form>
+<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+<script src="__PUBLIC__/js/jquery-form.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+
+<script>
+var is_loading = false;
+
+$('.js-ajax-submit').unbind('click').click(function(){
+	var id = $('#id').val();
+	var supplier_id = $('#supplier_id').val();
+	var check_memo = $('#check_memo').val();
+	var payment_time = $('#payment_time').val();
+	Wind.use('artDialog', function () {
+		art.dialog({
+			id: 'warning',
+			icon: 'warning',
+			content: '请核查凭证，保存后凭证不能更改，是否确认保存？',
+			cancelVal: '关闭',
+			cancel: function () {
+				return true;
+			},
+			ok: function () {
+				if(is_loading) return;
+				is_loading = true;
+				$.ajax({
+					async: false,
+					url: $('#form').attr('action'),
+					type: 'post',
+					data: {
+						settle_id: id,
+						upload_img_arr: upload_img_arr.join('|'),
+						remove_img_arr: remove_img_arr.join('|'),
+						payment_time: payment_time
+					},
+					dataType:'json',
+					success: function(result){
+						is_loading = false;
+						if(result.code == 200){
+							appear_error('操作成功！');
+							window.location.href ='{:U("BSettlement/check_payment")}';
+						}else{
+							appear_error('操作失败！'+ result.msg);
+						}
+					}
+				});
+			}
+		});
+	})
+
+});
+
+function appear_error(str){
+    var tips = $('.tips_error');
+    if(!tips.length){
+        $('.form-actions').append('<span class="tips_error" style="color:red;">'+str+'</span>');
+    }else{
+        tips.html(str);
+    }
+}
+
+</script>
+<script>
+	//付款凭证上传
+	var upload_img_arr = [];
+	var remove_img_arr = [];
+	function initRemoveUpload(){
+		$('#upload_payment_td').find('.remove_pic').unbind('click').click(function(){
+			var _p = $(this).closest('p');
+			var _img = _p.find('img');
+			var _src = _img.attr('src');
+
+			remove_img_arr.push(_src);
+
+			_p.remove();
+		});
+	}
+	function upload($form,$trigger,$file){
+		var img = $trigger.parent('td').find('img');
+		$file.unbind('change').change(function(){
+			if($file.val()){
+				$form.ajaxSubmit({
+					success: function (result) {
+						result = JSON.parse(result);
+						console.log(result);
+						if(result.status==1){
+							$trigger.html('上传成功！');
+							var value_to = $trigger.attr('data-valueTo');
+							$('input[name='+ value_to +']').val(result.upload_pic);
+							upload_img_arr.push(result.upload_pic);
+							setTimeout(function(){
+								$trigger.after('<p class="click_pic"><img src="'+ result.upload_pic +'"> <a class="remove_pic">删除</a></p>');
+								$file.val('');
+								$trigger.html('继续上传');
+								initPicReview();
+								initRemoveUpload();
+							},2000);
+
+						}else if (result.status==0){
+							$trigger.html('上传失败！');
+							$trigger.css('color','red');
+						}
+					}
+				});
+			}
+		});
+	}
+	function initPicReview(){
+		$('.click_pic').unbind('click').click(function(){
+			var img_url = $(this).find('img').attr('src');
+			image_preview_dialog(img_url);
+		})
+	}
+	function upload_pic(obj,upload_pic){
+		console.log(obj);
+		$("#"+upload_pic).click();
+		var form=$("#"+upload_pic).parent("form");
+		var file=$("#"+upload_pic);
+		upload(form,obj,file);
+	}
+</script>
+
+<include file="./Application/Home/View/Public/footer.html" />

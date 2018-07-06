@@ -1,0 +1,215 @@
+<businesstpl file="header" />
+<style>
+input{width:280px;}
+a{cursor:pointer;}
+.table .search_input{
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+input[name=user]{
+	margin:8px 5px;
+	/*text-indent: 20px;*/
+}
+.myModal3.leave{
+	position: absolute;
+	top:12px;
+	left:15px;
+	font-size: 14px;
+}
+tr td img{ max-width:200px;max-height:60px;}
+</style>
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#">{:L('SYSTEM_COMPANY_EDIT')}</a></li>
+	</ul>
+	<form id="form" class="form form-search" method="post" action="{:U('procure/add')}" >
+		<input type="hidden" name="company_id" value="{$company_info.company_id}">
+		<table class="table table-bordered ">
+			<tbody >
+			<tr>
+				<td class="sel">商户名称</td>
+				<td>{$company_info.company_name}</td>
+				<td class="sel">商户号</td>
+				<td>{$company_info.company_code}</td>
+			</tr>
+			<tr>
+				<td class="sel">商户简称</td>
+				<td><input name="company_short_name" value="{$company_info.company_short_name}" type="text">  *</td>
+				<td class="sel">门店类型</td>
+				<td>
+					<if condition="$company_info.company_type eq 1">
+						加盟商商户({$company_info.p_name})
+					<else/>
+						品牌商户
+					</if>
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">法人代表</td>
+				<td><input name="company_legal_person" value="{$company_info.company_legal_person}" type="text"></td>
+				<td class="sel">社会信用代码</td>
+				<td><input name="credit_code" type="text" value="{$company_info.credit_code}"></td>
+			</tr>
+			<tr>
+				<td class="sel">公司电话</td>
+				<td><input name="company_tel" type="text" value="{$company_info.company_tel}"></td>
+				<td class="sel">关联信息用户</td>
+				<td class="search_input">
+					<input  type="text" name="user" readonly="readonly" value="{$company_info.user_name}({$company_info.user_mobile})"  class="form-control">
+					<input type="hidden" name="user_id"  class="form-control" value="{$company_info.user_id}">
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">地址</td>
+				<td><input name="company_addr" value="{$company_info.company_addr}" type="text"></td>
+				<td class="sel">邮箱</td>
+				<td><input name="company_mail" value="{$company_info.company_mail}" type="text"></td>
+			</tr>
+			<tr>
+				<td class="sel">传真</td>
+				<td><input name="company_fax" value="{$company_info.company_fax}" type="text"></td>
+				<td class="sel">备注</td>
+				<td><input name="company_text" value="{$company_info.company_text}" type="text"></td>
+			</tr>
+			<!-- <tr>
+				<td class="sel">合同编号</td>
+				<td><input name="contact_sn" value="{$company_info.contact_sn}" type="text"></td>
+				<td class="sel">服务年限</td>
+				<td><input name="service_year" type="text" value="{$company_info.service_year}"></td>
+			</tr>
+			<tr>
+				<td class="sel">加盟商数量</td>
+				<td><input name="company_num" type="text" value="{$company_info.company_num}"></td>
+				<td class="sel">店铺数量</td>
+				<td><input name="shop_num" type="text" value={$company_info.shop_num}></td>
+			</tr> -->
+			<tr>
+				<td class="sel" height="46px" style="line-height:30px;">营业执照</td>
+				<td colspan="3" height="46px">
+					<input type="hidden" value="" name="company_img">
+					<p class="btn btn-primary company_img" type="text">上传营业执照</p>
+				</td>
+			</tr>
+			</tbody >
+		</table>
+	</form>
+	<div class="form-actions text-center">
+		<p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+		<a class="btn js-ajax-back-btn" href="javascript:history.go(-1);">{:L('BACK')}</a>
+	</div>
+</div>
+<form id="ajax_f" action="{:U('Company/upload_img')}" method="post">
+	<input type="file" name="upload_img" id="upload_img" style="opacity:0;position:absolute;">
+	<input type="hidden" name="del_img" id="del_img">
+</form>
+<script src="__PUBLIC__/js/jquery-form.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<include file="./Application/Home/View/Public/footer.html" />
+
+<script>
+$('.company_img').click(function(){
+    $('input[name=upload_img]').click();
+    upload();
+});
+function upload(){
+    var $form = $('#ajax_f');
+    var $file = $('input[name=upload_img]');
+    var img=$('#tr_img').find('img');
+    if(img.length>0){
+        var del_img=img.attr('src');
+        if(!is_empty(del_img)){
+            $('#del_img').val(del_img);
+        }
+    }
+    $file.unbind('change').change(function(){
+        if($file.val()){
+            $form.ajaxSubmit({
+                success: function (result) {
+                    //console.log(result+typeof(result));
+                    result=JSON.parse(result);
+                    if(result.status==1){
+                        $('.company_img').html('上传成功！');
+                        $('input[name=company_img]').val(result.company_img);
+                        setTimeout(function(){
+                            $('.company_img').html('更改图片');
+                            if($('.company_img').parent('td').find('img').length<1){
+                                $('.company_img').after('<img src="'+result.company_img+'"'+'>');
+                            }else{
+                                $('.company_img').parent('td').find('img').attr('src',result.company_img);
+                            }
+                        },2000);
+                    }else if (result.status==0){
+                        $('.company_img').html('上传失败！');
+                        $('.company_img').css('color','red');
+                    }
+                }
+            });
+        }
+    });
+}
+$('.js-ajax-submit').click(function(){
+	var company_short_name=$('input[name=company_short_name]').val();
+	var credit_code=$('input[name=credit_code]').val();
+	var company_addr=$('input[name=company_addr]').val();
+	var company_legal_person=$('input[name=company_legal_person]').val();
+	var company_tel=$('input[name=company_tel]').val();
+	var company_email=$('input[name=company_email]').val();
+	var company_fax=$('input[name=company_fax]').val();
+	var company_text=$('input[name=company_text]').val();
+	var company_img=$('input[name=company_img]').val();
+	var service_year=$('input[name=service_year]').val();
+	var company_num=$('input[name=company_num]').val();
+	var shop_num=$('input[name=shop_num]').val();
+	var company_mail=$('input[name=company_mail]').val();
+	var contact_sn=$('input[name=contact_sn]').val();
+	var company_id = $('input[name=company_id]').val();
+	var url='{:U("Company/edit")}';
+	if(empty(company_addr)){
+		error_appear("请填写公司地址！");
+		return false;
+	}else{
+		var data=new Object();
+		data.company_short_name=company_short_name;
+		data.credit_code=credit_code;
+		data.company_addr=company_addr;
+		data.company_legal_person=company_legal_person;
+		data.company_tel=company_tel;
+		data.company_mail=company_mail;
+		data.company_fax=company_fax;
+		data.company_text=company_text;
+		data.company_img=company_img;
+		data.service_year=service_year;
+		data.company_num=company_num;
+		data.shop_num=shop_num;
+		data.contact_sn=contact_sn;
+		$.ajax({
+			url:url,
+			type:'post',
+			data:{data,company_id:company_id},
+			dataType:'json',
+			success:function(result){
+				var code=result.code;
+				if(result.code==200){
+					error_appear("提交成功！");
+					setTimeout(function(){location.href='{:U("Company/index")}';},1500);
+				}else{
+					error_appear(result.datas.error);
+					setTimeout(function(){location.reload();},1500);
+				}
+			}
+		});
+	}
+	
+	
+	
+});
+</script>
+
+
+
+
+

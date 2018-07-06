@@ -1,0 +1,50 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('BExpence/index')}">{:L('BUSINESS_BEXPENCE_INDEX')}</a></li>
+            <li class="active"><a href="{:U('BExpence/add')}">{:L('BUSINESS_BEXPENCE_ADD')}</a></li>
+        </ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BExpence/add')}">
+			<fieldset>
+				<div class="control-group">
+					<label for="name" class="control-label">费用类目</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" id="name" name="name" value="">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="type" class="control-label">费用类型</label>
+					<div class="controls">
+						<select id="type" name="type">
+							<option value="0">--选择类型--</option>
+			                <volist name="type" id="v">
+			                <option value="{$key}">{$v}</option>
+			                </volist>
+						</select>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+	<script type="text/javascript">
+		$(".js-ajax-submit").click(function(){
+			var type = $('#type').val();
+			var name = $('#name').val();
+			if (type == '' || type == 0) {
+				$('.form-actions').append('<span class="tips_error" style="color:red;"> 请先选择类目类型！ </span>');
+				return false;
+			} else if (name == '') {
+				$('.form-actions').append('<span class="tips_error" style="color:red;"> 请先填写类目名称！ </span>');
+				return false;
+			}
+		});
+	</script>
+</body>
+</html>

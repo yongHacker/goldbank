@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>商品类目管理</title>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<include file="./public/common/js_css.html" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/stylesheets/bootstraptree/style.css">
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/stylesheets/bootstraptree/bootstrap.min.css">
+    <script src="__PUBLIC__/bootstrap-3.3.4/js/bootstrap.js"></script>
+</head>
+<body class=" theme-blue">
+	<div class="content">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="">{:L('SYSTEM_GOODSCLASS_INDEX')}</a></li>
+			<a id="doing" href="javascript:void(0);" role="button" data-toggle="modal"><button class="btn btn-primary" style="float: right; margin-left: 10px;">隐藏操作</button></a>
+			<a href="#addModal" role="button" data-toggle="modal"><button class="btn btn-primary" style="float:right">添加</button></a>
+		</ul>
+        <div class="main-content">
+			<div class="tree well">
+				<ul id="ul_tree"></ul>
+			</div>
+			<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+			<script type="text/javascript">
+		　		$(function(){
+					//构造树
+					getdata();
+				});
+				
+				function getdata(){
+					 $("#ul_tree").jqtree({
+						url:"{:U('GoodsClass/class_data')}",
+						param: { },
+						onBeforeLoad: function (param) {
+							addDepart();
+						},
+						onLoadSuccess: function (data) {
+							setDepart();
+							selectType();
+						},
+						onClickNode: function (selector) {
+						}
+					});
+				}
+				// 按钮绑定事件
+				function setDepart(){
+					$("#ul_tree li .edit").each(function(index, obj) {
+						$(this).click(function(){
+
+							var id = $(this).parent('li').find('span').attr('id');   						// 类目id
+							var pid = $(this).parent('li').find('span').attr('pid'); 						// 父类目id
+							var type = $(this).parent('li').find('span').attr('type');						// 类目类型
+							var class_name = $.trim($($(this).parent('li').children('span').get(0)).text());// 类目名称
+							var img  = $(this).parent('li').find('span').data('value');						// 类目图片
+
+							if(img == null || img == "" || img == undefined || img == "null") {
+								$("#img").hide();
+							} else {
+								$("#img").attr("src",img);
+								$("#img").show();
+							}
+
+							$("#editId").val(id);
+							$("#editType").val(type);
+							$("#editPid").val(pid);
+							$('#editClassName').val(class_name);
+							$("#editFile").val("");
+							subDepart(id);
+						})
+                	});
+					$("#ul_tree li .delete").each(function(index, obj){
+						$(this).click(function(){
+							var id = $(this).parent('li').find('span').attr('id');
+							var child_li = $(this).parent().find(".parent_li");
+							
+							if(child_li.length){
+								alert("请先删除子类目");
+								return false;
+							}else{
+								delDepart(id);
+							}
+							
+						})
+                	});
+				}
+				// 选择分类 分配类目类型
+				function selectType(){
+					$('#addPid, #editPid').on('change', function(){
+						var action = $(this).attr('id');
+						var type = $(this).children('option:selected').attr('type');
+						console.log(type);
+						if (type > 0) {
+							if (action == "addPid") {
+								$('#addType').val(type);
+							} else {
+								$('#editType').val(type);
+							}
+						}
+					});
+				}
+				// 编辑类目
+				function subDepart(id){
+					$('#editModal').find('button').each(function(index, element) {
+						$(this).click(function(){
+							if($(this).attr('id')=='modify'){
+								if($.trim($('#editClassName').val())){
+									$.ajax({
+										url: "{:U('GoodsClass/edit')}",
+										type: 'post',
+										data:new FormData($("#form2")[0]),
+										async: true,
+										cache: false,
+										contentType: false,
+										processData: false,
+											success: function(data) {
+											if(data.status==1){													
+												location.reload();
+											}else{
+												alert(data.msg);
+											}
+										}
+									})
+								} else {
+									alert('请输入商品类目名称');
+									return false;
+								}
+							}
+						})
+					});
+				}
+				// 删除类目
+				function delDepart(id){
+					$("#del").unbind('click').click(function(){
+						if($("#del").attr('id')=='del'){
+							$.ajax({
+								url: "{:U('GoodsClass/delete')}",
+								type: 'post',
+								data: {bm_id:id},
+								success: function(data) {
+									if(data.status==1){
+										location.reload();
+									}else{
+										alert(data.msg);
+									}
+								}
+							})
+						}
+					})
+				}
+				//添加类目
+				function addDepart(){
+					$('#addModal').find('button').each(function(index, element) {
+						$(this).unbind("click").click(function(){
+							if($(this).attr('id') == 'add'){
+								var class_name = $.trim($('#addClassName').val());
+								if(!class_name){
+									alert('请填写商品类目名称');
+									return false;
+								}
+								else{
+									$.ajax({
+										url: "{:U('GoodsClass/add')}",
+										type: 'post',
+										data: new FormData($( "#addForm" )[0]),
+										async: true,
+										cache: false,
+										contentType: false,
+										processData: false,
+										success: function(data) {
+											if (data.status == 1) {													
+												location.reload();
+											} else {
+												alert(data.msg);
+											}
+										}
+									})
+								}
+							}
+						})
+					});
+				}
+			</script>
+			<!--删除弹出框-->
+			<div class="modal small fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			  	<div class="modal-dialog">
+				    <div class="modal-content">
+				        <div class="modal-header">
+				            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				            <h3 id="myModalLabel">删除警告</h3>
+				        </div>
+				        <div class="modal-body">
+				            <p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要删除吗?</p>
+				        </div>
+				        <div class="modal-footer">
+				            <button id="can" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+				            <button id="del" class="btn btn-primary" data-dismiss="modal">删除</button>
+				        </div>
+			      	</div>
+			    </div>
+			</div>
+			<!--删除弹出框end-->
+
+			<!--添加节点弹出框-->  
+			<div class="modal small fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				    <div class="modal-content">
+				        <div class="modal-header" style="background-color: #cccccc;">
+				            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				            <h3 id="myModalLabel">添加节点</h3>
+				        </div>
+				        <div class="modal-body">
+							<div class="dropdown">
+					            <form class="form-horizontal" id="addForm" role="form" enctype='multipart/form-data'>
+									<div class="form-group">
+										<label for="addType" class="col-sm-2 control-label">分类</label>
+										<div class="col-sm-10">
+											<div class="col-lg-12" style="padding-left: 0px; padding-right: 0px;">
+												<select id="addType" name="type" class="selectpicker show-tick form-control bs-select-hidden" data-live-search="true">
+													<volist name="statusall" id="vo">
+													<option value="{$vo.value}"> {$vo.comment}</option>
+													</volist>
+												</select>
+											  </div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="addPid" class="col-sm-2 control-label">上级</label>
+										<div class="col-sm-10">
+											<div class="col-lg-12" style="padding-left: 0px; padding-right: 0px;">
+												<select id="addPid" name="pid" class="selectpicker show-tick form-control bs-select-hidden class-tree" data-live-search="true">
+													<option type="0" value="0"> 顶级节点</option>
+													{$goods_class}
+												</select>
+											  </div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="addClassName" class="col-sm-2 control-label">类目名称</label>
+										<div class="col-sm-10">
+											<input type="text" autocomplete="off" class="form-control" id="addClassName" name="class_name" placeholder="请输入节点名称">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="addFile" class="col-sm-2 control-label">图片</label>
+										<div class="col-sm-10">
+											<input type="file" name="file" id="addFile" placeholder="">
+										</div>
+									</div>
+								</form>
+					        </div>
+					        <div class="modal-footer">
+					            <button id="quxiao" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+					            <button id="add" class="btn btn-primary" data-dismiss="modal">添加</button>
+					        </div>
+						</div>
+				    </div>
+				</div>
+			</div>
+			<!--添加节点弹出框end-->
+
+			<!--编辑节点弹出框-->  
+			<div class="modal small fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				    <div class="modal-content">
+				        <div class="modal-header" style="background-color: #cccccc;">
+				            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				            <h3 id="myModalLabel">编辑节点</h3>
+				        </div>
+				        <div class="modal-body">
+							<div class="dropdown">
+					            <form class="form-horizontal" role="form" id="form2" enctype='multipart/form-data'>
+									<input type="hidden" id="editId" name="id" value="">
+									<div class="form-group">
+										<label for="editType" class="col-sm-2 control-label">分类</label>
+										<div class="col-sm-10">
+											<div class="col-lg-12" style="padding-left: 0px; padding-right: 0px;">
+												<select id="editType" name="type" class="selectpicker show-tick form-control bs-select-hidden" data-live-search="true">
+													<volist name="statusall" id="vo">
+													<option value="{$vo.value}"> {$vo.comment}</option>
+													</volist>
+												</select>
+											  </div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="editPid" class="col-sm-2 control-label">上级</label>
+										<div class="col-sm-10">
+											<div class="col-lg-12" style="padding-left: 0px; padding-right: 0px;">
+												<select id="editPid" name="pid" class="selectpicker show-tick form-control bs-select-hidden class-tree" data-live-search="true">
+													<option type="0" value="0"> 顶级节点</option>
+													{$goods_class}
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="editClassName" class="col-sm-2 control-label">节点名称</label>
+										<div class="col-sm-10">
+											<input type="text" autocomplete="off" class="form-control" id="editClassName" name="class_name" placeholder="请输入节点名称">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="editFile" class="col-sm-2 control-label">图片</label>
+										<div class="col-sm-10">
+											<input type="file" name="file" id="editFile"><img src="" style="width: 40px; height: 40px;" id="img">
+										</div>
+									</div>
+								</form>
+					        </div>
+					        <div class="modal-footer">
+					            <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+					            <button id="modify" class="btn btn-primary" data-dismiss="modal">保存</button>
+					        </div>
+				      	</div>
+				    </div>
+				</div>
+			</div>
+			<!--编辑节点弹出框end--> 		
+			<script>
+			$("#doing").on("click",function(){
+				if($(this).attr("ishide")!="ok"){
+					$("#ul_tree").find("a").hide();
+					$(this).find("button").val("显示操作");
+					$(this).find("button").text("显示操作");
+					$(this).attr("ishide","ok");
+				}else{
+					$("#ul_tree").find("a").show();
+					$(this).find("button").val("隐藏操作");
+					$(this).find("button").text("隐藏操作");
+					$(this).attr("ishide","no");
+				}
+			})
+			</script>
+			<include file="./public/common/footer.html" />

@@ -1,0 +1,62 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BMetalType/index')}">{:L('BUSINESS_BMETALTYPE_INDEX')}</a></li>
+			<li><a href="{:U('BMetalType/add')}">{:L('BUSINESS_BMETALTYPE_ADD')}</a></li>
+		</ul>
+		<form method="post" class="js-ajax-form" action="{:U('BMetalType/listorders')}">
+			<div class="table-actions">
+				<button type="submit" class="btn btn-primary btn-small js-ajax-submit">{:L('SORT')}</button>
+			</div>
+			<table class="table table-hover table-bordered table-list"  id="menus-table">
+				<thead>
+					<tr>
+						<th width="50">{:L('SORT')}</th>
+						<th width="50">ID</th>
+						<th>{:L('NAME')}</th>
+						<th>价格</th>
+						<th>是否关联(关联平台接口金价后将自动更新为平台金价)</th>
+						<th>{:L('ACTIONS')}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{$taxonomys}
+				</tbody>
+				<!--<tfoot>
+					<tr>
+						<th width="50">{:L('SORT')}</th>
+						<th width="50">ID</th>
+						<th>{:L('NAME')}</th>
+						<th>价格</th>
+						<th>{:L('ACTIONS')}</th>
+					</tr>
+				</tfoot>-->
+			</table>
+			<!--<div class="table-actions">
+				<button type="submit" class="btn btn-primary btn-small js-ajax-submit">{:L('SORT')}</button>
+			</div>-->
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script>
+		$(document).ready(function() {
+			Wind.css('treeTable');
+			Wind.use('treeTable', function() {
+				$("#menus-table").treeTable({
+					indent : 20
+				});
+			});
+		});
+
+		setInterval(function() {
+			var refersh_time = getCookie('refersh_time_admin_menu_index');
+			if (refersh_time == 1) {
+				reloadPage(window);
+			}
+		}, 1000);
+		setCookie('refersh_time_admin_menu_index', 0);
+	</script>
+</body>
+</html>

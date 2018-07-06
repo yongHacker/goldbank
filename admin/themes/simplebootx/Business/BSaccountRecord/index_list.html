@@ -1,0 +1,87 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="javascript:;">{:L('BUSINESS_BSACCOUNTRECORD_CHECK')}</a></li>
+		</ul>
+		<form class="well form-search" method="post" action="{:U('BSaccountRecord/index_list')}">
+			门店：
+			<select id="shop" name="shop_id" data-live-search="true">
+				<option value="-1" checked>全部</option>
+				<option value="0" <if condition="$_REQUEST['shop_id'] eq 0">selected=selected</if>>总部</option>
+				<volist name="shop" id="v">
+					<option value="{$v.id}" <if condition="$v['id'] eq $_REQUEST['shop_id']">selected=selected</if>  in_user="{$v.user_nicename}"  checked>{$v.shop_name}</option>
+				</volist >
+			</select> &nbsp;&nbsp;
+			收款方式：
+			<select name="pay_id"  style="width: auto">
+				<option value="0" pay_type="{$vo.pay_type}">选择收款方式</option>
+				<volist name="payment" id="vo">
+					<option value="{$vo.id}" <if condition="$vo['id'] eq $_REQUEST['pay_id']">selected=selected</if> pay_type="{$vo.pay_type}">{$vo.pay_name}</option>
+				</volist>
+			</select> &nbsp;&nbsp;
+			币种：
+			<select name="currency_id"  style="width: auto">
+				<option value="0" >选择币种</option>
+				<volist name="currency" id="vo">
+					<option value="{$vo.id}" <if condition="$vo['id'] eq $_REQUEST['currency_id']">selected=selected</if> exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+				</volist>
+			</select> &nbsp;&nbsp;
+			时间：
+			<input type="text" autocomplete="off" name="start_time" class="js-datetime" value="{$_REQUEST['start_time']}" style="width: 120px;" autocomplete="off">-
+			<input type="text" autocomplete="off" class="js-datetime" name="end_time" value="{$_REQUEST['end_time']}" style="width: 120px;" autocomplete="off"> &nbsp; &nbsp;
+			单号：
+			<input type="text" autocomplete="off" name="keyword" style="width: 200px;" value="{$_REQUEST['keyword']}" placeholder="请输入单号...">
+			<input type="submit" class="btn btn-primary" value="搜索" />
+			<a class="btn btn-danger" href="{:U('BSaccountRecord/index_list')}">清空</a>
+		</form>
+
+		<table class="table table-hover table-bordered table-list">
+			<thead>
+				<tr>
+					<th width="50">序</th>
+					<th>收款方式</th>
+					<th >默认币种</th>
+					<th >默认汇率%</th>
+					<th width="50">币种</th>
+					<th>币种汇率%</th>
+					<th>订单号</th>
+					<th>流水号</th>
+					<th >支付金额<br/>({$count_info.pay_price})</th>
+					<th >实收金额<br/>({$count_info.receipt_price})</th>
+					<th>创建时间</th>
+					<th>状态</th>
+				</tr>
+			</thead>
+
+			<foreach name="list" item="vo">
+			<tr>
+				<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+				<td>{$vo.pay_name}</td>
+				<td>{$vo.main_currency_name}</td>
+				<td class="text-right">{$vo.main_currency_rate}</td>
+				<td>{$vo.currency_name}</td>
+				<td class="text-right">{$vo.currency_rate}</td>
+				<td class="text-center">
+					<if condition="$vo['type'] eq 1">
+					<a href="{:U('BSell/index_detail',array('id'=>$vo['sn_id']))}">{$vo.order_id}</a>
+					<elseif condition="$vo['type'] eq 3" />
+					<a href="{:U('BSellReturn/detail',array('return_id'=>$vo['sn_id']))}">{$vo.order_id}</a>
+					<else />
+					</if>
+				</td>
+				<td class="text-center">{$vo.flow_id}</td>
+				<td class="text-right">{$vo.pay_price}</td>
+				<td class="text-right">{$vo.receipt_price}</td>
+				<td class="text-center">{:date('Y-m-d H:i',$vo['create_time'])}</td>
+				<td class="text-center">{$vo.show_status}</td>
+			</tr>
+			</foreach>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

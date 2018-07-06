@@ -1,0 +1,6 @@
+<form class="well form-search search_row" method="post" action="{:U('rproduct_list',array('mystore'=>$_REQUEST['mystore']))}">
+	综合搜索:
+	<input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="金料名称/金料编号">
+	<input type="submit" class="btn btn-primary" value="搜索" />
+	<a href="{:U('rproduct_list',array('mystore'=>$_REQUEST['mystore']))}" class="btn btn-danger">清空</a>
+</form>

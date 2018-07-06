@@ -1,0 +1,34 @@
+<systemtpl file="../System/setting_header" />
+<style>
+	.tips_success,.tips_error{color:red;}
+</style>
+		<form class="form-horizontal js-ajax-form" method="post" action="{:U('setting/procure_setting')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label" for="input-old-password">收货仓库</label>
+					<div class="controls">
+						<select name="wh_id">
+				            <option value="">--请选择--</option>
+				            <volist name="store_list" id="v">
+					            <option value="{$v.id}">{$v.wh_name}</option>
+				            </volist>
+				        </select>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary  js-ajax-submit">{:L('SAVE')}</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script>
+	$('select[name=wh_id] option').each(function(){
+		var id=$(this).val();
+		if(id=='{$info.option_value}'){
+			$(this).attr('selected','selected');
+		}
+	});
+	</script>
+</body>
+</html>

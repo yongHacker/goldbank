@@ -1,0 +1,554 @@
+<businesstpl file="header" />
+<style>
+	input{
+		width: 163px;
+		margin-bottom:0px;
+	}
+	.ta {
+		overflow-x: auto;
+		width: 100%;
+		margin-bottom: 20px;
+	}
+
+	.ta input{
+		width: 177px;
+		margin-bottom:0px;
+		border-left:0px;
+		border-top:0px;
+		border-right:0px;
+		border-bottom:0px;
+		padding:8px 1px ;
+		margin-left:6px;
+		text-align: center;
+	}
+	.ta input:focus{
+		-webkit-box-shadow: 0px 0px 0px;
+		-moz-box-shadow: 0px 0px 0px;
+		box-shadow: 0px 0px 0px;
+	}
+
+	.ta td{
+		vertical-align: middle;
+	}
+	.td_border{
+		border: solid 1px #157ab5;
+	}
+
+
+	.center-block {
+		float: none;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+</style>
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li ><a href="{:U('BAllotRproduct/allot_index')}">{:L('BUSINESS_BAllotRproduct_ALLOT_INDEX')}</a></li>
+		<li class="active" ><a href="javascript:void(0);">{:L('BUSINESS_BAllotRproduct_EDIT')}</a></li>
+        <span style="float: right">
+            <in name="allocation.status" value="-1,-2,3">
+                <button type="button" class="btn btn-primary baocun" data-type="add">保存</button>
+                <button type="button" class="btn btn-primary baocun" data-type="submit">提交</button>
+            </in>
+            <a class="btn" href="javascript:history.back(-1);">返回</a>
+        </span>
+	</ul>
+	<form class=" form-search" method="post" action="{:U('BAllotRproduct/index')}">
+		<table class="table table-bordered ">
+			<tbody>
+			<tr>
+				<td style="background-color:#f5f5f5">发货仓库</td>
+				<td>{$allocation['from_whname']}</td>
+				<td style="background-color:#f5f5f5">日期</td>
+				<td>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon">
+							<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+						</span>
+						<input id="trance_time" class="form-control datepicker js-date" name="trance_time" value="{:date('Y-m-d',$allocation['allot_time'])}" type="text">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="background-color:#f5f5f5">收货仓库</td>
+				<td>
+					<select id="store" name="wh_id" data-live-search="true">
+
+						<option value="0" checked>选择仓库</option>
+						<volist name="wh_data" id="v">
+							<if condition="$v['id'] neq $allocation['from_id']">
+								<option  <if condition="$v['id'] eq $allocation['to_id']">selected="selected"</if> value="{$v.id}" in_user="{$v.user_nicename}" >{$v.wh_name}</option>
+							</if>
+						</volist >
+					</select>
+
+				</td>
+				<td style="background-color:#f5f5f5">备注</td>
+				<td><textarea name="comment" id="comment">{$allocation['memo']}</textarea></td>
+			</tr>
+            <tr>
+                <td>审核备注</td>
+                <td colspan="3">{$allocation.check_memo}</td>
+            </tr>
+            <tr>
+                <td>出库备注</td>
+                <td colspan="3">{$allocation.outbound_memo}</td>
+            </tr>
+            <tr>
+                <td>入库备注</td>
+                <td colspan="3">{$allocation.receipt_memo}</td>
+            </tr>
+			</tbody >
+		</table>
+
+	</form>
+	<div class="main-content">
+		<div class="ta">
+			<table class="table table-bordered  table-hover">
+				<thead >
+				<tr>
+					<th>序</th>
+					<th style="width:200px;">金料编号</th>
+					<th>金料名称</th>
+                    <th>总重</th>
+                    <th>纯度</th>
+                    <th>金重</th>
+                    <!--<th>金价</th>-->
+                   <!-- <th>成本价</th>-->
+					<th style="width:140px;">操作</th>
+				</tr>
+				</thead>
+				<tbody id="tbody">
+				<volist name="list" id="v">
+					<tr old_data="old_data">
+						<td class="text-center"></td>
+						<td class="text-center" >{$v.rproduct_code}</td>
+						<td>{$v.recovery_name}</td>
+                        <td class="text-right" >{$v.total_weight}</td>
+                        <td class="text-right" >{$v.purity}</td>
+                        <td class="text-right" >{$v.gold_weight}</td>
+                        <!--<td class="text-right" >{$v.recovery_price}</td>-->
+                       <!-- <td class="text-right" >{$v.cost_price}</td>-->
+						<td class="text-center">
+							<a href="javascript:void(0);" name="{$v.id}" class="del2" >删除</i></a>
+						</td>
+						<td hidden=hidden class="product_id">{$v.p_id}</td>
+					</tr>
+				</volist>
+				<tr id="last">
+					<td class="text-center"></td>
+					<td class="text-center"></td>
+					<td></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td></td>
+                    <!--<td class="text-center"></td>-->
+                   <!-- <td class="text-center"></td>-->
+					<td class="text-center" href="#myModal2" class="myModal2 on" style="cursor:pointer;" role="button" data-toggle="modal" role="button">
+					<a href="javascript:void(0);">+</a></td>
+					<!--<td hidden=hidden class="product_id"></td>-->
+				</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="form-actions">
+			<div class="center-block" style="width:212px;">
+                <in name="allocation.status" value="-1,-2,3">
+                    <button type="button" class="btn btn-primary baocun" data-type="add">保存</button>
+                    <button type="button" class="btn btn-primary baocun" data-type="submit">提交</button>
+                </in>
+				<!-- <button type="button" class="btn btn-primary baocun" id="baocun_print">添加并打印</button>-->
+				<a class="btn" href="javascript:history.back(-1);">返回</a>
+				<span class="tips_error" style="color:red"></span>
+			</div>
+		</div>
+		<!--弹框选取货品-->
+		<div class="modal small fade" style="width:80%;left: 400px;" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header" style="cursor:move">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h3 id="myModalLabel">货品选取</h3>
+					</div>
+					<div class="modal-body" style="max-height: 800px;padding: 0px;">
+						<iframe  frameborder="0" class="appiframe" src="{:U('BAllotRproduct/rproduct_list',array('mystore'=>$allocation['from_id']))}" id="goods_index" name="goods_index">
+
+						</iframe>
+					</div>
+					<div class="modal-footer">
+						<button id="check" class="btn btn-primary pull-left" >选中</button>
+						<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+						<button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<include file="./Application/Home/View/Public/footer.html" />
+</div>
+<script src="/public/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+<script src="__PUBLIC__/js/jquery-form.js"></script>
+
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+<script src="/public/js/cookie.js"></script>
+<script type="text/javascript">
+    localStorage.removeItem('checkbox_id');
+
+    //编辑调拨单
+    $(".baocun,.submit").click(function(){
+        // var data_type=$(this).attr("data-type");
+        var add_status=$(this).data('type');
+        var __hash__=$("input[name='__hash__']").val();
+        var names = [];
+        var all_products = [];
+        var tr = $('#tbody').find('tr');
+        var i=0;
+        var new_product_id="";
+        var products_id = "";
+
+        tr.each(function(){
+            var id = $(this).find(".product_id").text();
+            //var ck=$(this).find("td:nth-child(5)").text()
+            var old_data = $(this).attr("old_data")
+            if(id){
+                if(i==0){
+                    if(old_data!="old_data"){
+                        new_product_id+=id;
+                    }
+                    products_id+=id;
+                }else{
+                    products_id+=",";
+                    products_id+=id;
+                    if(old_data!="old_data"){
+                        new_product_id+=",";
+                        new_product_id+=id;
+                    }
+                }
+                i=i+1;
+            }
+        })
+        names.push({'id':new_product_id});
+        all_products.push({'id':products_id});
+        if(names.length<1&&$(".del2").length<1){
+            $(".tips_error").text("请调拨货品!");
+            //alert("请选择需要调拨的货品");
+            return;
+        }
+        names = JSON.stringify(names);
+
+        var store=$("#store").val();
+        if(store<1){
+            $(".tips_error").text("请选收货仓库!");
+            //alert("收货仓库不能为空");
+            return;
+        }
+        var allocationid="{$allocation['id']}";
+        var comment=$("#comment").val();
+        var trance_time=$("#trance_time").val();
+        $.ajax({
+            url: "{:U('BAllotRproduct/edit')}",
+            type: 'post',
+            async: false,
+            data: {
+                __hash__:__hash__,
+                add_status:add_status,
+                comment:comment,
+                allocationid:allocationid,
+                store:store,
+                trance_time:trance_time,
+                order:eval(names),
+                all_products:eval(all_products)
+            },
+            beforeSend:function(){
+               if(add_status=="add"){
+                   $("#baocun").text("保存中...");
+               }else {
+                   $("#baocun").text("提交中...");
+               }
+                $("#baocun").attr("disabled",true);
+
+            },
+            success: function (data) {
+                
+                if(data.status==1){
+                    $(".tips_error").text("保存成功！");
+                    // self.location = document.referrer;
+                    if(add_status=="submit"){
+                        setTimeout(self.location='{:U("BAllotRproduct/allot_index")}',3000);
+					}
+
+                }else{
+                    $(".tips_error").text(data.msg);
+                    if(add_status=="add"){
+                        $(this).text("保存");
+                    }else {
+                        $(this).text("提交");
+                    }
+                    $(".baocun").attr("disabled",false);
+                }
+            },error: function (data,status) {
+                $(".tips_error").text("请检查网络!");
+
+            }
+        })
+    })
+
+	/*
+	 //日期
+	 laydate({
+	 elem: '#rzsj',
+	 istoday: true,
+	 });
+	 $("#rzsj").text(laydate.now(0, "YYYY-MM-DD"));
+	 */
+    //table排序
+    var tr_order=1;
+    table_order();
+    myModal2();
+    del_input();
+    del2_input();
+    //table排序
+    function del2_input(){
+        $(".del2").each(function(){
+
+            $(this).click(function(){
+                var tr = $(this).closest('tr');
+                var allocationid="{$allocation['id']}";
+                var id = $(this).attr("name");
+                var p_id = tr.find(".product_id").text();
+
+                $.ajax({
+                    url: "{:U('BAllotRproduct/detail_delete')}",
+                    type: 'post',
+                    async: false,
+                    data: {allocationid:allocationid,id:id,p_id:p_id},
+                    beforeSend:function(){
+                        // $(".baocun").attr("disabled",true);
+                    },
+                    success: function (data) {
+                        if(data.status==1){
+                            var tr=$("a[name='"+data.id+"']").parent().parent();
+                            del_tr(tr);
+                        }else{
+                            alert(data.msg);
+                        }
+                    },error: function (data,status) {
+                        alert("请检查网络");
+                    }
+                })
+
+
+
+            });
+        });
+    }
+
+    function table_order(){
+        //$('table tr:not(:first)').remove();
+        var len = $(".ta").find('table tr').length;
+        for(var i = 1;i<len;i++){
+            $(".ta").find('table tr:eq('+i+') td:first').text(i);
+        }
+
+    }
+    // tr删除
+    function del_tr(tr){
+        tr.remove();
+        table_order();
+        var checked=localStorage.getItem('checkbox_id');
+        var checkbox_id=tr.find("td:last").text();
+        checked=checked.replace("ck"+checkbox_id+"ck","");
+        localStorage.setItem('checkbox_id',checked);
+        //删除后将图片换回复选框
+        var html=$('#goods_index').contents();
+        var img=html.find(".ta").find("tbody img[checkbox_id='ck"+checkbox_id+"ck']");
+        var checkbox=html.find(".ta").find("tbody input[checkbox_id='ck"+checkbox_id+"ck']");
+        checkbox.show();
+        console.log(checkbox.length);
+        checkbox.prop('checked',false);
+        img.remove();
+    }
+    function del_input(){
+        //删除tr
+        $(".del").each(function(){
+            $(this).click(function(){
+                var tr=$(this).parent().parent();
+                del_tr(tr);
+            })
+
+        });
+
+        $(".ta").find("input").each(function(){
+            //input获取焦点，td加边框
+            $(this).focus(function(){
+                var td=$(this).parent();
+                td.css("border","solid 1px #157ab5");
+            });
+            //input失去焦点，td失去边框
+            $(this).blur(function(){
+                var td=$(this).parent();
+                td.css("border","");
+            });
+        });
+
+    }
+    //弹框可拖拽
+    $("#myModal2").draggable();
+    //点击添加一栏tr
+    $("#tr_add").click(function(){
+
+        var s=$("#last_tr").prev().find("td:nth-child(1)").text();
+        var ss=parseInt(s)+1;
+        var html="";
+        html+="<tr>";
+        html+=$("#tr_info").html();
+        html+="</tr>";
+        $("#last_tr").before(html);
+        $("#last_tr").prev().find("td:nth-child(1)").text(ss);
+        table_order();
+        myModal2();
+        del_input();
+    });
+
+    //iframe子页面加载触发
+    $('#goods_index').load(function () {
+        $("#add").unbind('click').click(function(){
+            $("#check").trigger("click");
+        })
+
+        $("#check").unbind('click').click(function(){
+            //alert($(".myModal2.on").parent().prev().text());
+            var html=$('#goods_index').contents();
+            var tr=html.find("input[class='goods_input']:checked").parent().parent();
+            tr.each(function(){
+            	if($(this).find("img").length>0){
+					
+				}else{
+	                var checkbox_id=$(this).find("td:nth-child(1)").find("input").attr("checkbox_id");
+	                var checked=localStorage.getItem('checkbox_id');
+	                checked+=","+checkbox_id;
+	                localStorage.setItem('checkbox_id',checked);
+	                var html="";
+                    html+="<tr>";
+                    html+='<td class="text-center"></td>';
+                    html += '<td class="text-center product_code" >' + $(this).find(".product_code").text() + '</td>';
+                    html += ' <td style="padding-left:10px;">' + $(this).find(".goodsname").text() + '</td>';
+                    html += '<td class="text-right" >' + $.trim($(this).find(".total_weight").text()) + '</td>';
+                    html += ' <td  class="text-right">' + $.trim($(this).find(".purity").text()) + '</td>';
+                    html += '<td class="text-right" >' + $.trim($(this).find(".gold_weight").text()) + '</td>';
+                    /*html += ' <td class="text-right">' + $.trim($(this).find(".recovery_price").text()) + '</td>';*/
+                    /*html += ' <td class="text-right">' + $.trim($(this).find(".cost_price").text()) + '</td>';*/
+                    html+='<td class="text-center">';
+                    html+='<a href="javascript:void(0);" name="{$v.id}" class="del" >删除</i></a>';
+                    html+='</td>';
+                    html+=' <td hidden=hidden class="product_id">'+$.trim($(this).find(".rproduct_id").text())+'</td>';
+                    html+='</tr>';
+	                $("#last").before(html);
+	                table_order();
+	                myModal2();
+	                del_input();
+				}
+            })
+            //刷新页面读取已勾选数据
+            var check=localStorage.getItem('checkbox_id');
+            if(check!=""&&check!=null&&typeof(check)!="undefined"){
+                var checked=check.split(',');
+                for(var i in checked){
+                    if(checked[i]!=null&&checked[i]!=""&&typeof(checked[i])!="undefined"){
+                        var checkbox=tr.find("input[checkbox_id='"+checked[i]+"']");
+
+                        if(checkbox.length>0&&checkbox.parent().find('img').length==0){
+                            var img= "<img checkbox_id='"+checked[i]+"' src='__PUBLIC__/images/gou.png'/>";
+                            checkbox.parent().append(img);
+                            // checkbox.parent().html(img);
+                             //checkbox.remove();
+                             checkbox.prop('checked',false);
+                             checkbox.hide();
+                        }
+                    }
+                }
+            }
+            //document.getElementById("goods_index").contentWindow.location.reload(true);
+        })
+
+        initData();
+    });
+
+    initData();
+
+    function checkedProductList(){
+        var html = $('#goods_index').contents();
+
+        var check = localStorage.getItem('checkbox_id');
+        if(check){
+            var tr_all = html.find("input[class=goods_input]").closest('tr');
+            tr_all.each(function(){
+                var all_checkbox_id = $(this).find("td:nth-child(1)").find("input").attr("checkbox_id");
+                if(all_checkbox_id){
+                    var index = check.indexOf(all_checkbox_id);
+                }
+                var imglength = $(this).find("td:nth-child(1)").find("img").length;
+                if(index >= 0 && imglength==0){
+                    var img= "<img checkbox_id='"+all_checkbox_id+"' src='__PUBLIC__/images/gou.png'/>";
+                    var checkbox = tr_all.find("input[checkbox_id='ck"+all_checkbox_id+"ck']");
+
+                    checkbox.parent().append(img);
+                    checkbox.prop('checked', false);
+                    checkbox.hide();
+                }
+            });
+        }
+
+    }
+
+    function initData(){
+        var tr = $('#tbody').find('tr');
+        var checked = [];
+
+        tr.each(function(){
+            var id = $(this).find(".product_id").text();
+
+            if(id != ''){
+                checked.push('ck'+id+'ck');
+            }
+        })
+
+        localStorage.setItem('checkbox_id', checked.join(','));
+
+        checkedProductList();
+    }
+
+    //设置父页面选择的tr,以便对应位置添加获取内容
+    function myModal2(){
+        $('.myModal2').each(function () {
+
+            $(this).click(function(){
+                $(".myModal2.on").removeClass("on");
+                $(this).addClass("on");
+
+            })
+
+        })
+    }
+    //选择收货仓库，自动完善收货管理员信息
+    $('#store').change(function(){
+        //alert($(this).val());
+        if($(this).val()>0){
+            var in_user=$(this).find("option:selected").attr("in_user");
+            $("#in_user").text(in_user);
+        }else{
+            $("#in_user").text("请选择收货仓库");
+        }
+
+    })
+
+</script>
+</body>
+
+

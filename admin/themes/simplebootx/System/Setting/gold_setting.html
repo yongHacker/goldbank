@@ -1,0 +1,219 @@
+<systemtpl file="header" />
+<style>
+	.tips_success,.tips_error{color:red;}
+	.wrap{padding: 20px 20px 0;}
+	.form-horizontal .control-group{margin-bottom:0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('setting/procure_setting')}">{:L('SYSTEM_SETTING_GOLD_SETTING')}</a></li>
+	</ul>
+	<form class="well form-search form-horizontal" method="post" id="form2" action="{:U('setting/gold_setting')}">
+		<fieldset>
+			<div class="control-group">
+				<label class="control-label">API接口:</label>
+				<div class="controls c_api">
+					<!--<label class="inline" for="lightup_true"> <input <if condition="$api_type eq 0">checked="checked"</if> class="radio api" name="api_type" value="0" type="radio">聚合接口</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="inline" for="lightup_false"> <input <if condition="$api_type eq 1">checked="checked"</if> class="radio api" name="api_type" value="1" type="radio">nowapi接口</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+					<label class="inline" for="lightup_false"> <input <if condition="$api_type eq 2">checked="checked"</if> class="radio api" name="api_type" value="2" type="radio">集金号接口</label>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+	<form id="form1" class="well form-search form-horizontal" method="post" action="{:U('setting/gold_setting')}">
+		<fieldset>
+			<div class="control-group">
+				<label class="control-label">是否开启:</label>
+				<div class="controls c_open">
+					<label class="inline" for="lightup_true"> <input <if condition="$is_open eq 1">checked="checked"</if> class="radio type_open open" name="lightup" value="1" type="radio">开启</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="inline" for="lightup_false"> <input <if condition="$is_open eq 0">checked="checked"</if> class="radio type_open open" name="lightup" value="0" type="radio">关闭</label>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+	<ul class="nav nav-tabs" id="price_ul">
+		<!--<li <if condition="$api_type eq 0">class="active"</if> div_data="tbody"><a href="javascript:void(0);">聚合接口</a></li>
+		<li <if condition="$api_type eq 1">class="active"</if> div_data="tbody"><a href="javascript:void(0);">nowapi接口</a></li>-->
+		<li <if condition="$api_type eq 2">class="active"</if> div_data="jjh_tbody"><a href="javascript:void(0);">集金号接口</a></li>
+		<li <if condition="$api_type eq 1">class="active"</if> div_data="tbody"><a href="javascript:void(0);">金价类型管理</a></li>
+	</ul>
+	<div class="main-content">
+		<div class="ta">
+			<table class="table table-bordered  table-hover table-striped" id="tbody" style="display:none;">
+				<thead >
+				<tr>
+					<th class="text-center">序</th>
+					<th class="text-center">种类</th>
+					<th class="text-center">商户显示名称</th>
+					<th class="text-center">操作</th>
+				</tr>
+				</thead>
+				<tbody >
+				<volist name="cate_list" id="v">
+					<tr  id="">
+						<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+						<td class="text-center">{$v.name}</td>
+						<td class="text-center"><if condition="$v['memo']">{$v['memo']}<else/>{$v['name']}</if></td>
+						<!--<td class="text-center">{$v.expression}</td>
+						<td class="text-center">{$v.price}</td>
+						<td class="text-center">{$v.user}</td>-->
+						<td class="text-center">
+								<a class="edit fa fa-edit" href="{:U('setting/gold_edit',array('id'=>$v['id']))}" title="编辑" name="{$v.id}"></a>
+						<!--	<if condition="$v.statu eq 'open'">
+								<a class="open fa operate fa-toggle-on" url="{:U('setting/gold_edit',array('id'=>$v['id'],'operate'=>'close'))}" title="关闭" name="{$v.id}"></a>
+								<else/>
+								<a class="open fa operate fa-toggle-off" url="{:U('setting/gold_edit',array('id'=>$v['id'],'operate'=>'open'))}" title="开启" name="{$v.id}"></a>
+							</if>-->
+							<if condition="$v.is_show eq 1">
+								<a class="open a_open fa is_show fa-check-square-o" url="{:U('setting/gold_edit',array('id'=>$v['id'],'is_show'=>'close'))}" title="商户不显示" name="{$v.id}"></a>
+								<else/>
+								<a class="open a_open fa is_show fa-square-o" url="{:U('setting/gold_edit',array('id'=>$v['id'],'is_show'=>'open'))}" title="商户显示" name="{$v.id}"></a>
+							</if>
+						</td>
+					</tr>
+				</volist>
+			</table>
+			<table class="table table-bordered  table-hover table-striped" id="jjh_tbody" style="display:none;">
+				<thead >
+				<tr>
+					<th class="text-center">序</th>
+					<th class="text-center">种类</th>
+					<th class="text-center">计算公式</th>
+					<th class="text-center">最新系统数据</th>
+					<th class="text-center">更新人</th>
+					<th class="text-center">操作</th>
+				</tr>
+				</thead>
+				<tbody >
+				<tr  id="">
+					<td class="text-center">1</td>
+					<td class="text-center">集金号金价({$jjh_info['is_open']})</td>
+					<td class="text-center">{$jjh_info.expression}</td>
+					<td class="text-center">{$jjh_info.price}</td>
+					<td class="text-center">系统自动</td>
+					<td class="text-center">
+						<a class="edit fa fa-edit" href="{:U('setting/jjh_gold_edit')}" title="编辑" name="{$v.id}"></a>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="pagination">{$page}</div>
+	</div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+
+	$("#price_ul").find("li").click(function(){
+		var div_data=$(this).attr("div_data");
+		$("#price_ul").find("li[class='active']").removeClass("active");
+		$(this).addClass("active");
+		if(div_data=='tbody'){
+			$('#tbody').show();
+			$('.pagination').show();
+			$('#jjh_tbody').hide();
+		}else {
+			$('#tbody').hide();
+			$('.pagination').hide();
+			$('#jjh_tbody').show();
+		}
+	})
+	var api_type='{$api_type}';
+	if(api_type==2){
+		$('#tbody').hide();
+		$('#jjh_tbody').show();
+	}else{
+		$('#tbody').show();
+		$('#jjh_tbody').hide();
+	}
+	$('.type_open').click(function(){
+		var url=$("#form1").attr('action');
+		var value=$(this).val();
+		if(empty(value)){
+			value=0;
+		}
+		$.ajax({
+			url:url,
+			type:'post',
+			data:{value:value,type:"open"},
+			dataType:"json",
+			success:function(result){
+				if(result.datas=="success"){
+					str="操作成功！";
+				}else{
+					str="操作失败！";
+				}
+				$('.c_open').append('<p style="display:inline;margin-left:30px;color:red;">'+str+'</p>');
+				setTimeout(function(){$('.c_open p').remove();},1000);
+			}
+		});
+	});
+	$('.api').click(function(){
+		var url=$("#form2").attr('action');
+		var li_index=$(this).val();
+		var value=$(this).val();
+		if(empty(value)){
+			value=0;
+		}
+		$.ajax({
+			url:url,
+			type:'post',
+			data:{value:value,type:"api"},
+			dataType:"json",
+			success:function(result){
+				if(result.datas=="success"){
+					$("#price_ul").find("li[class='active']").removeClass("active");
+					$("#price_ul").find("li").eq(li_index).addClass("active");
+					if(value==2){
+						$('#tbody').hide();
+						$('#jjh_tbody').show();
+					}else{
+						$('#tbody').show();
+						$('#jjh_tbody').hide();
+					}
+					str="操作成功！";
+				}else{
+					str="操作失败！";
+				}
+				$('.c_api').append('<p style="display:inline;margin-left:30px;color:red;">'+str+'</p>');
+				setTimeout(function(){$('.c_api p').remove();},1000);
+			}
+		});
+	});
+	$('td a.a_open').click(function(){
+		var url=$(this).attr('url');
+		var a_=$(this);
+		$.ajax({
+			url:url,
+			type:'get',
+			dataType:"json",
+			success:function(result){
+				var code=result.code;
+				if(code==200){
+
+					if(a_.hasClass('fa-square-o')){
+						a_.removeClass('fa-square-o');
+						a_.addClass('fa-check-square-o');
+					}else if(a_.hasClass('fa-check-square-o')){
+						a_.removeClass('fa-check-square-o');
+						a_.addClass('fa-square-o');
+					}
+					if(a_.hasClass('fa-toggle-off')){
+						a_.removeClass('fa-toggle-off');
+						a_.addClass('fa-toggle-on');
+					}else if(a_.hasClass('fa-toggle-on')){
+						a_.removeClass('fa-toggle-on');
+						a_.addClass('fa-toggle-off');
+					}
+					artdialog_alert('操作成功！','succeed');
+				}else{
+					artdialog_alert('操作失败！');
+				}
+			}
+		});
+	});
+</script>
+</body>
+</html>

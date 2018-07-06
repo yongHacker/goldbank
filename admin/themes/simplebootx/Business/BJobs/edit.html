@@ -1,0 +1,43 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li ><a href="{:U('BJobs/index',array('id'=>$list['sector_id']))}">{:L('BUSINESS_BJOBS_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BJobs/edit',array('id'=>$list['sector_id']))}">{:L('BUSINESS_BJOBS_EDIT')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BJobs/edit')}">
+			<fieldset>
+				<input type="hidden" value="{$list['id']}" name="id">
+				<input type="hidden" value="{$list['sector_id']}" name="sector_id">
+				<!--<div class="control-group">
+					<label class="control-label">部门:</label>
+					<div class="controls">
+						<select name="sector_id">
+							{$select_categorys}
+						</select>
+					</div>
+				</div>-->
+				<div class="control-group">
+					<label class="control-label">岗位名称:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="job_name" value="{$list['job_name']}">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">岗位职责:</label>
+					<div class="controls">
+						<textarea name="job_duty" value="{$list['job_duty']}" rows="5" cols="57" style="width: 500px;">{$list['job_duty']}</textarea>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

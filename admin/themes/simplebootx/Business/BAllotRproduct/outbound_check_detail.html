@@ -1,0 +1,53 @@
+<businesstpl file="header" />
+<body class="theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('outbound_check_detail')}">{:L('BUSINESS_BALLOT_OUTBOUND_CHECK_DETAIL')}</a></li>
+        <span style="float:right">
+            <p  class="btn btn-danger js-ajax-submit" data-type="-2" >驳回</p>
+        <p  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</p>
+        <p  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</p>
+            <button type="button" onclick="history.go( -1 )" class="btn  " >返回</button>
+        </span>
+	</ul>
+    <businesstpl file="BAllotRproduct/detail_tpl" />
+    <div class="form-actions text-center">
+        <input type="hidden" value="{$allocation.id}" id="id"/>
+        <p  class="btn btn-danger js-ajax-submit" data-type="-2" >驳回</p>
+        <p  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</p>
+        <p  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</p>
+        <a class="btn" href="javascript:history.back(-1);">返回</a>
+        <span class="tips_error"></span>
+
+    </div>
+	<include file="./Application/Home/View/Public/footer.html" />
+</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script type="text/javascript">
+    $(".js-ajax-submit").on('click',function(){
+        var id=$('#id').val();
+        var check_memo=$('#check_memo').val();
+        var type=$(this).data("type");
+        $.ajax({
+            url: "{:U('outbound_check_post')}",
+            type: 'post',
+            data:{id:id,check_memo:check_memo,type:type},
+            beforeSend:function(){
+                $(".js-ajax-submit").attr("disabled",true);
+            },
+            success: function(data) {
+                if(data.status==1){
+                    $(".tips_error").text("审核完成！");
+                    setTimeout(self.location=data.url,3000);
+                }else{
+                    $(".tips_error").text(data.msg);
+                    $(".js-ajax-submit").attr("disabled",false);
+                }
+            }
+
+        })
+    })
+</script>
+</body>
+

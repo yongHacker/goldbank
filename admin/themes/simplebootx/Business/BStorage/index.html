@@ -1,0 +1,226 @@
+<businesstpl file="header" />
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BStorage/index')}">{:L('BUSINESS_BSTORAGE_INDEX')}</a></li>
+        </ul>
+		<form class="well form-search form-horizontal" method="POST" action="{:U('BStorage/index')}">
+            综合搜索：
+            <input type="text" autocomplete="off" class="span4" placeholder="包裹编号/采购单号/采购员/供应商/分称人员" name="search_name" value="{:I('request.search_name')}">
+            状态：
+            <select name="status" class="">
+                <option value="">--请选择状态--</option>
+                <option <?php if($request_data['status'] =="-1"){?> selected="selected"<?php }?> value="-1">待分称</option>
+                <option <?php if($request_data['status'] =="0"){?> selected="selected"<?php }?> value="0">待审核</option>
+                <option <?php if($request_data['status'] =="1"){?> selected="selected"<?php }?> value="1">审核通过</option>
+                <!--<option <?php if($request_data['status'] =="2"){?> selected="selected"<?php }?> value="2">审核不通过</option>-->
+                <option <?php if($request_data['status'] =="-2"){?> selected="selected"<?php }?> value="-2">已驳回</option>
+            </select>
+            创建时间：
+            <div class="input-prepend">
+                    <span class="add-on input-group-addon">
+                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                    </span>
+                <input style="width: inherit;" class="js-date" name="begin_time" value="{$request_data['begin_time']}" type="text"  >
+            </div>
+            ~
+            <div class="input-prepend">
+                    <span class="add-on input-group-addon">
+                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                    </span>
+                <input style="width: inherit;" class="js-date" name="end_time" value="{$request_data['end_time']}" type="text"  >
+            </div>
+           <!-- <div class="row-fluid">
+                <div class="span4">
+                    <label class="row-fluid">包裹编号：
+                        <input type="text" autocomplete="off" class="span8" name="batch" value="{$request_data['batch']}">
+                    </label>
+                </div>
+                <div class="span4">
+                    <label class="row-fluid">采购编号：
+                        <input type="text" autocomplete="off" class="span8" name="procure_batch" value="{$request_data['procure_batch']}">
+                    </label>
+                </div>
+                <div class="span4">
+                    <label class="row-fluid">采购员：
+                        <input type="text" autocomplete="off" class="span8" name="creator_name" value="{$request_data['creator_name']}">
+                    </label>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4">
+                    <label class="row-fluid">供应商：
+                        <input type="text" autocomplete="off" class="span8" name="suppiler_name" value="{$request_data['suppiler_name']}">
+                    </label>
+                </div>
+                <div class="span4">
+                    <label class="row-fluid">状态：
+                        <select name="status" class="span8">
+                            <option value="">&#45;&#45;请选择状态&#45;&#45;</option>
+                            <option <?php if($request_data['status'] =="-1"){?> selected="selected"<?php }?> value="-1">待分称</option>
+                            <option <?php if($request_data['status'] =="0"){?> selected="selected"<?php }?> value="0">待审核</option>
+                            <option <?php if($request_data['status'] =="1"){?> selected="selected"<?php }?> value="1">审核通过</option>
+                            <option <?php if($request_data['status'] =="2"){?> selected="selected"<?php }?> value="2">审核不通过</option>
+                            <option <?php if($request_data['status'] =="3"){?> selected="selected"<?php }?> value="3">已撤销</option>
+                            <option <?php if($request_data['status'] =="4"){?> selected="selected"<?php }?> value="4">已结算</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="span4">
+                    <label class="row-fluid">分称人员：
+                        <input type="text" autocomplete="off" class="span8" name="storager_name" value="{$request_data['storager_name']}">
+                    </label>
+                </div>
+            </div>-->
+           <!-- <div class="row-fluid" style="margin-bottom: 8px;">
+                <div class="span4">
+                    <label class="row-fluid">综合搜索：
+                        <input type="text" autocomplete="off" class="span8" name="search_name" value="{:I('request.search_name')}">
+                    </label>
+                </div>
+                <div class="span8">
+                    <label class="row-fluid">状态：
+                        <select name="status" class="span8">
+                            <option value="">&#45;&#45;请选择状态&#45;&#45;</option>
+                            <option <?php if($request_data['status'] =="-1"){?> selected="selected"<?php }?> value="-1">待分称</option>
+                            <option <?php if($request_data['status'] =="0"){?> selected="selected"<?php }?> value="0">待审核</option>
+                            <option <?php if($request_data['status'] =="1"){?> selected="selected"<?php }?> value="1">审核通过</option>
+                            <option <?php if($request_data['status'] =="2"){?> selected="selected"<?php }?> value="2">审核不通过</option>
+                            <option <?php if($request_data['status'] =="3"){?> selected="selected"<?php }?> value="3">已撤销</option>
+                            <option <?php if($request_data['status'] =="4"){?> selected="selected"<?php }?> value="4">已结算</option>
+                        </select>
+                    </label>
+                </div>
+                <div style="float: left;">创建时间：</div>
+                <div class="span10">
+                    <div class="input-prepend">
+                        <span class="add-on input-group-addon">
+                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                        </span>
+                        <input style="width: inherit;" class="js-date" name="begin_time" value="{$request_data['begin_time']}" type="text"  >
+                    </div>
+                    ~
+                    <div class="input-prepend">
+                        <span class="add-on input-group-addon">
+                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                        </span>
+                        <input style="width: inherit;" class="js-date" name="end_time" value="{$request_data['end_time']}" type="text"  >
+                    </div>
+                </div>
+            </div>-->
+            <input class="btn btn-primary" value="搜索" type="submit">
+            <button class="btn btn-primary" type="submit" name="submit" value="excel_out">导出</button>
+
+            <input type="hidden" name="type" value="{$list_type}">
+            <a href="{:U('BStorage/index',array('type'=>$_REQUEST['type']))}">清空</a>
+        </form>
+    <!--<button class="btn btn-primary" onclick="window.print();">打印<i class="icon-print"></i></button>-->
+
+    <div class="main-content">
+
+<!--         <ul class="nav nav-tabs">
+            <li <if condition="$list_type eq 1">class="active"</if> ><a href="{:U('BStorage/index', array('type'=> 1))}">列表</a></li>
+            <li <if condition="$list_type eq 0">class="active"</if> ><a href="{:U('BStorage/index', array('type'=> 0))}">待分称</a></li>
+            <li <if condition="$list_type lt 0">class="active"</if> ><a href="{:U('BStorage/index')}">全部</a></li>
+        </ul> -->
+
+        <div class="ta">
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                <tr>
+                    <th class="text-center">序号</th>
+                	<th class="text-center">包裹编号</th>
+                    <th class="text-center">采购单号/供应商</th>
+                    <th class="text-center">商品大类</th>
+                    <th class="text-center">采购克重/实际克重</th>
+                    <th class="text-center">秤差</th>
+                    <!-- <th class="text-center">总工费</th> -->
+                    <th class="text-center">采购人员</th>
+                    <th class="text-center">分称人员</th>
+                    <th class="text-center">包裹状态</th>
+                    <th class="text-center">创建日期</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="storage_list" id="v">
+                    <tr>
+                        <td class="text-center">
+                            <?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1); ?>
+                            <!-- <label class="checkbox"><input type="checkbox" name="procure_id" value="{$v.id}"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1); ?>
+                            </label> -->
+                        </td>
+                        <!-- <td class="text-center">{$v.class_name}</td> -->
+                        <td class="text-center">{$v.batch}</td>
+                        <td class="coded text-left">
+                            {$v.procure_batch} <br>
+                            {$v.company_name}
+                        </td>
+                        <td class="text-left">{$v.class_name}<notempty name="v['show_type']">({$v.show_type})</notempty></td>
+                        <td class="coded text-right <?php if($v['diff_weight'] != 0){?>text-error<?php }?>">
+                            {:numberformat($v[weight], 2, '.', ',')}g <br>
+                            {:numberformat($v[real_weight], 2, '.', ',')}g
+                        </td>
+                        <td class="jhmc text-right <?php if($v['diff_weight'] != 0){?>text-error<?php }?>">{:numberformat($v['diff_weight'], 2, '.', ',')}g</td>
+                        <!-- <td class="text-center">{$v.price}</td> -->
+                        <td class="jhmc text-left">{$v.creator_name}</td>
+                        <td class="clrq text-left">{$v.storager_name}</td>
+                        <td class="text-center">
+                            <!-- <if condition="$v['p_status'] eq 2 || $v['p_status'] eq 3">采购单{$p_status[$v['p_status']]}
+                                <else/>{$v.show_status}
+                            </if> -->
+                            <in name="v.p_status" value="2,3">
+                                采购单{$p_status[$v['p_status']]}
+                            <else />
+                                {$v.show_status}
+                            </in>
+                        </td>
+                        <td class="clrq text-center">{:date('Y-m-d H:i:s', $v['create_time'])}</td>
+                        <td class="text-center">
+                            <a href="{:U('BStorage/detail', array('id'=> $v['id']))}">查看</a>
+
+                            <!-- <if condition="$v['p_status'] neq 2 && $v['p_status'] neq 3"> -->
+                                <!-- <if condition="$v['storage_status'] eq 0 || $v['status']  eq 3">
+                                    <a href="{:U('BStorage/split', array('id'=> $v['id'],'type'=>$v['type']))}">分称</a>
+                                </if> hidden by jk.20180326 -->
+
+                            <if condition="$v['p_status'] eq 1">
+                                <!-- 分称初始、保存 -->
+                                <if condition="$v[storage_status] eq 0 && $v['status'] eq 0">
+                                    <a href="{:U('BStorage/split', array('id'=> $v['id'],'type'=>$v['type']))}">分称</a>
+                                </if>
+                                <!-- 或storage.status IN (2,3) 驳回、撤销 -->
+                                <in name="v.status" value="-2,3">
+                                    <a href="{:U('BStorage/split', array('id'=> $v['id'],'type'=>$v['type']))}">分称</a>
+                                </in>
+                            </if>
+                            
+                            <!-- </if> -->
+                            <!-- <a class="js-ajax-delete" href="{:U('BStorage/delete', array('id'=> $v['id']))}">删除</a> -->
+                        </td>
+                    </tr>
+                </volist>
+                </tbody>
+            </table>
+        </div>
+        <div class="ts" style="display:none;">
+            <include file="./public/common/default_empty.html" />
+        </div>
+        <div class="pagination">{$page}</div>
+        <include file="./public/common/footer.html" />
+	</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+
+<script>
+if('{:count($storage_list)}' == 0 ||'{$storage_list}'==''||'{$storage_list}'==null||typeof('{$storage_list}')=='undefined'){
+    $('.ta').hide();
+    $('.ts').show();
+}
+</script>
+
+</body>
+</html>

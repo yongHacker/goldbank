@@ -1,0 +1,53 @@
+<systemtpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#">{:L('SYSTEM_JOBS_USER')}</a></li>
+		<button class="btn js-ajax-back-btn" type="button" onclick="history.go( -1 )" style="float:right">返回</button>
+	</ul>
+	<table class="table table-hover table-bordered table-list" id="menus-table">
+		<thead>
+		<tr>
+			<th width="30">ID</th>
+			<th>员工姓名</th>
+			<th>岗位名称</th>
+		</tr>
+		</thead>
+		<tbody>
+		<volist name="list" id="v">
+			<tr id="del_{$v.id}">
+				<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+				<td class="text-left">
+					<a href="{:U('Employee/info',array('user_id'=>$v['id']))}"><span style="float:left">{$v.user_nicename}</span></a>
+				</td>
+				<td class="text-left">
+					{$v['job_name']}
+				</td>
+			</tr>
+		</volist>
+		</tbody>
+	</table>
+</div>
+<div class="pagination">{$page}</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+	$(document).ready(function () {
+		Wind.css("treeTable");
+		Wind.use('treeTable', function () {
+			$("#menus-table").treeTable({
+				indent: 20
+			})
+		})
+	});
+
+	setInterval(function () {
+		var refersh_time = getCookie('refersh_time_admin_menu_index');
+		if (refersh_time == 1) {
+			reloadPage(window);
+		}
+	}, 1000);
+	setCookie('refersh_time_admin_menu_index', 0);
+</script>
+</body>
+</html>

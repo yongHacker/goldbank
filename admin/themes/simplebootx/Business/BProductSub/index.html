@@ -1,0 +1,61 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BProductSub/index')}">{:L('BUSINESS_BPRODUCTSUB_INDEX')}</a></li>
+			<li><a href="{:U('BProductSub/add')}">{:L('BUSINESS_BPRODUCTSUB_ADD')}</a></li>
+		</ul>
+		<form class="well form-search" method="post" action="{:U('BProductSub/index')}">
+            类别
+            <select name="sub_type">
+                <option value="">全部</option>
+                <volist name="sub_types" id="v" key="k">
+                    <option value="{$v.value}" <if condition="$v['value'] eq $_REQUEST['sub_type']">selected="selected"</if>>{$v.comment}</option>
+                </volist>
+            </select>
+            <input id="search_value" name="search_value" style="width:200px;margin-left:10px;margin-right: 10px;" value="{$_REQUEST['search_value']}" placeholder="附属信息值/附属信息值注释" type="text">
+            <input class="btn btn-primary" value="搜索" type="submit">
+            <a class="btn btn-danger" href="{:U('BProductSub/index')}">清空</a>
+        </form>
+    <div class="main-content">
+        <if condition="$list">
+        <div class="ta">
+            <table class="table table-bordered  table-hover table-striped">
+                <thead>
+                <tr>
+                	<th class="text-center">序</th>
+                	<th class="text-center">类别</th>
+                    <th class="text-center">附属信息值</th>
+                    <th class="text-center">附属信息值注释</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="list" id="v">
+                    <tr>
+                        <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                        <td class="coded text-left">{$sub_types[$v['sub_type']]['comment']}</td>
+                        <td class="coded text-left">{$v.sub_value}</td>
+                        <td class="jhmc text-left">{$v.sub_note}</td>
+                        <td class="text-center">
+                            <a href="{:U('BProductSub/edit',array('id'=>$v['id']))}">编辑</a> |
+                            <a href="{:U('BProductSub/deleted',array('id'=>$v['id']))}" name="1687" class="js-ajax-delete" role="button" title="删除" data-toggle="modal">删除</a>
+                        </td>
+                    </tr>
+                </volist>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">{$page}</div>
+        <else/>
+            <div class="ts" style="display:none;">
+            <include file="./public/common/default_empty.html" />
+            </div>
+        </if>
+      <include file="./public/common/footer.html" />
+	</div>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

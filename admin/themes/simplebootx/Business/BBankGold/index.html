@@ -1,0 +1,94 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BBankGold/index')}">{:L('BUSINESS_BBANKGOLD_INDEX')}</a></li>
+			<li><a href="{:U('BBankGold/add')}">{:L('BUSINESS_BBANKGOLD_ADD')}</a></li>
+		</ul>
+        <form class="well form-search" method="post" action="{:U('BBankGold/index')}">
+			金价类型:
+			<select name="bgt_id"  >
+				<option value="0" checked>全部</option>
+				<volist name="gold_type" id="v">
+					<option value="{$v.bgt_id}" <if condition="$_REQUEST['bgt_id'] eq $v['bgt_id']">selected="selected" </if>>{$v.name}</option>
+				</volist>
+			</select>
+			<!--门店:
+			<select name="shop_id">
+				<option value="-2" checked>全部</option>
+				<option value="-1" <if condition="$_POST['shop_id'] eq '-1' || $_GET['shop_id'] eq '-1'"> selected="selected" </if>>总部</option>
+				<volist name="shop_list" id="v">
+					<option <if condition="$_POST['shop_id'] eq $v['id'] || $_GET['shop_id'] eq $v['id']"> selected="selected" </if> value="{$v.id}" >{$v.shop_name}
+					</option>
+				</volist>
+			</select>-->
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:U('BBankGold/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<!--<th width="50">ID</th>-->
+					<th width="50">序</th>
+					<th>金价类型</th>
+					<!--<th>门店</th>-->
+					<th>计算公式</th>
+					<th>当前价格</th>
+					<th>修改时间</th>
+					<th width="120">{:L('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<php>$user_statuses=array("0"=>L('USER_STATUS_BLOCKED'),"1"=>L('USER_STATUS_ACTIVATED'),"2"=>L('USER_STATUS_UNVERIFIED'));</php>
+				<foreach name="list" item="vo">
+				<tr>
+					<!--<td>{$vo.bgt_id}</td>-->
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td>{$vo.name}</td>
+					<!--<td>{$vo['shop_name']?$vo['shop_name']:'总部'}</td>-->
+					<td>{$vo.formula}</td>
+					<td class="text-right">{$vo.price}</td>
+					<td class="text-center">
+						<if condition="$vo['update_time']">
+							{:date('Y-m-d H:i:s',$vo['update_time'])}
+							<else/>
+							价格未设置
+						</if>
+
+					</td>
+					<td class="text-center">
+						<a href="{:U('BBankGold/edit',array('bg_id'=>$vo['bg_id']))}" title="编辑"  class="edit fa fa-edit"></a>
+						<if condition="$vo['bg_id']">
+						<if condition="$vo['deleted']">
+							<a class="open js-ajax-delete fa fa-toggle-off" data-msg="您确定开启价格吗？" href="{:U('BBankGold/deleted',array('deleted'=>$vo['deleted'],'bg_id'=>$vo['bg_id']))}" title="开启" name="1"></a>
+							<else/>
+							<a class="open js-ajax-delete fa fa-toggle-on" data-msg="您确定禁用价格吗？" href="{:U('BBankGold/deleted',array('deleted'=>$vo['deleted'],'bg_id'=>$vo['bg_id']))}" title="关闭" name="1"></a>
+						</if>
+						</if>
+						<!--<a href="{:U('BBankGold/deleted',array('id'=>$vo['bg_id']))}" name="165" class="js-ajax-delete delete fa fa-trash" role="button" title="删除" data-toggle="modal"></a>-->
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script>
+	$(".open").click(function (e) {
+		e.preventDefault();
+		if ($(this).hasClass("fa-toggle-off")) {
+			$(this).removeClass("fa-toggle-off");
+			$(this).addClass("fa-toggle-on");
+			$(this).parent("td").find("input.val").val("1");
+		}
+		else {
+			$(this).removeClass("fa-toggle-on");
+			$(this).addClass("fa-toggle-off");
+			$(this).parent("td").find("input.val").val("0")
+		}
+	});
+</script>

@@ -1,0 +1,43 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li ><a href="{:U('BSectors/index')}">{:L('BUSINESS_BSECTORS_INDEX')}</a></li>
+			<!--<li ><a href="{:U('BSectors/lists')}">{:L('BUSINESS_BSECTORS_LIST')}</a></li>-->
+			<li class="active"><a href="{:U('BSectors/add')}">{:L('BUSINESS_BSECTORS_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BSectors/add')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">上级:</label>
+					<div class="controls">
+						<select name="sector_pid">
+							<option value="0">作为顶级部门</option>
+							{$select_categorys}
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">部门名称:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="sector_name">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">部门描述:</label>
+					<div class="controls">
+						<textarea name="sector_des" rows="5" cols="57" style="width: 500px;"></textarea>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

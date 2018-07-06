@@ -1,0 +1,63 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BBankGold/css/add.css">
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BBankGold/shop_index')}">{:L('SHOP_BBANKGOLD_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BBankGold/add')}">{:L('SHOP_BBANKGOLD_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BBankGold/add')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">金价类型名称</label>
+					<div class="controls">
+						<select name="bg_id"  >
+							<volist name="gold_type" id="v">
+								<option value="{$v.bg_id}" bgt_id="{$v.bgt_id}">{$v.name}</option>
+							</volist>
+						</select>*
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">{$cate_info.name}系统价=</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="expression" class="expression" value="{$expression}"/> *    <a class="btn btn-danger" id="del">清空</a>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">运算符选择</label>
+					<div class="controls bbt">
+						<a class="btn btn-primary" style="margin-left:0px;" id="round">四舍五入</a>
+						<a class="btn btn-primary" id="ceil">向上取整</a>
+						<a class="btn btn-primary" id="floor">向下取整</a>
+						</br>
+						<a class="btn btn-danger" style="margin-left:0px;" id="plus">+</a>
+						<a class="btn btn-danger" style="margin-left:15px;" id="minus">-</a>
+						<a class="btn btn-danger"style="margin-left:15px;" id="multiply">×</a>
+						<a class="btn btn-danger"style="margin-left:15px;" id="divide">÷</a>
+						<a class="btn btn-primary"style="margin-left:15px;" id="price">price</a>
+					</div>
+				</div>
+				<!--<div class="control-group">
+					<label class="control-label">所属</label>
+					<div class="controls">
+						<select name="shop_id">
+							<option value="0">总部</option>
+							<volist name="shop" id="vo">
+								<option value="{$vo.id}">{$vo.shop_name}</option>
+							</volist>
+						</select>
+					</div>
+				</div>-->
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script src="__PUBLIC__/shop/BBankGold/js/add.js"></script>

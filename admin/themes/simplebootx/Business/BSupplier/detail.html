@@ -1,0 +1,174 @@
+<businesstpl file="header" />
+<style>
+	.scope{
+		display: inline-block;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
+	.scope-detail{
+		display: inline-block;
+		vertical-align: top;
+		text-decoration: none;
+		 }
+	.scope-detail.on{
+		display: block;
+		vertical-align: inherit;
+	}
+	.attach_pic{
+		margin-right:20px;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BSupplier/index')}">{:L('BUSINESS_BSUPPLIER_INDEX')}</a></li>
+			<li class="active"><a href="javascript:void(0)">{:L('BUSINESS_BSUPPLIER_DETAIL')}</a></li>
+			<span style="float: right"><button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button></span>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BSupplier/add')}">
+			<fieldset>
+				<table class="table table-bordered">
+					<tbody>
+						<tr>
+							<td class="sel" width="25%">供应商编号</td>
+							<td width="25%">{$info.supplier_code}</td>
+							<td class="sel">公司名称</td>
+							<td width="25%">{$info.company_name}</td>
+						</tr>
+						<tr>
+
+							<td class="sel">公司简称</td>
+							<td width="25%">{$info.company_short_name}</td>
+							<td class="sel">法人代表</td>
+							<td width="25%">{$info.legal_person}</td>
+						</tr>
+						<tr>
+
+							<td class="sel">社会信用代码</td>
+							<td width="25%">{$info.credit_code}</td>
+							<td class="sel">业务联系人</td>
+							<td width="25%">{$info.contact_member}</td>
+						</tr>
+						<tr>
+							<td class="sel">联系人电话</td>
+							<td width="25%">{$info.contact_phone}</td>
+							<td class="sel">联系人邮箱</td>
+							<td width="25%">{$info.supplier_email}</td>
+						</tr>
+
+						<tr>
+							<td class="sel">公司电话</td>
+							<td width="25%">{$info.phone}</td>
+							<td class="sel">传真</td>
+							<td width="25%">{$info.fax}</td>
+						</tr>
+						<tr>
+							<td class="sel">营业执照</td>
+							<td width="25%">
+									<if condition="$info.supplier_licence eq ''">
+										<img src="/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png" id="thumb-preview" width="60" style="cursor: hand">
+										<else/>
+										<img src="{$info.supplier_licence}" id="thumb-preview" width="60" style="cursor: hand">
+									</if>
+							</td>
+							<td class="sel">附件</td>
+							<td width="25%">
+								<input id="attachment" type="text" name="attachment" data-edit="{$info.attachment}"  value="{$info.attachment}" style="display: none"/>
+								<a id="add" href="javascript:void(0)"></a>
+							</td>
+						</tr>
+						<tr>
+							<td class="sel">经营范围</td>
+							<td colspan="3">
+								<span class="scope" data-msg="{$info.business_area}">{$info.business_area}</span>
+								<a class="scope-detail off" href="javascript:void(0)">展开</a> </td>
+
+						</tr>
+						<tr>
+							<td class="sel">地址</td>
+							<td colspan="3">{$info.address}</td>
+						</tr>
+						<tr>
+							<td class="sel">备注</td>
+							<td colspan="3">{$info.comment}</td>
+						</tr>
+					</tbody>
+				</table>
+			</fieldset>
+			<if condition="sp_auth_check(get_user_id(),'Business/BSupplier/account_info')">
+			<iframe id="iframe" src="{:U('account_info',array('type'=>I('get.type'),'id'=>I('request.id')))}" style="width:100%;height:800px;" frameborder="0" scrolling="no"></iframe>
+			</if>
+			<div class="form-actions">
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<div class="modal small fade" style="top: 10%; bottom: 2%; height: 350px; display: none;" id="scope-detail" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog-div">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h3 id="myModalLabel" style="font-size: 20px;">详情</h3>
+				</div>
+				<div class="modal-body" style="height: 230px;">
+
+				</div>
+				<div class="modal-footer">
+					<button id="can" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+<script>
+	var td_width=$("form").width();
+	console.log(td_width);
+	$(".scope").css("width",td_width*3/4-40);
+	var scope_data=$(".scope").attr("data-msg");
+	var scope_w=td_width*3/4-11;
+	if(scope_data.length*12>scope_w){
+	    $(".scope-detail").css("display","inline-block")
+
+	}
+	else{
+        $(".scope-detail").css("display","none")
+	}
+	$(".scope-detail").click(function(){
+	    if($(this).hasClass("off")){
+	        $(this).removeClass("off").addClass("on").html("收起");
+	        $(".scope").css({"white-space":"normal","width":td_width*3/4-11});
+		}
+		else{
+            $(this).removeClass("on").addClass("off").html("展开");
+            $(".scope").css({"white-space":"nowrap","width":td_width*3/4-40});
+		}
+	})
+	function GetLength(str){
+        return str.replace(/[\u0391-\uFFE5]/g,"aa").length;
+	}
+    //初步渲染附件
+    var i=1;//全局变量（附件基数）
+    var attach=$("#attachment").attr("data-edit");
+    attachFun(attach);
+    function attachFun(attach_s){
+        if(attach_s!=""){
+            var tmp=attach_s.split(",");
+            i=tmp.length;
+            for(var j=0;j<i;j++){
+                $("#add").before('<a class="attach_pic" target="_blank" href="'+tmp[j]+'">附件'+(parseInt(j)+1)+'</a>');
+            }
+            i++;
+
+        }
+        else{
+            i=1;
+
+        }
+    }
+</script>
+</html>

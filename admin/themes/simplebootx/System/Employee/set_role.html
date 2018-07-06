@@ -1,0 +1,85 @@
+<systemtpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li class="active">{:L('SYSTEM/EMPLOYEE/SET_ROLE')}</li>
+		</ul>
+
+		<form method="post" class="form-horizontal" action="{:U('employee/set_role')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">用户名</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="user_login" value="{$user.user_login}" disabled="">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">{:L('PASSWORD')}</label>
+					<div class="controls">
+						<input type="password" name="user_pass" value="" placeholder="******">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label"><!--{:L('EMAIL')}-->手机号码</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="mobile" value="{$user.mobile}" disabled="">
+						<input type="hidden" name="id" value="{$user.id}">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label"><!--{:L('ROLE')}-->角色</label>
+					<div class="controls">
+						<foreach name="roles" item="vo">
+						<label class="checkbox inline">
+							<php>$role_id_checked=in_array($vo['id'],$role_ids)?"checked":"";</php>
+							<input value="{$vo.id}" type="checkbox" name="role_id[]" {$role_id_checked} 
+							
+							<if condition="sp_get_current_system_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}
+						</label>
+						</foreach>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<p id="save" class="btn btn-primary ">{:L('SAVE')}</p>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script>
+        $(document).on("click",".checkbox.inline input[type=checkbox]",function(){
+            var $check_input=$(this).attr("checked");
+            if($check_input=="checked"){
+				// $(".checkbox.inline input[type=checkbox]").attr("checked",false);
+                $(this).attr("checked","checked");
+			}
+        });
+		$('#save').click(function(){
+			var id = $('input[name=id]').val();
+			var role_id=$('input:checkbox[name="role_id[]"]:checked').val();
+			 text = $("input:checkbox[name='role_id[]']:checked").map(function(index,elem) {
+		            return $(elem).val();
+		        }).get().join(',');
+      //  alert("选中的checkbox的值为："+text);
+			//console.log(role_id);
+			var user_pass=$('input[name=user_pass]').val();
+			$.ajax({
+				url:$('form').attr('action'),
+				data:{id:id,'role_id[]':text,user_pass:user_pass},
+				type:'post',
+				dataType:'json',
+				success:function(result){
+					if(result.status==1){
+						error_appear('操作成功！');
+						setTimeout(function(){location.href=result.url},800);
+					}else{
+						error_appear(result.msg);
+					}
+				}
+			});
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<if condition="$list">
+	<div class="ta">
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<notempty name="checkbox_list">
+						<th><input type="checkbox" id="th_input" /></th>
+					</notempty>
+					<th width="50">序</th>
+					<th class="text-center">仓库</th>
+					<th class="text-center">金料编号</th>
+					<th class="text-center">金料名称</th>
+					<th class="text-center">金价</th>
+					<th class="text-center">金重</th>
+					<th class="text-center">总重</th>
+					<th class="text-center">纯度(‰)</th>
+					<th class="text-center">损耗率</th>
+					<th class="text-center">成本价</th>
+					<th class="text-center">材质</th>
+					<th class="text-center">颜色</th>
+					<th class="text-center">来源</th>
+					<th class="text-center">金料状态</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="list" item="v">
+				<tr class='check_tr'>
+					<notempty name="checkbox_list">
+						<td class="text-center allot_p_id">
+							<input type="checkbox" value="{$v.product_code}" class="goods_input" checkbox_id="ck{$v.id}ck"/>
+						</td>
+					</notempty>
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td class="text-left wh_name">{$v.wh_name}</td>
+					<td class="text-left product_code">{$v.rproduct_code}</td>
+					<td class="text-left goodsname">{$v.recovery_name}</td>
+					<td class="text-right recovery_price">{$v.recovery_price}</td>
+					<td class="text-right gold_weight">{$v.gold_weight}</td>
+					<td class="text-right total_weight">{$v.total_weight}</td>
+					<td class="text-right purity">{$v['purity']*1000}</td>
+					<td class="text-center attrition">{$v.attrition}</td>
+					<td class="text-right cost_price">{$v.cost_price}</td>
+					<td class="text-center material">{$v.material}</td>
+					<td class="text-center color">{$v.color}</td>
+					<td class="text-center">
+						{$type[$v['type']]}
+					</td>
+					<td class="text-center">
+						{$status[$v['status']]}
+					</td>
+					<td class="text-right rproduct_id" hidden=hidden>{$v.id}</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		</div>
+		<div class="pagination">{$page}</div>
+		<else /> <include file="./public/common/default_empty.html" /> </if>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+<script src="__PUBLIC__/shop/BRecoveryProduct/js/rproduct_list_tpl.js"></script>

@@ -1,0 +1,199 @@
+<systemtpl file="header" />
+<style>
+input{width:280px;}
+a{cursor:pointer;}
+.table .search_input{
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+input[name=user]{
+	margin:8px 5px;
+	text-indent: 20px;
+}
+.myModal3.leave{
+	position: absolute;
+	top:12px;
+	left:15px;
+	font-size: 14px;
+}
+tr td img{ max-width:200px;max-height:60px;}
+</style>
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap">
+	<ul class="nav nav-tabs">
+		<li><a href="{:U('CompanyContribute/index')}">{:L('SYSTEM_COMPANYCONTRIBUTE_INDEX')}</a></li>
+		<li class="active"><a href="{:U('CompanyContribute/add')}">{:L('SYSTEM_COMPANYCONTRIBUTE_ADD')}</a></li>
+	</ul>
+	<form id="form" class="form form-search" method="post" action="" >
+		<table class="table table-bordered ">
+			<tbody >
+			<tr>
+				<td>制单人</td>
+				<td>{$user_nicename}</td>
+				<td>时间</td>
+				<td>{$time}</td>
+			</tr>
+			<tr>
+				<td class="sel">商户名称</td>
+				<td>
+					<select name="company_id">
+						<option value="">--选择商户名称--</option>
+						<volist name="companys" id="c">
+							<option value="{$c.company_id}">{$c.company_name}</option>
+						</volist>
+					</select>
+					*</td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="sel">合同编号</td>
+				<td><input name="contract_sn" type="text" >*</td>
+				<td></td>
+				<td></td>
+				<!-- <td class="sel">授权单号</td>
+				<td>
+					<div class="input-append ">
+						<input type="text" autocomplete="off" class="span3" placeholder="授权单号" name="contribute_no" readonly="readonly">
+						<button type="button" class="btn btn-default" id="get_contribute_no" style="border-radius: 0 4px 4px 0;">点击生成</button>
+					</div>*
+				</td> -->
+			</tr>
+			<tr>
+				<td class="sel">增加期限</td>
+				<td><input name="service_year" type="number" onkeyup="value=value.replace(/[^\d]/g,'')">(年)</td>
+				<td class="sel">缴纳金额</td>
+				<td><input name="price" type="number"></td>
+			</tr>
+			<tr>
+				<td class="sel" style="line-height: 60px;">增加店铺数</td>
+				<td><input name="shop_num" style="margin-top: 15px;" type="number"></td>
+				<td class="sel">增加加盟商</td>
+				<td><input name="company_num" type="number"></td>
+			</tr>
+			<tr>
+				<td class="sel" style="line-height: 60px;">备注</td>
+				<td colspan="3">
+					<textarea name="memo" style="width: 280px;"></textarea>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</form>
+	<div class="form-actions text-center">
+		<p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+		<!--<button class="btn js-ajax-back-btn" type="submit">{:L('BACK')}</button>-->
+	</div>
+</div>
+<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+<script src="__PUBLIC__/js/jquery-form.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<include file="./Application/Home/View/Public/footer.html" />
+<script>
+
+// $('[name="company_id"]').change(function(){
+// 	$('[name="contribute_no"]').val('');
+// });
+
+// $('#get_contribute_no').click(function(){
+// 	var url = '{:U("CompanyContribute/getContributeNo")}';
+// 	var company_id = $('select[name=company_id]').val();
+
+// 	if(empty(company_id)){
+// 		error_appear("请选择商户名称");
+// 		return;
+// 	}
+
+// 	$.post(url, {company_id: company_id}, function(data){
+// 		$('[name="contribute_no"]').val(data);
+// 	});
+// });
+
+var is_loading = false;
+
+$('.js-ajax-submit').click(function(){
+
+	if(is_loading) return;
+
+	var company_id = $('select[name=company_id]').val();
+	var contract_sn = $('input[name="contract_sn"]').val();
+	var price = $('input[name=price]').val();
+	var service_year = $('input[name=service_year]').val();
+	var company_num = $('input[name=company_num]').val();
+	var shop_num = $('input[name=shop_num]').val();
+	// var contribute_no = $('input[name="contribute_no"]').val();
+	var memo = $('textarea[name=memo]').val();
+	
+	var r =/^[0-9]*[1-9][0-9]*$/;
+	if(empty(company_id)){
+		error_appear("请选择商户名称");
+		return;
+	}
+	if(empty(contract_sn)){
+		error_appear("请填写合同编号!");
+		return;
+	}
+	// if(empty(contribute_no)){
+	// 	error_appear("请点击生成授权单号!");
+	// 	return;
+	// }
+	if(!r.test(service_year) || empty(service_year)){
+		error_appear("年限必须为整数!");
+		return;
+	}
+
+	if(!(/^\d+(\.\d{1,2})?$/.test(price))){
+		error_appear("金额输入有误!");
+		return;
+	}
+	// if(!r.test(shop_num)){
+	// 	error_appear("增加店铺数必须为整数!");
+	// 	return;
+	// }
+	// if(!r.test(company_num)){
+	// 	error_appear("增加加盟商必须为整数!");
+	// 	return;
+	// }
+	
+	var post_data = {
+		company_id: company_id,
+		price: price,
+		service_year: service_year,
+		company_num: company_num,
+		shop_num: shop_num,
+		contract_sn: contract_sn,
+		// contribute_no : contribute_no,
+		memo: memo,
+	}
+
+	is_loading = true;
+	
+	var url = '{:U("CompanyContribute/add")}';
+	$.ajax({
+		url: url,
+		type: 'post',
+		data: post_data,
+		dataType:'json',
+		success:function(result){
+			is_loading = false;
+
+			var code = result.code;
+			if(result.code == 200){
+				error_appear("提交成功！");
+				setTimeout(function(){location.href='{:U("CompanyContribute/index")}';},1500);
+			}else{
+				error_appear(result.datas.error);
+			}
+		}
+	});
+});
+</script>
+
+
+
+
+

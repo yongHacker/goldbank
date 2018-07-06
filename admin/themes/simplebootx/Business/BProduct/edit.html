@@ -1,0 +1,90 @@
+<businesstpl file="header" />
+<style>
+	a .fa{
+		text-decoration:none !important;
+		display: inline-block !important;
+		font-size: 16px !important;
+	}
+	.fa.fa-toggle-on,
+	.fa.fa-toggle-off{
+		text-decoration:none;
+		display: inline-block;
+		font-size:24px;
+
+	}
+	.fa.fa-toggle-on{
+		color:#2ecc71 !important;
+	}
+	.fa.fa-toggle-off{
+		color:#ccc !important;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BShop/index')}">{:L('BUSINESS_BSHOP_INDEX')}</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BSHOP_EDIT')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BShop/edit')}">
+			<fieldset>
+				<table class="table table-bordered">
+					<tbody>
+					<tr>
+						<td class="sel">门店名称</td>
+						<td width="25%"><input type="text" autocomplete="off" id="shop_name" name="shop_name" value="{$data['shop_name']}">*</td>
+						<td class="sel">编号</td>
+						<td width="25%"><input type="text" autocomplete="off" id="code" name="code" value="{$data['code']}">*</td>
+					</tr>
+					<tr>
+						<td class="sel">联系电话</td>
+						<td width="25%"><input name="mobile" type="text" value="{$data['mobile']}">*</td>
+						<td class="sel">是否营业</td>
+						<td width="25%">
+							<if condition="$data['enable']">
+									<a class="open fa fa-toggle-on" href="javascript:void(0)">
+								<else/>
+									<a class="open fa fa-toggle-off" href="javascript:void(0)">
+							</if>
+								<input type="hidden" class="val" name="enable" value="{$data['enable']}">
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">地址</td>
+						<td width="25%" ><textarea name="address" type="text" style="width:90%;    height: 20px;">{$data['address']}</textarea></td>
+						<td class="sel">备注</td>
+						<td width="25%" ><textarea name="memo" type="text" style="width:90%;    height: 20px;">{$data['memo']}</textarea></td>
+					</tr>
+					<tr>
+						<td class="sel">图片</td>
+						<td width="25%" colspan="3"><input type="file" name="shop_pic"></td>
+
+					</tr>
+					</tbody></table>
+			</fieldset>
+			<div class="form-actions">
+				<input type="hidden" value="{$data['id']}" name="id">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('EDIT')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script>
+	$(".open").click(function (e) {
+		e.preventDefault();
+		if ($(this).hasClass("fa-toggle-off")) {
+			$(this).removeClass("fa-toggle-off");
+			$(this).addClass("fa-toggle-on");
+			$(this).parent("td").find("input.val").val("1");
+		}
+		else {
+			$(this).removeClass("fa-toggle-on");
+			$(this).addClass("fa-toggle-off");
+			$(this).parent("td").find("input.val").val("0")
+		}
+	});
+</script>

@@ -1,0 +1,164 @@
+<systemtpl file="header" />
+<style>
+input { width: 163px; margin-bottom: 0px;}.table { text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.ta { overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta input { width: 177px; margin-bottom: 0px; border-left: 0px; border-top: 0px; border-right: 0px; border-bottom: 0px; padding: 8px 1px; margin-left: 0px; width: 95%;}
+.ta input:focus { -webkit-box-shadow: 0px 0px 0px; -moz-box-shadow: 0px 0px 0px; box-shadow: 0px 0px 0px;}
+.ta td { padding: 0px; vertical-align: middle;}
+.td_border { border: solid 1px #157ab5;}.sel { background: #f4f4f4;}.my_page li { margin-top: 10px; display: none;}
+.table tr th { text-align: center;}
+.dropdown-menu_sell { position: absolute; z-index: 1000; display: none; float: left; min-width: 177px; background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 10px; -webkit-background-clip: padding-box; background-clip: padding-box; padding: 5px 0px; margin: 2px 0px 0px; list-style: none; border-width: 1px; border-style: solid; border-color: rgba(0, 0, 0, 0.2); border-image: initial; border-radius: 6px;}
+</style>
+</head>
+<body class="theme-blue">
+	<form id="lis" method="POST" action="{:U('Company/user_list')}" style="margin: 0 0 -20px">
+		<div class="well form-search">
+			综合搜索: <input id="mobile" name="mobile" style="width: 150px;" value="{$Think.request.mobile}" placeholder="关键字查询" type="text">
+			<input id="from" class="btn btn-primary" value="搜索" type="submit">
+			<button class="btn btn-primary" type="submit" name="quick_add" value="1">创建联系人</button>
+		</div>
+	</form>
+	<table class="table table-bordered table-hover">
+		<thead style="background: #e5e5ea">
+			<tr>
+				<th>选择</th>
+				<th>序号</th>
+				<th>客户姓名</th>
+				<th>手机</th>
+			</tr>
+		</thead>
+		<tbody id="table">
+			<if condition="$_REQUEST[quick_add] eq null">
+				<volist name="user_list" id="v">
+				<tr class="check_tr">
+					<td class="text-center">
+						<input name="save" class="check_box" uid="{$v.id}" u_name="{$v.user_nicename}" mobile="{$v.mobile}" type="radio" <if condition="$v[selected] eq 1">checked="checked"</if>>
+					</td>
+					<td class="text-center">
+						<input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>" />
+						<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+					</td>
+					<td class="user_nicename">{$v.user_nicename}</td>
+					<td class="mobile">{$v.mobile}</td>
+				</tr>
+				</volist>
+			</if>
+
+			<if condition="(count($user_list) == 0 && $_REQUEST[mobile] != '') || $_REQUEST[quick_add] eq 1">
+			<tr>
+				<td colspan="4">
+					<form method="post" action="{:U('Company/add_user')}" class="well form-search" style="height: 140px;">
+						<if condition="$_REQUEST[quick_add] eq 1">
+						<p>快速创建联系人。</p>
+						<else />
+						<p>没有找到相关的联系人，是否添加？</p>
+						</if>
+						<input type="text" name="add_name" value="" placeholder="客户姓名">
+						<div class="btn-group">
+						    <button type="button" class="btn btn-default dropdown-toggle area-title" data-toggle="dropdown" style="width: 60px; text-align: left; border: 1px solid #ccc;">86
+						        <span class="caret" style="right: 4px; position: absolute;"></span>
+						    </button>
+						    <ul class="dropdown-menu" role="menu" style="width: 218px;">
+						        <li>
+						            <a class="area_code" data-code="1" data-title="86" href="#">中国大陆（86）</a>
+						        </li>
+						        <li>
+						            <a class="area_code" data-code="2" data-title="852" href="#">中国香港（852）</a>
+						        </li>
+						        <li>
+						            <a class="area_code" data-code="3" data-title="853" href="#">中国澳门（853）</a>
+						        </li>
+						    </ul>
+						</div>
+						<input type="hidden" autocomplete="off" name="mobile_area" value="1">
+						<input type="text" name="add_mobile" value="" placeholder="手机" style="width: 142px;">
+						<button id="add_m_user" class="btn btn-primary" type="button">添加</button>
+						<p class="msg text-error"></p>
+					</form>
+				</td>
+			</tr>
+			</if>
+		</tbody>
+	</table>
+
+	<div class="pagination">{$page}</div>
+	<script src="/public/js/common.js"></script>
+	<script>
+		$(".check_tr").click(function() {
+			$(this).find(".check_box").attr('checked', 'checked');
+		});
+		var is_loading = false;
+
+		$('#add_m_user').click(function() {
+
+			if (is_loading)
+				return;
+
+			var ck = false;
+
+			var add_name = $('[name="add_name"]').val();
+			var add_mobile = $('[name="add_mobile"]').val();
+			var mobile_area = $('[name="mobile_area"]').val();
+
+			if (add_name != '' && add_mobile != '') {
+				ck = true;
+			}
+
+			if (add_name == '') {
+				$('.msg').html('客户姓名不能为空!');
+				$('[name="add_name"]').focus();
+				return false;
+			}
+
+			if (add_mobile == '') {
+				$('.msg').html('手机号码不能为空!');
+				$('[name="add_mobile"]').focus();
+				return false;
+			} else if (!is_mobile(add_mobile, mobile_area)) {
+				$('.msg').html('请输入有效的手机号码！');
+				$('[name="add_mobile"]').focus();
+				return false;
+			}
+
+			if (!ck) {
+				$('.msg').text('提示：请填写新增联系人的姓名和电话。');
+			} else {
+				$('.msg').text('');
+			}
+
+			is_loading = true;
+
+			var _form = $(this).closest('form');
+			$.post(_form.attr('action'), {
+				add_name : add_name,
+				add_mobile : add_mobile,
+				mobile_area : mobile_area
+			}, function(rsData) {
+
+				is_loading = false;
+
+				var rsData = eval("(" + rsData + ")");
+
+				if (rsData.code == 200) {
+					$('.msg').text('提示：' + rsData.datas.msg);
+
+					setTimeout(function() {
+						window.location = rsData.datas.url;
+					}, 1500);
+
+				} else {
+					$('.msg').text('提示：' + rsData.datas.error);
+				}
+			});
+		});
+	</script>
+	<!-- 手机号区号切换js -->
+	<script type="text/javascript">
+		$('.area_code').click(function(){
+			$(this).closest('.btn-group').find('.area-title').html($(this).data('title') +'<span class="caret" style="right: 4px; position: absolute;"></span>');
+			$('input[name=mobile_area]').val($(this).data('code'));
+		});
+	</script>
+</body>
+
+

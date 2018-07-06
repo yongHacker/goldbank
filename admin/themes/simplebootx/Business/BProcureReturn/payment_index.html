@@ -1,0 +1,59 @@
+<businesstpl file="header" />
+<style>
+td a.weixin { color: #ddd;}
+td a.down { color: #2fa4e7;}
+</style>
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BProcureReturn/payment_index')}">{:L('BUSINESS_BPROCURERETURN_PAYMENT_INDEX')}</a></li>
+		</ul>
+		
+		<businesstpl file="BProcureReturn/index_search" />
+
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">序</th>
+					<th>退货编号</th>
+					<th>仓库名称</th>
+					<th>数量</th>
+					<th>克重</th>
+					<th>金额</th>
+					<th>抹零金额</th>
+					<th>制单人</th>
+					<th>退货日期</th>
+					<th>创建日期</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="pr_list" item="vo">
+				<tr>
+					<td class="text-center">
+						<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+					</td>
+					<td class="text-center">{$vo.batch}</td>
+					<td class="text-left">{$vo.wh_name}</td>
+					<td class="text-right">{$vo.num}</td>
+					<td class="text-right">{$vo.weight}</td>
+					<td class="text-right">{$vo.price}</td>
+					<td class="text-right">{$vo.extra_price}</td>
+					<td class="text-left">{$vo.creator_name}</td>
+					<td class="text-center">{:date('Y-m-d',$vo['return_time'])}</td>
+					<td class="text-center">{:date('Y-m-d',$vo['create_time'])}</td>
+					<td class="text-center">
+                        <a href="{:U('BProcureReturn/payment', array('return_id'=> $vo['id']))}">上传凭证</a>
+					</td>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+		<empty name="pr_list">
+		    <include file="./public/common/default_empty.html" />
+		</empty>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

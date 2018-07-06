@@ -1,0 +1,71 @@
+<a href="#memoModal" class="memoModal" role="button" data-toggle="modal" hidden></a>
+<div class="modal small fade" id="memoModal" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="memoModalLabel" aria-hidden="true">
+	<div class="modal-dialog-div">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h3 id="memoModalLabel">添加备注</h3>
+			</div>
+			<div class="modal-body">
+				<textarea type="text" name="memo" id="memo" style="width: calc(100% - 14px); resize:none; height: 100px;"></textarea>
+			</div>
+			<div class="modal-footer">
+				<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+				<button id="submit" class="btn btn-danger" data-dismiss="modal">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+		
+	// 初始化备注 iframe
+	var memo_option_obj = '';
+	var memo_click_obj = '';
+	function init_memo_iframe(obj) {
+		// 点击对象
+		memo_click_obj = $(obj);
+		// 备注填充对象
+		memo_option_obj = $(obj).find('.memo');
+		// 显示iframe
+		show_memo_iframe();
+		// iframe填充备注
+		option_memo_val(memo_option_obj.text());
+	}
+
+	/**
+	 * 使用说明
+	 * 预定义memo_submit_append_function方法，，即点击确定按钮监听事件
+	 */
+	if (typeof(memo_submit_append_function) !== 'function') {
+		// 备注iframe点击确认联动事件， 赋值备注
+		function memo_submit_append_function() {
+			var memo = option_memo_val();
+			memo_click_obj.attr('title', memo);
+			memo_option_obj.text(memo);
+		}
+	}
+	// 显示iframe
+	function show_memo_iframe() {
+		$('.memoModal').trigger('click');
+	}
+	// 获取\设置\清空ifarme中memo的值
+	function option_memo_val($value) {
+		// 返回值
+		if (typeof($value) == 'undefined') {
+			return $('#memoModal').find('textarea#memo').val();
+		}
+		// 设定或清空值
+		$('#memoModal').find('textarea#memo').val($value);
+		return true;
+	}
+	// 取消按钮联动事件
+	$('#memoModal #cancel').click(function(){
+		option_memo_val('');
+	});
+	// 确定按钮联动事件
+	$('#memoModal #submit').click(function(){
+		memo_submit_append_function();
+		option_memo_val('');
+	});
+</script>

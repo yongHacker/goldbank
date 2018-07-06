@@ -1,0 +1,105 @@
+<systemtpl file="header" />
+	<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+<style>
+
+.table tr th{text-align:center;}
+</style>
+<script>
+	function export_csv(){
+		var param=$(".search_row").serialize();
+		console.log( param);
+		var url="/index.php?g=Kunjinjubao&m=GoldPrice&a=export_csv&price_type="+"{$_GET['price_type']}";
+		location.href = url+"&"+param;
+	}
+</script>
+</head>
+<body class=" theme-blue" >  
+    <div class="wrap js-check-wrap"  >
+       <ul class="nav nav-tabs">
+			<!--<li class="active"><a href="{:U('sells/index')}">销售列表</a></li>-->
+			<li class="active"><a href="{:U('sells/add')}">详情</a></li>
+			<button type="button" onclick="history.go( -1 )" class="btn js-ajax-back-btn" style="float:right">返回</button>
+		</ul>
+		<form class="well form-search search_row" method="post" action="{:U('GoldPrice/detail',array('price_type'=>$_GET['price_type']))}">
+			综合搜索:
+			<div class="input-prepend input-group">
+				<span class="add-on input-group-addon">
+					<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+				</span>
+				<input id="begin_time" class="js-datetime date" name="begin_time" value="{:I('begin_time')}" type="text">
+			</div>
+			<div class="input-prepend input-group">
+				<span class="add-on input-group-addon">
+					<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+				</span>
+				<input id="end_time" class="js-datetime date" name="end_time" value="{:I('end_time')}" type="text">
+			</div>
+			状态：
+			<div class="input-prepend input-group">
+				<select id="price_status" name="price_status">
+					<option value="100">交易中</option>
+					<if condition="I('price_status') eq 120">
+						<option value="120" selected="selected">闭市</option>
+						<else/>
+						<option value="120">闭市</option>
+					</if>
+
+				</select>
+			</div>
+
+			<input class="btn btn-primary" value="搜索" type="submit">
+			<a class="btn btn-danger" href="{:U('GoldPrice/detail',array('price_type'=>$_GET['price_type']))}">清空</a>
+			<input class="btn btn-primary" value="导出" type="button" onclick="export_csv();">
+		</form>
+     <div class="main-content">
+<div class="ta">
+<div class="ta">
+	<table class="table table-bordered  table-hover table-striped">
+	  <thead  >
+		<tr >
+		   <th>序号</th>
+		   <th>分类</th>
+		   <th>最新价</th>
+			<if condition="$_GET['price_type'] eq 'xauusd_price'||$_GET['price_type'] eq 'xauusd_cny_price'">
+				<th>汇率</th>
+				<th>汇率后价格</th>
+			</if>
+		   <th>开盘价</th>
+           <th>最高价</th>
+		   <th>最低价</th>
+			<th>涨跌</th>
+           <th>浮动</th>
+           <th>昨收价</th>
+           <th>更新时间</th>
+			<th>创建时间</th>
+			<th>状态</th>
+		   <th>接口类型</th>
+		</tr>
+	  </thead>
+	  <volist name="list" id="v">
+		<tr>
+			<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+			<td class="text-left">{$_GET['price_type']}</td>
+			<td class="text-right">{$v.price}</td>
+			<if condition="$_GET['price_type'] eq 'xauusd_price'||$_GET['price_type'] eq 'xauusd_cny_price'">
+				<td class="text-right">{$v.exchange_rate}</td>
+				<td class="text-right">{$v.exchange_price}</td>
+			</if>
+			<td class="text-right">{$v.open}</td>
+			<td class="text-right">{$v.hight}</td>
+			<td class="text-right">{$v.low}</td>
+			<td class="text-right">{$v.pricedown_price}</td>
+			<td class="text-right">{$v.pricedown_precent}%</td>
+			<td class="text-right">{$v.prevclose}</td>
+			<td class="text-center">{$v.time|date="Y-m-d H:i:s",###}</td>
+			<td class="text-center">{$v.create_time|date="Y-m-d H:i:s",###}</td>
+			<td class="text-left"><php> echo $v['status']==100?"交易中":"闭市" </php></td>
+			<td class="text-left"><php> echo $v['api_type']==1?"nowapi接口":"集金号" </php></td>
+		</tr>
+		</volist>
+	</table>
+</div>
+<div class="pagination">{$page}</div>
+<script src="/public/js/common.js"></script>
+<include file="./public/common/footer.html" />
+

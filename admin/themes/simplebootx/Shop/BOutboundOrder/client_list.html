@@ -1,0 +1,10 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BOutboundOrder/css/client_list.css">
+</head>
+<body class=" theme-blue" onkeydown="keyLogin(event);">
+<div class="wrap js-check-wrap">
+	<form id="lis" method="POST" action="{:U('BOutboundOrder/client_list',array('shop_id'=>I('shop_id')))}" style="margin: 0 0 -20px">
+		{$client_list_tpl}
+
+
+			

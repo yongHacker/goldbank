@@ -1,0 +1,138 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BProduct/index')}">零售货品</a></li>
+			<li class=""><a href="{:U('BRecoveryProduct/rproduct_list')}">{:L('BUSINESS_BRECOVERYPRODUCT_RPRODUCT_LIST')}</a></li>
+			<if condition="CONTROLLER_NAME eq 'BProduct' and sp_auth_check(get_user_id(),'Business/BProduct/product_statistic')"><span style="float: right"><a class="btn btn-primary" href="{:U('BProduct/product_statistic')}">货品统计</a></span></if>
+		</ul>
+        <form class="well form-search search_row" method="post" action="{:U('BProduct/index')}">
+			<label>仓库:</label>
+			<select id="store" name="wh_id"
+					style="width: 150px;" data-live-search="true">
+				<option value="-1" checked>所有仓库</option>
+				<volist name="warehouse" id="v">
+					<option <if condition="$_POST['wh_id'] eq $v['id'] ||$_GET['wh_id'] eq $v['id']">
+					selected="selected" </if> value="{$v.id}" in_user="{$v.user_nicename}"
+					>{$v.wh_name}
+					</option>
+				</volist>
+			</select> <label>状态:</label> <select name="status" style="width: 120px;"
+												 data-live-search="true">
+			<option <if
+				condition="$_POST['status'] eq 'all' || $_GET['status'] eq 'all'">
+			selected="selected" </if> value="all" >货品状态
+			</option>
+			<volist name="status_list" id="v">
+				<option <if
+					condition="$_POST['status'] eq $v['value'] || $_GET['status'] eq $v['value']">
+				selected="selected" </if> value="{$v.value}" >{$v.comment}
+				</option>
+			</volist>
+		</select>
+			<!-- <select id="is_p_detail" name="is_p_detail"
+					style="width: 150px;" data-live-search="true">
+				<if condition="I('request.is_p_detail/s','') eq 1">
+					<option value="1" selected="selected">显示详情</option>
+					<option value="2" checked>隐藏详情</option>
+					<else/>
+					<option value="2" selected="selected">隐藏详情</option>
+					<option value="1" checked>显示详情</option>
+				</if>
+			</select> -->
+			商品分类:
+			<select name="class_id">
+				<option value="0">全部分类</option>
+				{$select_categorys}
+			</select>
+            综合搜索:
+            <input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="商品/货品编号">
+
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:U('BProduct/index')}">清空</a>
+			<input class="btn btn-primary export" url="{:U('BProduct/product_export')}" value="导出" type="button" onclick="export_excel();">
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<!--<th width="50">ID</th>-->
+					<th width="50">序</th>
+					<th>仓库</th>
+					<th>类型</th>
+					<th>商品分类</th>
+					<th>货品编号</th>
+					<th>商品名称</th>
+					<th>规格</th>
+					<th>克重</th>
+					<!--<th>类型</th>-->
+					<if condition="I('request.is_p_detail/s','') eq 1">
+					<th class="product_detail">货品详情</th>
+					</if>
+
+					<th>质检编号</th>
+					<!-- <th>检索号</th> -->
+
+
+					<th>入库时间</th>
+					<!-- <th>成本价</th> -->
+					<!-- <th>附加费用</th> -->
+
+
+					<th>销售指导价</th>
+					<!-- <th>实质售价</th> -->
+					<th>销售时间</th>
+
+					<!-- <th>货品标识</th> -->
+					<th>货品状态</th>
+					<!--<th width="120">{:L('ACTIONS')}</th>-->
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="list" item="vo">
+				<tr>
+					<!--<td>{$vo.id}</td>-->
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<!--<td>{$vo.company_name}</td>-->
+					<td>{$vo.wh_name}</td>
+					<td>{$vo.type_name}</td>
+					<td>{$vo.class_name}</td>
+					<!--<td>{$vo.product_code}</td>-->
+					<td class="text-center"><a href="{:U('BProduct/product_detail',array(search_name=>$vo['product_code']))}">{$vo.product_code}</a></td>
+					<!--<td><a href="{:U('BGoodsCommon/index',array('search_name'=>$vo['common_goods_name']))}">{$vo.common_goods_name}</a></td>-->
+					<td><a href="{:U('BGoodsCommon/detail',array('type'=>$vo['type'],'goods_common_id'=>$vo['goods_common_id']))}">{$vo.common_goods_name}</a></td>
+					<td>{$vo.goods_spec}</td>
+					<td class="text-right">{$vo.weight}</td>
+					<if condition="I('request.is_p_detail/s','') eq 1">
+					<td class="product_detail" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:120px;">
+						&nbsp;&nbsp;&nbsp;{$vo.product_detail}
+					</td>
+					</if>
+					<td class="text-center">{$vo.qc_code}</td>
+					<!-- <td>{$vo.isd_num}</td> -->
+
+					<td class="text-center">{:date('Y-m-d H:i:s',$vo['buy_time'])}</td>
+					<!-- <td class="text-right">{$vo.cost_price}</td> -->
+					<!-- <td>{$vo.extras}</td> -->
+
+
+
+					<td class="text-right">{$vo.sell_price}</td>
+					<!-- <td>{$vo.actual_price}</td> -->
+					<td class="text-center"><if condition="$vo['sell_time']">{:date('Y-m-d H:i:s',$vo['sell_time'])}</if></td>
+
+					<!-- <td>{$vo.product_indentify}</td> -->
+					<td>{$status[$vo['status']]}</td>
+					<!--<td>
+						<a href='{:U("BProduct/edit",array("id"=>$vo["id"]))}'>{:L('EDIT')}</a> |
+						<a class="js-ajax-delete" href="{:U('BProduct/deleted',array('id'=>$vo['id']))}">{:L('DELETE')}</a>
+					</td>-->
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

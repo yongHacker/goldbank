@@ -1,0 +1,195 @@
+﻿<businesstpl file="header" />
+<style>
+	@charset "utf-8";
+	/**Style Reset**/
+	body, div, span, h1, h2, h3, h4, h5, h6, p, pre, sup, sub, ul, ol, li, dl, dt, dd, form, fieldset, input, button, textarea, select, iframe, img, a, header, footer, section, article, aside, details, figcaption, figure, hgroup, nav, menu, canvas { padding: 0; margin: 0; }
+	body { background-color: #fff; color: #000; font: 12px/20px "Microsoft Yahei", Tahoma, Arial, "Helvetica Neue", "Hiragino Sans GB", Simsun, sans-self; }
+	ul, ol { list-style-type: none; }
+	b, strong { font-weight: normal; }
+	i, em { font-style: normal; }
+	a { text-decoration: none; color: #333; }
+	/*清除浮动*/
+	.clearfix:after { clear: both; display: block; height: 0; content: ""; }
+	/*主体部分*/
+	.contains { width: 1000px; margin: 0 auto; }
+	/*面包屑导航*/
+	.crumbNav { padding: 18px 0; color: #323232; }
+	.crumbNav a { color: #2fa4e7; }
+	.crumbNav a:hover { color: #2fa4e7; }
+	.crumbNav font { padding: 0 2px; font-family: simsun; }
+	/**选择商品分类**/
+	.wareSort { padding: 15px 8px 15px 7px; border: 1px solid #ddd; background-color: #f6f6f6; }
+	.wareSort ul { float: left; padding: 10px; border: 1px solid #ddd; margin-right: 7px; margin-left: 8px; background-color: #fff; }
+	.wareSort ul li a { display: block; padding-right: 25px; padding-left: 10px; border: 1px solid #fff; line-height: 28px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+	.wareSort ul li a:hover { color: #2fa4e7; }
+	.wareSort ul li.active a { border-color: #2fa4e7; background: #cedfff url(/public/images/business/arrow.png) no-repeat right center; color: #2fa4e7; }
+	.selectedSort { padding: 10px 15px; border: 1px solid #2fa4e7; margin-top: 10px; margin-bottom: 10px; background-color: #fff4f0; color: #2fa4e7; }
+	.selectedSort b { font-weight: bold; }
+	.selectedSort i font { font-family: simsun; }
+	.wareSortBtn { padding-bottom: 50px; text-align: center; }
+	.wareSortBtn input { width: 200px; height: 36px; border: 1px solid #2fa4e7; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; background-color: #2fa4e7; color: #fff; }
+	.wareSortBtn input:hover { border-color: #2fa4e7; background-color: #2fa4e7; }
+	.wareSortBtn input:disabled { border-color: #ddd; background-color: #f6f6f6; color: #9a9a9a; cursor: default; }
+</style>
+</head>
+<body class=" theme-blue">
+<div class="wrap">
+	<ul class="nav nav-tabs">
+		<li><a href="{:U('BGoodsCommon/index')}">{:L('BUSINESS_BGOODSCOMMON_INDEX')}</a></li>
+		<li class="active"><a href="{:U('BGoodsCommon/add_first')}">{:L('BUSINESS_BGOODSCOMMON_ADD_FIRST')}</a></li>
+		<!-- <button type="button" onclick="history.go( -1 )" class="btn btn-default" style="float:right">返回</button>
+		<button id="save-all" type="button" class="btn btn-primary " style="float:right">保存</button> -->
+	</ul>
+	<div class="main-content">
+		<div class="contains">
+			<!--面包屑导航-->
+			<!--<div class="crumbNav">
+				<a href="demo.html">首页</a>
+				<font>&gt;</font>
+				发布商品
+				<font>&gt;</font>
+				选择商品所在分类
+			</div>-->
+			<!--商品分类-->
+			<div class="wareSort clearfix">
+				{$classhtml}
+			</div>
+			<div class="selectedSort"><b>您当前选择的商品类别是：</b><i id="selectedSort"></i></div>
+			<div class="wareSortBtn">
+				<input id="releaseBtn" type="button" value="下一步" disabled="disabled" />
+			</div>
+		</div>
+		<div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
+		</div>
+	</div>
+</div>
+</body>
+</html>
+<script>
+/*定义三级分类数据*/
+var bgoodsclass='{$bgoodsclass}';
+var bgoodsclass=eval(bgoodsclass);
+var expressP, expressC, expressD, expressArea, areaCont,type,class_id;
+var arrow = " <font>&gt;</font> ";
+/*初始化一级目录*/
+function intProvince(bgoodsclass) {
+	areaCont = "";
+	console.log(bgoodsclass);
+	$.each(bgoodsclass, function (n, v) {
+		if(v.pid==0) {
+			areaCont += '<li  li_id="'+v.id+'"><a href="javascript:void(0)">' + v.class_name + '</a></li>';
+		}
+	});
+
+	$("#sort1").html(areaCont);
+}
+intProvince(bgoodsclass);
+var arr=[];
+for(var i=1;i<=$(".wareSort").find("ul").length+1;i++){
+	arr[i] = i;
+}
+add_li_click(bgoodsclass);
+function add_li(num,pid,bgoodsclass){
+	num0=num;
+	num1=num+1;
+	num2=num+2;
+	//num3=num+3;
+	areaCont = "";
+	$.each(bgoodsclass, function (n, v) {
+		if(v.id==pid) {
+			expressC =  v.class_name;
+			arr[num1]=expressC;
+			type= v.type;
+			class_id= v.id;
+		}
+		if(v.pid==pid) {
+			areaCont += '<li  li_id="'+v.id+'"><a href="javascript:void(0)">' + v.class_name + '</a></li>';
+		}
+	})
+	$("#sort"+num2).html(areaCont).show();
+	$("#sort"+num1+" li[li_id='"+pid+"']").addClass("active").siblings("li").removeClass("active");
+	if(num==0){
+		for(var i=3;i<=$(".wareSort").find("ul").length+1;i++){
+			$("#sort"+i).hide();
+		}
+		//expressC=arr[num1];
+		$("#selectedSort").html(expressC);
+		$("#releaseBtn").removeAttr("disabled");
+	}else {
+		for(var i=num2+1;i<=$(".wareSort").find("ul").length+1;i++){
+			$("#sort"+i).hide();
+		}
+		arr[num1]=arr[num0]+"" + arrow +""+ expressC;
+		console.log("a1"+arr[1]);
+		console.log("a2"+arr[2]);
+		console.log("a3"+arr[3]);
+		console.log("a4"+arr[4]);
+		//expressC=arr[num2];
+		$("#selectedSort").html(arr[num1]);
+	}
+	add_li_click(bgoodsclass);
+}
+function add_li_click(bgoodsclass){
+	$(".wareSort").find("li").unbind("click").click(function(){
+		var num=$(this).parent().index();
+		console.log(num);
+		pid=$(this).attr("li_id");
+		add_li(num,pid,bgoodsclass);
+		console.log($(this).text());
+		//wareSort();
+	});
+}
+/*选择一级目录*/
+/*function selectP(pid) {
+	areaCont = "";
+	$.each(bgoodsclass, function (n, v) {
+		if(v.id==pid) {
+			expressP =  v.class_name;
+			type= v.type;
+			class_id= v.id;
+		}
+		if(v.pid==pid) {
+			areaCont += '<li onClick="selectC(' + v.id + ');" class="'+v.id+'"><a href="javascript:void(0)">' + v.class_name + '</a></li>';
+		}
+	})
+	$("#sort2").html(areaCont).show();
+	$("#sort3").hide();
+	$("#sort1 li[class='"+pid+"']").addClass("active").siblings("li").removeClass("active");
+	$("#selectedSort").html(expressP);
+	$("#releaseBtn").removeAttr("disabled");
+}
+function selectC(pid) {
+	areaCont = "";
+	expressC = "";
+	areaCont = "";
+	$.each(bgoodsclass, function (n, v) {
+		if(v.id==pid) {
+			expressC =  expressP + arrow + v.class_name;
+			class_id= v.id;
+		}
+		if(v.pid==pid) {
+			areaCont += '<li onClick="selectD(' + v.id + ');" class="'+v.id+'"><a href="javascript:void(0)">' + v.class_name + '</a></li>';
+		}
+	})
+	$("#sort3").html(areaCont).show();
+	$("#sort2 li[class='"+pid+"']").addClass("active").siblings("li").removeClass("active");
+	$("#selectedSort").html(expressC);
+}
+
+function selectD(id) {
+	expressD = expressC + arrow + $("#sort3 li[class='"+id+"']").find("a").text();
+	class_id= id;
+	$("#sort3 li[class='"+id+"']").addClass("active").siblings("li").removeClass("active");
+	$("#selectedSort").html(expressD);
+}
+*/
+/*点击下一步*/
+$("#releaseBtn").click(function() {
+	var releaseS = $(this).prop("disabled");
+	if (releaseS == false) {
+		location.href="/index.php?g=Business&m=BGoodsCommon&a=add&type="+type+"&class_id="+class_id
+		//未被禁用
+		/* window.open("/index.php?g=Business&m=BGoodsCommon&a=add&type="+type+"&class_id="+class_id);//跳转到下一页 */
+	}
+});
+</script>

@@ -1,0 +1,170 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BOutboundOrder/css/add.css">
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active" ><a href="javascript:void(0);">{:L('SHOP_BOutboundOrder_ADD')}</a></li>
+	</ul>
+		<form class=" form-search" method="post" action="{:U('BOutboundOrder/add')}">
+			<table class="table table-bordered ">
+
+				<tbody >
+				<tr>
+                    <td style="background-color:#f5f5f5">出库类型</td>
+                    <td width="25%">
+                        <!-- <span><input type="radio" value="1" name="outbound_type" checked="checked">&nbsp;&nbsp;销售&nbsp;&nbsp;</span> -->
+                        <span><input type="radio" value="2" name="outbound_type" checked="checked">&nbsp;&nbsp;异常  </span>
+                        <span><input type="radio" value="4" name="outbound_type">&nbsp;&nbsp;赠送  </span>
+                        <span><input type="radio" value="5" name="outbound_type">&nbsp;&nbsp;转料  </span>
+                    </td>
+					<td style="background-color:#f5f5f5">日期</td>
+					<td>
+					{$today}
+					<input id="trance_time" class="js-date" name="trance_time" value="{$today}" type="hidden"  >
+					</td>
+				</tr>
+                <tr class="hide client_td">
+                    <td style="background-color:#f5f5f5">会员</td>
+                    <td class="search_input" width="25%" colspan="3">
+                        <input type="text" autocomplete="off" id="mobile-name" class="form-control" onclick="$('#myModal3').modal('show');"> <!--style="display: none;"-->
+                        <input type="hidden" autocomplete="off" id="mobile" class="form-control">
+                        <input type="hidden" id="uid" class="form-control" value="">
+                        <input type="hidden" id="employee_id" class="form-control" value="">
+                        <a href="#myModal3" class="myModal3 leave" data-toggle="modal" name="{$v.id}" role="button"><span><i class="fa fa-search normal"></i></span></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color:#f5f5f5">出库仓库</td>
+                    <td>
+                        <select id="mystore" name="wh_id" data-live-search="true">
+                            <option value="0" checked>选择仓库</option>
+                            <option value="{$warehouse.id}" >{$warehouse.wh_name}</option>
+                        </select>
+                    </td>
+                    <td style="background-color:#f5f5f5">备注</td>
+                    <td colspan="3">
+                        <textarea name="comment" id="comment" ></textarea>
+                    </td>
+                </tr>
+				</tbody >
+			</table>
+
+		</form>
+        <form id="excel_into" class="form" method="post" action="{:U('excel_input')}" enctype="multipart/form-data">
+            <p class="btn btn-primary btn-small excel_click" type="text">从excel文件中导入</p>
+            <p class="btn btn-primary btn-small" onclick="location.href='{$example_excel}'">点击此处下载模板</p>
+            <input type="file" name="excel_file" style="opacity:0;position:absolute;">
+        </form>
+		<div class="main-content">
+			<!--<a class="btn btn-primary btn-small procureModal" href="#procureModal" style="cursor:pointer;"  data-toggle="modal" role="button" type="text">
+				选择采购单</a>-->
+			<div class="ta" style="margin-top: 10px;">
+				<table class="table table-bordered  table-hover">
+					<thead >
+					<tr>
+						<th>序</th>
+						<th style="width:200px;">货品编号</th>
+						<th>商品名称</th>
+                        <th>详情</th>
+						<th style="width:140px;">操作</th>
+					</tr>
+					</thead>
+					<tbody id="tbody">
+					<tr id="last">
+						<td class="text-center"></td>
+						<td class="text-center"></td>
+						<td class=""></td>
+                        <td class="text-center"></td>
+						<td class="text-center" href="#myModal2" class="myModal2 on" style="cursor:pointer;" data-toggle="modal" role="button">
+							<a>+</a>
+						</td>
+						<td hidden=hidden class="product_id"></td>
+					</tr>
+					</tbody>
+				</table>
+
+			</div>
+            <div id="recovery_table" class="ta hide">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="javascript:void(0);">金料列表</a></li>
+                </ul>
+                <table class="table table-bordered  table-hover">
+                    <thead >
+                    <tr>
+                        <th>序</th>
+                        <th style="width:220px;">关联货号</th>
+                        <th >金料名称</th>
+                        <th >金料编号</th>
+                        <th >金料总重</th>
+                        <th style="width:220px;">纯度(‰)</th>
+                        <th >金料金重</th>
+                        <!-- <th style="width:220px;">旧金金重</th>-->
+                        <th >金料金价</th>
+                        <th >服务克工费</th>
+                        <!-- <th style="width:220px;">损耗率</th>-->
+                        <th >抵扣费用</th>
+                        <th >材质</th>
+                        <th >颜色</th>
+                    </tr>
+                    </thead>
+                    <tbody id="recovery_tbody" class="recovery_tbody">
+                    </tbody>
+                </table>
+            </div>
+			<div class="form-actions text-center">
+				<button type="button" class="btn btn-primary baocun" id="baocun" data-type="-1">保存</button>
+                <button type="button" class="btn btn-primary baocun" id="submit" data-type="0">提交</button>
+				<!-- <button type="button" class="btn btn-primary baocun" id="baocun_print">添加并打印</button>-->
+				<!--  <a class="btn" href="javascript:history.back(-1);">取消</a>-->
+				<br/><span class="tips_error" style="color:red"></span>
+			</div>
+			<!--弹框选取货品-->
+			<div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header" style="cursor:move">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							<b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">货品选取</b>
+						</div>
+						<div class="modal-body" style="max-height: 800px;padding: 0px;">
+							<iframe  frameborder="0" class="appiframe" src="{:U('BOutboundOrder/product_list')}" id="goods_index" name="goods_index">
+							</iframe>
+						</div>
+						<div class="modal-footer">
+							<button id="check" class="btn btn-primary pull-left" >选中</button>
+							<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+							<button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    <div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <b id="clientModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">选择会员</b>
+                </div>
+                <div class="modal-body" style="max-height: 500px;padding: 0px;">
+                    <iframe  frameborder="0" class="appiframe" src="{:U('BOutboundOrder/client_list')}" id="goods_index2" name="goods_index2" >
+
+                    </iframe>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                    <button id="add-2" class="btn btn-primary" data-dismiss="modal">选中</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	<include file="./public/common/footer.html" />
+	<script src="/public/js/common.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+    <script src="__PUBLIC__/js/shop_common.js"></script>
+	<script src="__PUBLIC__/shop/BOutboundOrder/js/add.js"></script>
+</div>
+</body>
+

@@ -1,0 +1,338 @@
+<systemtpl file="header" />
+	<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+<style>
+
+.table tr th{text-align:center;}
+</style>
+</head>
+<body class=" theme-blue" >  
+    <div class="wrap js-check-wrap"  >
+       <ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('Market/index')}">行情<!--{:L('KUNJINJUBAO_GOLD_INDEX')}--></a></li>
+			
+		</ul>
+     <div class="main-content">
+<div class="ta">
+	<table class="table table-bordered  table-hover table-striped">
+	  <thead  >
+		<tr >
+		   <th>序号</th>
+		   <th>分类</th>
+		   <th>最新价</th>
+		   <th>开盘价</th>
+           <th>最高价</th>
+		   <th>最低价</th>
+			<th>涨跌</th>
+           <th>浮动</th>
+           <th>昨收价</th>
+           <th>更新时间</th>
+			<th>创建时间</th>
+			<th>状态</th>
+		   <th>接口类型</th>
+           <th>操作</th>
+		</tr>
+	  </thead >
+		<tbody id="tbody">
+	  <volist name="list" id="v" key="key">
+		<tr class="{$key}">
+			<td class="text-center"><?php echo $i?$i+1:1;?></td>
+			<?php $i=$i+1;?>
+			<td class="text-left">{$v.name}</td>
+			<td class="text-right price" >
+			<span <if condition="$v['pricedown_precent'] lt 0">style='color:#08a169'<else/>style='color:#ed3b5f'</if>>{$v.price}</span>
+			</td>
+			<td class="text-right open">{$v.open}</td>
+			<td class="text-right hight">{$v.hight}</td>
+			<td class="text-right low">{$v.low}</td>
+			<td class="text-right pricedown_price">{$v.pricedown_price}</td>
+			<td class="text-right pricedown_precent">{$v.pricedown_precent}%</td>
+			<td class="text-right prevclose">{$v.prevclose}</td>
+			<td class="text-center time">{$v.time|date="Y-m-d H:i:s",###}</td>
+			<td class="text-center create_time">{$v.create_time|date="Y-m-d H:i:s",###}</td>
+			<td class="text-left status"><php> echo $v['status']==100?"交易中":"闭市" </php></td>
+			<td class="text-left api_type"><php> echo $v['api_type']==1?"nowapi接口":"集金号" </php></td>
+			<td class="text-center"><a href="{:U('GoldPrice/detail',array('price_type'=>$v['price_type']))}">详情</a></td>
+		</tr>
+		</volist>
+		</tbody>
+	</table>
+
+</div>
+ <div class="trend-statistics">
+	 <span>趋势统计</span>
+	 <select id="trend-select" name="">
+		 <option value="xauusd_price">现货黄金</option>
+		 <option value="xauusd_cny_price">现货黄金(cny)</option>
+		 <option value="au9999_price">上海au9999</option>
+		 <option value="london_gold_price">伦敦金</option>
+		 <option value="usdcny_price">美元人民币</option>
+	 </select>
+	 <select id="show_time" name="">
+		 <option value="1">一天</option>
+		 <option value="2">一月</option>
+		 <option value="3">一年</option>
+	 </select>
+ </div>
+<div class="user-count">
+	 <div id="user-count" style="height:500px;"></div>
+ </div>
+
+<include file="./public/common/footer.html" />
+<script src="/public/js/common.js"></script>
+<script src="/public/js/echarts.min.js"></script>
+<script>
+	function get_new_price(url, data){
+		$.post(url, data,function (data) {
+			var data = eval("("+ data +")");
+			var html='';
+			var i=0;
+			$.each(data,function(k,val){
+				html+="<tr>";
+				html+="</tr>";
+				//console.log(val.price);
+				//console.log($("#tbody").find("tr").eq(i).find(".price").html());
+				if(val.pricedown_precent<0){
+					var price_html="<span style='color:#08a169'>"+val.price+"</span>";
+				}else {
+					var price_html="<span style='color:#ed3b5f'>"+val.price+"</span>";
+				}
+				$("#tbody").find("tr").eq(i).find(".price").html(price_html);
+				$("#tbody").find("tr").eq(i).find(".open").html(val.open);
+				$("#tbody").find("tr").eq(i).find(".prevclose").html(val.prevclose);
+				$("#tbody").find("tr").eq(i).find(".hight").html(val.hight);
+				$("#tbody").find("tr").eq(i).find(".low").html(val.low);
+				$("#tbody").find("tr").eq(i).find(".pricedown_price").html(val.pricedown_price);
+				$("#tbody").find("tr").eq(i).find(".pricedown_precent").html(val.pricedown_precent);
+				$("#tbody").find("tr").eq(i).find(".time").html(val.time_date);
+				$("#tbody").find("tr").eq(i).find(".create_time").html(val.create_time_date);
+				if(val.status==100){
+					$("#tbody").find("tr").eq(i).find(".status").html("交易中");
+				}else {
+					$("#tbody").find("tr").eq(i).find(".status").html("闭市");
+				}
+				i++;
+			})
+			//$("#tbody").html(html);
+		})
+	}
+	$("#trend-select,#show_time").change(function(){
+		//var data_name=$(this).find("option:selected").html();
+		//var val=$(this).val();
+		var data={type:$("#trend-select").val(),show_time:$("#show_time").val()}
+		var html=$("#trend-select option:selected").html()+"("+$("#show_time option:selected").html()+")";
+		var url=SYSTEM_API_URL+"&m=GoldPrice&a=get_xauusd_data";
+		//window.clearInterval(timeTicket)
+		trend(data,url,html,'user-count');
+		if($("#show_time").val()!=1){
+			window.clearInterval(timeTicket)
+		}
+	});
+	update_line(0);
+	function update_line(timeticket){
+		console.log(timeticket);
+		var data={type:$("#trend-select").val(),show_time:$("#show_time").val()}
+		var html=$("#trend-select option:selected").html()+"("+$("#show_time option:selected").html()+")";
+		trend(data,SYSTEM_API_URL+"&m=GoldPrice&a=get_xauusd_data",html,'user-count',timeticket);
+		get_new_price(SYSTEM_API_URL+"&m=GoldPrice&a=index", {data_type:"json"});
+	}
+	var timeTicket = setInterval(update_line, 60000);
+	function trend(data,url,name,id,timeticket){
+		var myChart = echarts.init(document.getElementById(id));
+		myChart.showLoading();
+		$.post(url, data,function (data) {
+			var data = eval("("+ data +")");
+			var res=data.datas.data_list;
+			console.log(data.datas.data_split);
+			/*if(timeticket){
+				myChart.setOption({
+					series: [{
+						data: res
+					}]
+				});
+				return;
+			}*/
+			var option = {
+				backgroundColor: '#fff',
+				animation: false,
+				title:{
+					text:name,
+					x:'center',
+					y:'top',
+				},
+				/*legend: {
+					data:[name,'现货黄金（cny）']
+				},*/
+				tooltip: {
+					trigger: 'axis',
+					backgroundColor: 'rgba(245, 245, 245, 0.8)',
+					borderWidth: 1,
+					borderColor: '#ccc',
+					padding: 10,
+					textStyle: {
+						color: '#000'
+					}
+				},
+				grid: [
+					{
+						left: '10%',
+						right: '8%',
+						height: '50%'
+					}
+					,
+					{
+						left: '10%',
+						right: '8%',
+						top: '63%',
+						height: '16%'
+					}
+				],
+				xAxis: [
+					{
+						name:'时间',
+						type: 'category',
+						data: res.map(function (item) {
+							return item.show_time;
+						}),
+						scale: true,
+						boundaryGap : false,
+						axisLine: {onZero: false},
+						splitLine: {show: false},
+						splitNumber: data.datas.data_split,
+						axisPointer: {
+							z: 100
+						}
+					},
+					{
+						type: 'category',
+						gridIndex: 1,
+						data: res.map(function (item) {
+							return item.show_time;
+						}),
+						scale: true,
+						boundaryGap : false,
+						axisLine: {onZero: false},
+						axisTick: {show: false},
+						splitLine: {show: false},
+						axisLabel: {show: false},
+						splitNumber: data.datas.data_split
+					}
+				],
+				yAxis: [
+					{
+						name:data.datas.y_name,
+						min:(parseInt(data.datas.min_price)-1),
+						scale: false,
+
+						splitArea: {
+							show: true
+						}
+					},
+					{
+						scale: true,
+						gridIndex: 1,
+						splitNumber: 2,
+						axisLabel: {show: false},
+						axisLine: {show: false},
+						axisTick: {show: false},
+						splitLine: {show: false}
+					}
+				],
+				dataZoom: [
+					{
+						type: 'inside',
+						xAxisIndex: [0, 1],
+						start:0,
+						end: 100
+					}
+					,
+					{
+						show: true,
+						xAxisIndex: [0, 1],
+						type: 'slider',
+						top: '85%',
+						start: 0,
+						end: 100
+					}
+				],
+				series: [
+					{
+						name: name,
+						type: 'line',
+						data: res.map(function (item) {
+							return item.price;
+						}),
+						symbol: 'none',
+						areaStyle: {normal: {
+							color: new echarts.graphic.LinearGradient(
+									0, 0, 0, 1,
+									[
+										{offset: 0, color: '#66b3ff'},
+										{offset: 1, color: '#fff'}
+									]
+							)
+						}},
+						smooth: true,
+						lineStyle: {
+							normal: {
+								//opacity: 0.5,
+								color: "#66b3ff",
+								borderColor: "#66b3ff",
+								borderWidth: 2
+							},
+						},
+						tooltip: {
+							formatter: function (params) {
+								debugger;
+								console.log(params);
+								var param='<div><p>'+params.show_time+'</p><p>'+params.price+'</p></div>';
+
+								return param;
+//
+							}
+						}
+					},
+					/*{
+						name: '现货黄金（cny）',
+						type: 'line',
+						data: res.map(function (item) {
+							return item.exchange_price;
+						}),
+						symbol: 'none',
+						areaStyle: {normal: {
+							color: new echarts.graphic.LinearGradient(
+									0, 0, 0, 1,
+									[
+										{offset: 0, color: '#66b3ff'},
+										{offset: 1, color: '#fff'}
+									]
+							)
+						}},
+						smooth: true,
+						lineStyle: {
+							normal: {
+								//opacity: 0.5,
+								color: "#66b3ff",
+								borderColor: "#66b3ff",
+								borderWidth: 2
+							},
+						},
+						tooltip: {
+							formatter: function (params) {
+								debugger;
+								console.log(params);
+								var param='<div><p>'+params.show_time+'</p><p>'+params.chart_value+'</p></div>';
+
+								return param;
+							}
+						}
+					}*/
+				]
+			};
+
+			myChart.setOption(option, true);
+			myChart.hideLoading();
+
+		});
+
+	}
+</script>

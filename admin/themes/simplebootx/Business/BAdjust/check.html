@@ -1,0 +1,177 @@
+<businesstpl file="header" />
+<link href="__PUBLIC__/appertain/business/css/BAdjust.css" rel="stylesheet">
+</head>
+<body class=" theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active">
+				<a href="{:U('BAdjust/' . $Think.ACTION_NAME, array('adjust_id' => I('adjust_id/d', 0)))}">{:L('BUSINESS_BADJUST_' . $Think.ACTION_NAME)}</a>
+			</li>
+			<span style="float: right">
+				<if condition="$adjust_info['status'] eq 0">
+		            <p class="btn btn-danger js-ajax-submit reject" data-status="-2">驳回</p>
+		            <p class="btn btn-primary js-ajax-submit pass" data-status="1">审核通过</p>
+		            <p class="btn btn-danger js-ajax-submit unpass" data-status="2">审核不通过</p>
+		        </if>
+				<button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			</span>
+		</ul>
+
+		<table class="table table-bordered table-hover" id="order_base">
+			<tr>
+				<td class="sel" width="20%">制单人</td>
+				<td class="sel" width="30%">{$adjust_info.creator_name}</td>
+				<td class="sel" width="20%">件数</td>
+				<td class="sel" id="adjust_num" width="30%">{$adjust_info.num}</td>
+			</tr>
+			<tr>
+				<td class="sel">类型</td>
+				<td>{$adjust_type[$adjust_info['type']]}</td>
+				<td class="sel">备注</td>
+				<td>{$adjust_info['memo']}</td>
+			</tr>
+			<tr>
+				<td class="sel">审核备注</td>
+				<td colspan="3" width="80%">
+					<textarea name="check_memo"></textarea>
+				</td>
+			</tr>
+		</table>
+
+        <businesstpl file="process" />
+
+		<div class="main-content">
+			<div class="ta" style="overflow-x: auto;">
+				<if condition="$adjust_info['type'] eq 1">
+					<table class="table table-bordered table-hover table-responsive">
+						<thead>
+							<tr>
+								<th class="text-center" style="min-width: 40px;">序</th>
+								<th class="text-center" style="min-width: 80px;">货品编码</th>
+								<th class="text-center" style="min-width: 200px;">货品名称</th>
+								<th class="text-center" style="min-width: 80px;">规格编码</th>
+								<th class="text-center" style="min-width: 80px;">采购计价方式</th>
+								<th class="text-center" style="min-width: 80px;">克重</th>
+								<th class="text-center" style="min-width: 80px;">工费</th>
+								<th class="text-center" style="min-width: 100px;">总工费</th>
+								<th class="text-center" style="min-width: 100px;">成本价</th>
+								<th class="text-center" style="min-width: 100px;">货品状态</th>
+							</tr>
+						</thead>
+						<tbody id="tbody">
+							<volist name="adjust_info['product_list']" id="v">
+								<tr>
+									<td class="text-center">{$key+1}</td>
+									<td class="text-center product_code">{$v.product_code}</td>
+									<td class="text-center product_name">{$v.goods_name}</td>
+									<td class="text-center goods_code">{$v.goods_code}</td>
+									<td class="text-center pricemode">
+										<if condition="$v.price_mode eq 1">计重<else />计件</if>
+									</td>
+									<td class="text-right weight">
+										<if condition="$v.price_mode eq 1">{$v.weight}<else />-</if>
+									</td>
+									<td class="text-right buy_m_fee">
+										<if condition="$v.price_mode eq 1">{$v.buy_m_fee}<else />-</if>
+									</td>
+									<td class="text-right total_fee">
+										<if condition="$v.price_mode eq 1">{:round(bcmul($v['weight'], $v['buy_m_fee'], 4), 2)}<else />-</if>
+									</td>
+									<td class="text-right cost_price">
+										<if condition="$v.price_mode eq 1">-<else />{$v.cost_price}</if>
+									</td>
+									<td class="text-center status_name">{$status[$v['product_status']]}</td>
+								</tr>
+							</volist>
+						</tbody>
+					</table>
+				</if>
+
+				<if condition="$adjust_info['type'] eq 2">
+					<table class="table table-bordered  table-hover table-responsive">
+						<thead>
+							<tr>
+								<th class="text-center" style="min-width: 40px;">序</th>
+								<th class="text-center" style="min-width: 80px;">货品编码</th>
+								<th class="text-center" style="min-width: 200px;">货品名称</th>
+								<th class="text-center" style="min-width: 80px;">规格编码</th>
+								<th class="text-center" style="min-width: 80px;">销售计价方式</th>
+								<th class="text-center" style="min-width: 80px;">销售工费方式</th>
+								<th class="text-center" style="min-width: 100px;">销售价</th>
+								<th class="text-center" style="min-width: 100px;">销售工费</th>
+								<th class="text-center" style="min-width: 100px;">货品状态</th>
+							</tr>
+						</thead>
+						<tbody id="tbody">
+							<volist name="adjust_info['product_list']" id="v">
+								<tr>
+									<td class="text-center">{$key+1}</td>
+									<td class="text-center product_code">{$v.product_code}</td>
+									<td class="text-center product_name">{$v.goods_name}</td>
+									<td class="text-center goods_code">{$v.goods_code}</td>
+									<td class="text-center sell_pricemode">
+										<if condition="$v.sell_pricemode eq 1">计重<else />计件</if>
+									</td>
+									<td class="text-right sell_feemode">
+										<if condition="$v.sell_feemode eq 1">克工费销售<else />件工费销售</if>
+									</td>
+									<td class="text-right sell_price">
+										<if condition="$v.sell_pricemode eq 1">-<else />{$v.sell_price}</if>
+									</td>
+									<td class="text-right sell_fee">
+										<if condition="$v.sell_pricemode eq 1">{$v.sell_fee}<else />-</if>
+									</td>
+									<td class="text-center status_name">{$status[$v['product_status']]}</td>
+								</tr>
+							</volist>
+						</tbody>
+					</table>
+				</if>
+
+				<if condition="$adjust_info['type'] eq 3">
+					<table class="table table-bordered table-hover table-responsive">
+						<thead>
+							<tr>
+								<th class="text-center" style="min-width: 40px;">序</th>
+								<th class="text-center" style="min-width: 80px;">货品编码</th>
+								<th class="text-center" style="min-width: 200px;">货品名称</th>
+								<th class="text-center" style="min-width: 80px;">原规格编码</th>
+								<th class="text-center" style="min-width: 80px;">规格编码</th>
+								<th class="text-center" style="min-width: 100px;">货品状态</th>
+							</tr>
+						</thead>
+						<tbody id="tbody">
+							<volist name="adjust_info['product_list']" id="v">
+								<tr>
+									<td class="text-center">{$key+1}</td>
+									<td class="text-center product_code">{$v.product_code}</td>
+									<td class="text-center goods_name">{$v.goods_name}</td>
+									<td class="text-center old_goods_code">{$v.adjust_before.goods_code}</td>
+									<td class="text-center new_goods_code">{$v.adjust_after.goods_code}</td>
+									<td class="text-center status_name">{$status[$v['product_status']]}</td>
+								</tr>
+							</volist>
+						</tbody>
+					</table>
+				</if>
+			</div>
+
+			<businesstpl file="operate" />
+
+			<div class="form-actions">
+				<if condition="$adjust_info['status'] eq 0">
+					<input type="hidden" id="adjust_id" value="{:I('adjust_id/d', 0)}">
+					<input type="hidden" class="form_url" value="{:U('BAdjust/check')}">
+		            <p class="btn btn-danger js-ajax-submit reject" data-status="-2">驳回</p>
+		            <p class="btn btn-primary js-ajax-submit pass" data-status="1">审核通过</p>
+		            <p class="btn btn-danger js-ajax-submit unpass" data-status="2">审核不通过</p>
+		        </if>
+				<button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			</div>
+		</div>
+	</div>
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/jquery-form.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script src="__PUBLIC__/appertain/business/js/BAdjust.js?t={:time()}"></script>

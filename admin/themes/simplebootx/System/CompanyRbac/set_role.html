@@ -1,0 +1,214 @@
+<systemtpl file="header"/>
+</head>
+<body>
+<style>
+	.new td{vertical-align: middle;padding: 0px;line-height: 40px;}
+	.new2{border: none;}
+	.new td{ border-right: none;}
+	.new th {text-align: center;}
+</style>
+<div class="wrap js-check-wrap">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('CompanyRbac/set_role')}">{:L('SYSTEM_COMPANYRBAC_SET_ROLE')}</a></li>
+		<a class="btn btn-primary" href="{:U('CompanyRbac/role_company')}" data-toggle="modal" style="float: right;">返回</a>
+	</ul>
+	<div >
+		<table class="table table-hover table-bordered table-list new" id="menus-table" style="width: 19%;float: left;margin-right: 1%;">
+			<tr>
+				<th>序</th>
+				<th>商户名称</th>
+			</tr>
+			<tbody>
+			{$companys}
+			</tbody>
+		</table>
+	</div>
+	<div style="border:1px solid #ddd;float: left;width: 75%;">
+		<ul class="nav nav-tabs" style="padding: 15px 30px;">
+			<li>
+				角色信息
+			</li>
+		</ul>
+	<form class="form-horizontal js-ajax-form" action="" method="post">
+		<div  style="margin-top:20px;margin-bottom: 20px;margin-left: 30px;">
+			<input type="hidden" name="id" value="{$data.id}">
+			商户名称:
+			<select name="company_id" style="width: 150px;margin-right: 50px;" id="company" onchange="get_company_role();">
+				<option value="">请选择商户</option>
+				<volist name="c_company" id="c">
+					<option id="company_{$c.uid}" value="{$c.uid}">{$c.name}</option>
+				</volist>
+			</select>
+			角色名称:
+			<select name="role_id" style="width: 150px;" id="role" onchange="get_company_role();">
+				<option value="">请选择角色</option>
+				<volist name="roles" id="c">
+					<option id="role_{$c.id}" value="{$c.id}">{$c.name}</option>
+				</volist>
+			</select>
+		</div>
+		<div style="float: left;margin-left: 30px;">角色权限：</div>
+		<table class="table table-hover table-bordered table-list new" id="menus-table" style="width: 90%;float: left;">
+			<tr>
+				<th width="120px">一级</th>
+				<th width="105px">二级</th>
+				<th >权限配置规则</th>
+			</tr>
+			<volist name="menus" id="m" key="k">
+				<tr>
+					<td width="120px">
+						<input name="menuid[]" value="{$m.id}" <php> if(in_array($m['id'],$h_menus)) echo "checked"; </php> level="0" onclick="javascript:checknode(this);" style="margin-left:10px;margin-right: 5px;margin-top: -3px;"type="checkbox">{$m.name}
+					</td>
+					<td colspan="2">
+						<table class="table table-hover table-bordered table-list new2" width="100%"height="100%" id="menus-table">
+							<volist name="m.children" id="mc">
+								<tr>
+									<td width="120px"><input name="menuid[]" value="{$mc.id}" level="1"  <php> if(in_array($mc['id'],$h_menus)) echo "checked"; </php>  onclick="javascript:checknode(this);" style="margin-left:10px;margin-right: 5px;margin-top: -3px;" type="checkbox">{$mc.name}</td>
+									<td><php>$i=1;</php>
+										<volist name="mc.children" id="zc">
+											<php>$i++;if($i%7==0){echo "<br/>";}</php>
+											<input name="menuid[]" value="{$zc.id}" <php> if(in_array($zc['id'],$h_menus)) echo "checked"; </php> level="2" onclick="javascript:checknode(this);" style="margin-left:10px;margin-right: 5px;margin-top: -3px;" type="checkbox">{$zc.name}
+											<php>
+												if(!empty($zc["children"])){
+												echo "【";
+												foreach($zc['children'] as $z){
+												if(in_array($z['id'],$h_menus)){
+													$a="checked";
+												}else{
+													$a="";
+												}
+												echo '<input name="menuid[]" value="'.$z['id'].'" '.$a.' level="3" style="margin-left:5px;margin-right: 5px;margin-top: -3px;"onclick="javascript:checknode(this);" type="checkbox">'.$z["name"];
+												}
+												echo "&nbsp;】";
+												}
+											</php>
+										</volist>
+									</td>
+								</tr>
+							</volist>
+						</table>
+					</td>
+				</tr>
+			</volist>
+		</table>
+		<div class="form-actions" style="float: left;width: 100%;">
+			<button type="btn" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+			<a class="btn" href="{:U('CompanyRbac/role_company')}">{:L('BACK')}</a>
+		</div>
+	</form>
+</div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+	$(document).ready(function() {
+		Wind.css("treeTable");
+		Wind.use('treeTable',function() {
+			$("#menus-table").treeTable({
+				indent: 20
+			})
+		})
+	});
+	$(function(){
+		$("input[type='checkbox']").attr('disabled', true)
+	});
+	function checknode(obj) {
+		var chk = $("input[type='checkbox']");
+		var count = chk.length;
+		var num = chk.index(obj);
+		var level_top = level_bottom = chk.eq(num).attr('level');
+		for (var j = num + 1; j < count; j++) {
+			var le = chk.eq(j).attr('level');
+			if (chk.eq(num).attr("checked") == "checked") {
+				if (eval(le) > eval(level_bottom)){
+					chk.eq(j).attr("checked", true);
+				}
+				else if (eval(le) == eval(level_bottom)){
+					break;
+				}
+			} else {
+				if (eval(le) > eval(level_bottom)){
+					chk.eq(j).attr("checked", false);
+				}else if(eval(le) == eval(level_bottom)){
+					break;
+				}
+			}
+		}
+	}
+/*	$('button.js-ajax-submit').bind('click', function (e) {
+		var role_id =$("#role").val();
+		var user_id=$("#company").val();
+		if(empty(role_id)){
+			$('<span class="tips_error">请选择角色</span>').appendTo(btn.parent()).fadeIn('fast');
+		}
+		if(empty(user_id)){
+			$('<span class="tips_error">请选择企业</span>').appendTo(btn.parent()).fadeIn('fast');
+		}
+		var url ="{:U('CompanyRbac/set_role')}";
+		var data={role_id:role_id,user_id:user_id};
+		$.ajax({
+			type:'post',
+			data:data,
+			dataType:'json',
+			url:url,
+			success:function(result){
+
+			}
+		});
+	});*/
+	function get_company_role(){
+		var role_id = $("#role").val();
+		var chk = $("input[type='checkbox']");
+		if(empty(role_id)){
+			chk.attr("checked", false);
+			return;
+		}
+		var url ="{:U('CompanyRbac/set_role')}";
+		var data={type:"getrc",role_id:role_id};
+		$.ajax({
+			type:'post',
+			data:data,
+			dataType:'json',
+			url:url,
+			success:function(result){
+				var data=result.data;
+				var chk = $("input[type='checkbox']");
+				chk.attr("checked", false);
+				var count = chk.length;
+				for (var j = 1; j < count; j++) {
+					if(result1 = data.indexOf(chk.eq(j).val())>0){
+						chk.eq(j).attr("checked",true);
+					}
+				}
+			}
+		});
+	}
+	$('.show_cr').bind('click', function (e) {
+		var role_id =$(this).attr("data-role");
+		var company_id=$(this).attr("data-company");
+		var url=$(this).attr("data-url");
+		var data={role_id:role_id,company_id:company_id};
+		$.ajax({
+			type:'post',
+			data:data,
+			dataType:'json',
+			url:url,
+			success:function(result){
+				var cinfo=result.cinfo;
+				var crole=result.crole;
+				var h_menus=result.h_menus;
+				$("#company_"+cinfo['company_uid']).attr("selected", true);
+				$("#role_"+crole['id']).attr("selected", true);
+				var chk = $("input[type='checkbox']");
+				chk.attr("checked", false);
+				var count = chk.length;
+				for (var j = 1; j < count; j++) {
+					if(result1 = h_menus.indexOf(chk.eq(j).val())>0){
+						chk.eq(j).attr("checked",true);
+					}
+				}
+			}
+		});
+	});
+</script>
+</body>
+</html>

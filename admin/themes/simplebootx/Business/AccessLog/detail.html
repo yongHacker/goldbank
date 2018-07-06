@@ -1,0 +1,115 @@
+<businesstpl file="header" />
+<style>
+.form-horizontal .controls {line-height: 30px;}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<form method="post" class="form-horizontal ajax-form" >
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">用户id:</label>
+					<div class="controls" title="{$detail.user_id}">
+						{$detail.user_id}
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">用户名:</label>
+					<div class="controls" title="{$detail.user_name}">
+						{$detail.user_name}
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">访问类型:</label>
+					<div class="controls">
+						{$access_type[$detail['access_type']]}
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">访问路径:</label>
+					<div class="controls">
+						{$detail.access_path}
+					</div>
+				</div>
+				<if condition="$detail['access_name'] neq ''">
+					<div class="control-group">
+						<label class="control-label">访问路径名:</label>
+						<div class="controls">
+							{$detail.access_name}
+						</div>
+					</div>
+				</if>
+				<div class="control-group">
+					<label class="control-label">post传递参数:</label>
+					<div class="controls <if condition="$detail['postparam'] neq ''">admin-controls</if>">
+						<foreach name="detail.postparam" item="vo">
+							<div class="control-group admin-control-group">
+								<label class="control-label" title="{$key}">{$key}</label>
+								<div class="controls">
+									{$vo}
+								</div>
+							</div>
+						</foreach>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">get传递参数:</label>
+					<div class="controls <if condition="$detail['getparam'] neq ''">admin-controls</if>">
+						<foreach name="detail.getparam" item="vo">
+							<div class="control-group admin-control-group">
+								<label class="control-label" title="{$key}">{$key}</label>
+								<div class="controls">
+									{$vo}
+								</div>
+							</div>
+						</foreach>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">访问ip:</label>
+					<div class="controls">
+						{$detail.access_ip}
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">访问时间:</label>
+					<div class="controls">
+						{$detail.access_time|date="Y-m-d H:i:s",###}
+					</div>
+				</div>
+				<!-- <div class="control-group">
+					<label class="control-label">访问MAC:</label>
+					<div class="controls">
+						{$detail.access_mac}
+					</div>
+				</div> -->
+			</fieldset>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+	$(function() {
+		$(".js-ajax-close-btn").on('click', function(e) {
+			e.preventDefault();
+			Wind.use("artDialog", function() {
+				art.dialog({
+					id : "question",
+					icon : "question",
+					fixed : true,
+					lock : true,
+					background : "#CCCCCC",
+					opacity : 0,
+					content : "您确定需要关闭当前页面嘛？",
+					ok : function() {
+						setCookie('refersh_time_admin_menu_index', 1);
+						window.close();
+						return true;
+					}
+				});
+			});
+		});
+	});
+</script>
+</body>
+</html>

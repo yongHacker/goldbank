@@ -1,0 +1,124 @@
+<systemtpl file="header" />
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<!--<li class="active"><a href="{:U('sells/index')}">销售列表</a></li>-->
+		<li class="active"><a href="{:U('sells/add')}">{:L('SYSTEM_GOLD_INDEX')}</a></li>
+	</ul>
+	<form class="well form-search" method="post" action="{:U('gold/index')}">
+		综合搜索:
+		<div class="input-prepend input-group">
+			<span class="add-on input-group-addon">
+				<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+			</span>
+			<input id="begin_time" class="js-datetime" name="begin_time" value="{$Think.request.begin_time}" type="text"  >
+		</div>
+		<div class="input-prepend input-group">
+				<span class="add-on input-group-addon">
+					<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+				</span>
+			<input id="end_time" class="js-datetime" name="end_time" value="{$Think.request.end_time}" type="text"  >
+		</div>
+		<input id="search_name" name="search_name" style="width: 100px;" value="{$Think.request.search_name}" placeholder="关键字查询" type="text">
+		<input class="btn btn-primary" value="搜索" type="submit">
+	</form>
+	<form class="well form-search" method="post" >
+		<span style="font-size:18px;">当前金价(Au99.99)：</span><b >{$gold2['price']}</b>
+		<button href="#myModal"   role="button" data-toggle="modal" type="button"  class="btn btn-primary " style="float:right">更新金价</button>
+	</form>
+	<div class="main-content">
+		<div class="ta">
+			<table class="table table-bordered  table-hover table-striped">
+				<thead  >
+				<tr >
+					<th>序号</th>
+					<th>黄金种类</th>
+					<th>时间</th>
+					<th>金价</th>
+					<th>更新人</th>
+				</tr>
+				</thead>
+				<volist name="gold" id="v">
+					<tr>
+						<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+						<td>{$v.name}</td>
+						<td class="text-center">{$v.create_time|date="Y-m-d H:i:s",###}</td>
+						<td class="text-right">{$v.price}</td>
+						<td>{$v.user_id|get_user_nicename=###}</td>
+					</tr>
+				</volist>
+			</table>
+		</div>
+		<div class="pagination">{$page}</div>
+		<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog-div">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h3 id="myModalLabel" style="font-size: 16px">更新金价</h3>
+					</div>
+					<div class="modal-body">
+						<select id="gold_category">
+							<volist name="gold_category" id="cate">
+								<option value="{$cate.id}" <if condition="$cate['id'] eq 7">selected="selected"</if>>{$cate.name}</option>
+							</volist>
+						</select>
+						当前金价： <input type="text" autocomplete="off" name="price" id="price"/>
+					</div>
+					<div class="modal-footer">
+						<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+						<button  id="del" class="btn btn-danger" data-dismiss="modal">确定</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<include file="./public/common/footer.html" />
+</div>
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+<script src="/public/js/common.js"></script>
+<script type="text/javascript">
+    $(function(){
+        setUser();
+    });
+    function setUser(){
+
+        var price =$('#price').val();
+        delUser(price);
+
+    }
+
+
+    function delUser(price){
+
+        $('#myModal').find('button').each(function(index, element) {
+
+            $(this).unbind().click(function(){
+                if($(this).attr('id')=='del'){
+                    var price =$('#price').val();
+                    var cate =$('#gold_category').val();
+                    $.ajax({
+                        url: "{:U('Gold/add')}",
+                        type: 'post',
+                        data:{price:price,cate:cate},
+                        success: function(data) {
+                            if(data==1){
+                                //alert('更新成功');
+                                window.location.reload();
+                            }
+                            else{
+                                alert('更新失败');
+                                window.location.reload()
+                            }
+                        }
+                    })
+                }
+            })
+        });
+    }
+
+</script>
+</body>
+
+

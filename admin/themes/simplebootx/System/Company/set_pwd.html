@@ -1,0 +1,87 @@
+<systemtpl file="header"/>
+</head>
+<body>
+<style>
+	.new td{vertical-align: middle;padding: 0px;line-height: 40px;}
+	.new2{border: none;}
+	.new td{ border-right: none;}
+	.new th {text-align: center;}
+</style>
+<div class="wrap js-check-wrap">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('Company/set_pwd')}">{:L('SYSTEM_COMPANY_SET_PWD')}</a></li>
+	</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('Company/set_pwd')}">
+			<input type="hidden" name="user_id" value="{$user_id}">
+			<fieldset>
+				<!--<div class="control-group">
+					<label class="control-label">原密码:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="old_pwd" id="old_pwd">
+						<span class="form-required">*</span>
+					</div>
+				</div>-->
+				<div class="control-group">
+					<label class="control-label">新密码:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="new_pwd" id="new_pwd">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">重复新密码:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="new_pwd2" id="new_pwd2">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+				<a class="btn js-ajax-back-btn">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script>
+	$('.js-ajax-submit').unbind().click(function(){
+		var old_pwd=$('input[name=old_pwd]').val();
+		var new_pwd=$('input[name=new_pwd]').val();
+		var new_pwd2=$('input[name=new_pwd2]').val();
+		var user_id=$('input[name=user_id]').val();
+		/*if(empty(old_pwd)){
+			error_appear('请输入旧密码');
+			return false;
+		}*/
+		if(empty(new_pwd)){
+			error_appear('请输入新密码');
+			return false;
+		}
+		/*if(old_pwd==new_pwd){
+			error_appear('旧密码和新密码不能相同');
+			return false;
+		}*/
+		if(new_pwd!=new_pwd2){
+			error_appear('两个密码输入不相同');
+			return false;
+		}
+		$.ajax({
+			url:$('form').attr('action'),
+			data:{old_pwd:old_pwd,new_pwd:new_pwd,user_id:user_id},
+			type:'post',
+			dataType:'json',
+			success:function(result){
+				if(result.status==1){
+					error_appear('操作成功！');
+					setTimeout(function(){location.href=result.url},800);
+				}else if(result.status==0){
+					error_appear(result.info);
+				}
+			}
+		});
+		
+	});
+	</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<businesstpl file="header" />
+<style>
+input{width: 163px;margin-bottom:0px;}
+.table {text-overflow: ellipsis;overflow: hidden;}
+.ta {overflow-x: auto;width: 100%;margin-bottom: 20px;}
+.ta input{width: 177px;margin-bottom:0px;border-left:0px;border-top:0px;border-right:0px;border-bottom:0px;padding:8px 1px ; margin-left:0px;width:95%;}
+.ta input:focus{			
+			-webkit-box-shadow: 0px 0px 0px;  
+			  -moz-box-shadow: 0px 0px 0px;  
+box-shadow: 0px 0px 0px;  }
+
+.td_border{border: solid 1px #157ab5;}
+.sel{background: #f4f4f4;}
+.my_page li{margin-top: 10px;display:none;}
+.table tr th{text-align:center;}
+.dropdown-menu_sell { position: absolute;z-index: 1000;display: none;float: left; min-width: 177px;background-color: rgb(255, 255, 255);box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 10px;
+    -webkit-background-clip: padding-box; background-clip: padding-box;padding: 5px 0px; margin: 2px 0px 0px;list-style: none;
+    border-width: 1px;border-style: solid;border-color: rgba(0, 0, 0, 0.2);border-image: initial;border-radius: 6px;
+}
+.list-2{z-index: 11;height: 80%;width:80%;margin:5% auto;background: #fff;}
+.remark{width: 888px;cursor: not-allowed;background-color: #fff;}
+</style>
+</head>
+<body class=" theme-blue">  
+    <div class="wrap js-check-wrap"  >
+       <ul class="nav nav-tabs">
+			<li class="active"><a>{:L('BUSINESS_BSELL_INDEX_DETAIL')}</a></li>
+			<button type="button" onclick="history.go( -1 )" class="btn js-ajax-back-btn" style="float:right">返回</button>
+		</ul>
+
+		<table class="table table-bordered" style="white-space:normal">
+			<tr>
+				<td class="sel" width="20%">制单时间</td>
+				<td width="25%">
+			 		{$data["create_time"]|date="Y-m-d H:i:s",###}
+	            </td>
+				<td class="sel" width="20%">会员姓名</td>
+				<if condition='$data["u1"] eq "贵宾"'>
+					<td width="25%">{$data["shop_name"]}<if condition="$data['realname']">{$data['realname']}<else/>{$data['u1']}</if></td>
+				<else />
+					<td width="25%"><if condition="$data['realname']">{$data['realname']}<else/>{$data['buy_name']}</if></td>
+				</if>
+
+			</tr>
+			<tr width="25%">
+				<td class="sel">销售员</td>
+				<td><if condition="$data['realname']">{$data['realname']}<else/>{$data['user_nicename']}</if></td>
+				<td class="sel">销售总价</td>
+				<td>{$data['real_sell_price']}</td>
+			</tr>
+			<tr>
+				<td class="sel">销售单号</td>
+				<td >
+				{$data['order_id']}
+				</td>
+				<td class="sel">备注</td>
+				<td colspan="4" style="word-break:break-all;">{$data['memo']}</td>
+			</tr>
+			<tr width="25%">
+				<td class="sel">审核人</td>
+				<td>{$data['check_name']}</td>
+				<td class="sel">审核时间</td>
+				<td>
+				<if condition='$data["check_time"] neq ""'>
+				{$data["check_time"]|date="Y-m-d H:i:s",###}
+				</if>
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">审核备注</td>
+				<td colspan="4" style="word-break:break-all;">{$data['check_memo']}</td>
+			</tr>
+		</table>
+        <div class="main-content">
+<div class="ta">
+	<table class="table table-bordered  table-hover">
+		<thead >
+			<tr>
+				<th>序</th>
+				<th>图片</th>
+				<th>品目</th>
+				<!--  <th>规格</th>-->
+				<th>商品编号</th>
+				<th>销售量</th>
+				<th>单价</th>
+				<th>单品优惠</th>
+				<th>总价</th>
+				<th>计价方式</th>
+				<input type="hidden" class="weight" value="{$sun[0]['sun']}">
+			</tr>
+		</thead>
+		<volist name="list" id="v">
+		<tr >
+			<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+			<td class="text-center">
+				<if condition="empty($v['product_pic'])">
+				 <img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
+				 <else />
+				 <a href="javascript:parent.image_preview_dialog('{$v['product_pic']}');">
+					 <img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$v.product_pic}">
+				 </a>
+				</if>
+			</td>
+			<td class="text-left">{$v.goods_name}</td>
+			<td class="text-center">{$v.goods_code}</td>
+			<td class="text-center">{$v.goods_stock}</td>
+			<td class="text-right">{:numberformat($v['procure_price'],2,'.',',')}</td>
+			<td class="text-right">{:numberformat($v['discount_price'],2,'.',',')}</td>
+			<td class="text-right">{:numberformat($v['price'],2,'.',',')}</td>
+			<td class="text-center"><if condition='$v.sell_pricemode eq 0'>计件<else/>计重</if></td>
+		</tr>
+		</volist>
+	</table>
+	<div class="form-actions text-center">
+		<if condition='$data.status eq 0 '>
+			<a class="btn btn-danger del" href="#myModal" name="{$data.id}" class="del" role="button" data-toggle="modal">撤销</a>
+		 </if>
+		 
+        <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+    </div>
+</div>
+<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog-div">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h3 id="myModalLabel">取消警告</h3>
+			</div>
+			<div class="modal-body">
+				<p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要撤销吗?</p>
+			</div>
+			<div class="modal-footer">
+				<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+				<button id="del" class="btn btn-danger" data-dismiss="modal">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+　		$(function(){
+			setUser();
+		});
+		function setUser(){
+			$(".del").each(function(index, obj) {
+				$(this).unbind().click(function(){
+					var id=$(this).attr('name');
+					delUser(id);
+				})
+			});
+		}
+		function delUser(id){
+			$('#myModal').find('button').each(function(index, element) {
+				$(this).unbind().click(function(){
+					if($(this).attr('id')=='del'){
+						$.ajax({
+							url: "{:U('BWsell/revoke')}",
+							type: 'post',
+							data:{id:id},
+							success: function(data) {
+								if(data.status==1){
+									window.location.href = data.url;
+								}
+								else{
+									alert(data.msg);
+								}
+							}
+						})
+					}
+				})
+			});
+		}
+</script>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<include file="./Application/Home/View/Public/footer.html" />

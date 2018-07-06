@@ -1,0 +1,118 @@
+<businesstpl file="header" />
+<style>
+	.tips_success,.tips_error{color:red;}
+	.wrap{padding: 20px 20px 0;}
+	.form-horizontal .control-group{/*margin-bottom:0;*/}
+	.bbt a.btn{margin-bottom:20px; margin-left:10px;}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<!--<li><a href="{:U('BBankGold/index')}">{:L('BUSINESS_BBANKGOLD_INDEX')}</a></li>-->
+			<li class="active"><a href="{:U('BRecovery/setting')}">{:L('BUSINESS_BRECOVERY_setting')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BRecovery/setting')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">截金金价</label>
+					<div class="controls">
+						<select name="cut_bgt_id"  >
+							<option value="0">选择截金金价</option>
+							<volist name="gold_type" id="v">
+								<option value="{$v.bgt_id}" <if condition="$data['cut_bgt_id'] eq $v['bgt_id']">selected=selected</if>>{$v.name}</option>
+							</volist>
+						</select>*
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">回购金价</label>
+					<div class="controls">
+						<select name="recovery_bgt_id"  >
+							<option value="0">选择回购金价</option>
+							<volist name="gold_type" id="v">
+								<option value="{$v.bgt_id}" <if condition="$data['recovery_bgt_id'] eq $v['bgt_id']">selected=selected</if>>{$v.name}</option>
+							</volist>
+						</select>*
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">当前金价</label>
+					<div class="controls">
+						<select name="bgt_id"  >
+							<option value="0">选择当前金价</option>
+							<volist name="gold_type" id="v">
+								<option value="{$v.bgt_id}" <if condition="$data['bgt_id'] eq $v['bgt_id']">selected=selected</if>>{$v.name}</option>
+							</volist>
+						</select>*
+					</div>
+				</div>
+
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script>
+	var expression=$('input[name=expression]');
+	/*$('p.save').click(function(){
+		var url=$('form').attr('action');
+		$.ajax({
+			url:url,
+			type:'post',
+			data:{expression:expression.val()},
+			dataType:"json",
+			success:function(result){
+				var code=result.code;
+				var str="";
+				if(code==200){
+					str="操作成功！";
+				}else{
+					str="操作失败！";
+				}
+				$(".form-actions").append('<p class="tips" style="display:inline;margin-left:20px;color:red;">'+str+'</p>');
+				setTimeout(function(){$('.form-actions .tips').remove();},1000);
+			}
+		});
+	});*/
+	$('#del').click(function(){
+		expression.val("");
+	});
+	$('#round').click(function(){
+		var value=expression.val();
+		expression.val("round("+value+")");
+	});
+	$('#ceil').click(function(){
+		var value=expression.val();
+		expression.val("ceil("+value+")");
+	});
+	$('#floor').click(function(){
+		var value=expression.val();
+		expression.val("floor("+value+")");
+	});
+	$('#plus').click(function(){
+		var value=expression.val();
+		expression.val(value+"+");
+	});
+	$('#minus').click(function(){
+		var value=expression.val();
+		expression.val(value+"-");
+	});
+	$('#multiply').click(function(){
+		var value=expression.val();
+		expression.val(value+"*");
+	});
+	$('#divide').click(function(){
+		var value=expression.val();
+		expression.val(value+"/");
+	});
+	$('#price').click(function(){
+		var value=expression.val();
+		expression.val(value+"price");
+	});
+</script>

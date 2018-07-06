@@ -1,0 +1,42 @@
+<if condition="$process_list">
+    <p>流程进度</p>
+    <div class="process-list" data-length="{:count($process_list)}">
+        <volist name="process_list" id="v">
+            <div class="comm" data-time="{$v.time}">
+                <if condition="$key eq 1">
+                    <if condition="$v['is_done'] eq 0">
+                        <div class="comm-hd">
+                            <span class="c-n"></span>
+                            <span class="icon"></span>
+                        </div>
+                        <else/>
+                        <div class="comm-hd">
+                            <span class="c-n"></span>
+                            <span class="icon active"></span>
+                        </div>
+                    </if>
+                    <else/>
+                    <if condition="$v['is_done'] eq 0">
+                        <div class="comm-hd">
+                            <span class="c-l"></span>
+                            <span class="icon"></span>
+                        </div>
+                        <else/>
+                        <div class="comm-hd">
+                            <span class="c-l active"></span>
+                            <span class="icon active"></span>
+                        </div>
+                    </if>
+
+                </if>
+                <div class="comm-bd">
+                    <span class="process">{$v.process_name}</span>
+                    <span class="user">{$v.user_name}</span>
+                    <if condition="$v['time'] neq ''">
+                        <span class="time">{:date('Y-m-d H:i:s',$v['time'])}</span>
+                    </if>
+                </div>
+            </div>
+        </volist>
+    </div>
+</if>

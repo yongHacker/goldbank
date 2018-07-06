@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>layui</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/public/layui/css/layui.css" media="all">
+	<!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+	<style>
+		.layui-main{width:auto;padding: 20px 20px 70px;}
+	</style>
+</head>
+<body>
+<div class="layui-main">
+	<div class=" demoTable">
+		搜索ID：
+		<div class="layui-inline">
+			<input class="layui-input" name="id" id="demoReload" autocomplete="off">
+		</div>
+		<button class="layui-btn" data-type="reload">搜索</button>
+		<!--<button class="layui-btn" data-type="getCheckData">获取选中行数据</button>
+		<button class="layui-btn" data-type="getCheckLength">获取选中数目</button>
+		<button class="layui-btn" data-type="isAll">验证是否全选</button>-->
+	</div>
+
+	<table class="layui-table" lay-data="{url:'/index.php?g=Business&m=BOutboundOrder&a=index&is_limit=1&data_type=1', page:true, id:'idTest'}" lay-filter="demo">
+		<thead>
+		<tr>
+			<th lay-data="{type:'checkbox', fixed: 'left'}"></th>
+			<th lay-data="{field:'id', width:80, sort: true, fixed: true}">ID</th>
+			<th lay-data="{field:'batch', sort: true}">出库单号</th>
+			<th lay-data="{field:'count'}">数量</th>
+			<th lay-data="{field:'type', width:80}">类型</th>
+			<th lay-data="{field:'user_nicename', width:160}">制单人</th>
+			<th lay-data="{field:'create_time', width:80, sort: true}">制单时间</th>
+
+			<th lay-data="{field:'check_name', width:80}">审核人</th>
+			<th lay-data="{field:'check_time', width:135, sort: true}">审核时间</th>
+			<!--<th lay-data="{field:'score', width:80, sort: true, fixed: 'right'}">评分</th>-->
+			<th lay-data="{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}"></th>
+		</tr>
+		</thead>
+	</table>
+
+	<script type="text/html" id="barDemo">
+		<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+		<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+	</script>
+
+
+</div>
+<script src="/public/layui/layui.js" charset="utf-8"></script>
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script src="__PUBLIC__/shop/BOutboundOrder/index3.js"></script>
+</body>
+</html>

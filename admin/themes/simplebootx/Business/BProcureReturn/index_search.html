@@ -1,0 +1,63 @@
+<form class="well form-search search_row" method="post" action="{:U('BProcureReturn/' . $Think.ACTION_NAME)}">
+	<div class="row-fluid">
+		<div class="span4" style="width: 500px;">
+			综合搜索： <input type="text" class="span8" autocomplete="off" name="search_name" value="{:I('request.search_name/s','')}" placeholder="退货编号/制单人/仓库名称" style="width:300px;">
+		</div>
+		<div class="span4" style="width: 500px;">
+			创建时间：
+            <div class="input-prepend">
+                <span class="add-on input-group-addon">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                </span>
+                <input style="width: inherit;" class="js-date" name="create_begin_time" value="{:I('request.create_begin_time/s','')}" type="text">
+            </div>
+            ~
+            <div class="input-prepend">
+                <span class="add-on input-group-addon">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                </span>
+                <input style="width: inherit;" class="js-date" name="create_end_time" value="{:I('request.create_end_time/s','')}" type="text">
+            </div>
+        </div>
+    </div>
+    <br/>
+	<div class="row-fluid">
+		<div class="span4" style="width: 500px;">
+            <label class="row-fluid">订单状态：
+                <select name="status" style="width: 300px;" <if condition="ACTION_NAME == 'check_index' || ACTION_NAME == 'payment_index'">disabled="disabled"</if>>
+                    <option value="">--请选择状态--</option>
+                    <?php 
+                        if (ACTION_NAME == 'check_index') {
+                            $_REQUEST['status'] = '0';
+                        } elseif (ACTION_NAME == 'payment_index') {
+                            $_REQUEST['status'] = '1';
+                        }
+                    ?>
+                    <volist name="status" id="v">
+                    	<option value="{$key}" <if condition="$_REQUEST['status'] === (String)$key">selected="selected"</if>>{$v}</option>
+                    </volist>
+                </select>
+            </label>
+        </div>
+		<div class="span4" style="width: 500px;">
+			退货时间：
+            <div class="input-prepend">
+                <span class="add-on input-group-addon">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                </span>
+                <input style="width: inherit;" class="js-date" name="return_begin_time" value="{:I('request.return_begin_time/s','')}" type="text"  >
+            </div>
+            ~
+            <div class="input-prepend">
+                <span class="add-on input-group-addon">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                </span>
+                <input style="width: inherit;" class="js-date" name="return_end_time" value="{:I('request.return_end_time/s','')}" type="text"  >
+            </div>
+        </div>
+        <div class="span4">
+			<input type="submit" class="btn btn-primary" value="搜索" />
+			<a class="btn btn-danger" href="{:U('BProcureReturn/index')}">清空</a>
+		</div>
+    </div>
+</form>

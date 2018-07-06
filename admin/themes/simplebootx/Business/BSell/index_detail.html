@@ -1,0 +1,346 @@
+<businesstpl file="header" />
+<style>
+input {width: 163px; margin-bottom: 0px;}
+.table {text-overflow: ellipsis;overflow: hidden;}
+.ta {overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta input {width: 177px; margin-bottom: 0px; border-left: 0px; border-top: 0px; border-right: 0px; border-bottom: 0px; padding: 8px 1px; margin-left: 0px; width: 95%;}
+.ta input:focus { -webkit-box-shadow: 0px 0px 0px; -moz-box-shadow: 0px 0px 0px; box-shadow: 0px 0px 0px;}
+.ta td { vertical-align: middle;}
+.td_border { border: solid 1px #157ab5;}
+.sel { background: #f4f4f4;}
+.my_page li { margin-top: 10px; display: none;}
+.table tr th { text-align: center;}
+.dropdown-menu_sell { position: absolute; z-index: 1000; display: none; float: left; min-width: 177px; background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 10px; -webkit-background-clip: padding-box; background-clip: padding-box; padding: 5px 0px; margin: 2px 0px 0px; list-style: none; border-width: 1px; border-style: solid; border-color: rgba(0, 0, 0, 0.2); border-image: initial; border-radius: 6px;}
+.list-2 { z-index: 11; height: 80%; width:80%; margin:5% auto; background: #fff;}
+.remark { width: 888px; cursor: not-allowed; background-color: #fff;}
+</style>
+</head>
+<body class="theme-blue">  
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+			<li class="active"><a>{:L('BUSINESS_BSELL_INDEX_DETAIL')}</a></li>
+			<span style="float: right">
+				<if condition='$data.status eq 0 && get_user_id() eq $data["creator_id"]'>
+					<a class="btn btn-danger del" href="#myModal" name="{$data.id}" class="del" role="button" data-toggle="modal">撤销</a>
+				</if>
+			        <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			</span>
+		</ul>
+
+		<table class="table table-bordered" style="white-space:normal">
+			<tr>
+				<td class="sel" width="20%">销售日期（制单时间）</td>
+				<td width="25%">{$data["sell_time"]|date="Y-m-d",###}({$data["create_time"]|date="Y-m-d H:i:s",###})</td>
+				<td class="sel" width="20%">会员姓名</td>
+				<td>{$data['buy_name']}</td>
+			</tr>
+			<tr>
+				<td class="sel">销售方式</td>
+				<td width="25%" >
+					<if condition="$data['sell_type'] eq 1">
+						零售
+					<elseif condition="$data['sell_type'] eq 2"/>
+						以旧换新
+					</if>
+				</td>
+				<td class="sel">外部订单号</td>
+				<td >{$data['sn_id']}</td>
+			</tr>
+			<tr>
+				<td class="sel">销售员</td>
+				<td><if condition="$data['realname']">{$data['realname']}<else/>{$data['user_nicename']}</if></td>
+				<td class="sel">销售总价</td>
+				<td>{$data['real_sell_price']}</td>
+			</tr>
+			<tr>
+				<td class="sel">销售单号</td>
+				<td>{$data['order_id']}</td>
+				<td class="sel">抹零金额</td>
+				<td>{$data['extra_price']}</td>
+			</tr>
+			<tr>
+				<td class="sel">备注</td>
+				<td colspan="3" style="word-break:break-all;">{$data['memo']}</td>
+			</tr>
+			<if condition="$data['check_id']">
+			<tr>
+				<td class="sel">审核人</td>
+				<td>{$data['check_name']}</td>
+				<td class="sel">审核时间</td>
+				<td><if condition='$data["check_time"] neq ""'>{$data["check_time"]|date="Y-m-d H:i:s",###}</if></td>
+			</tr>
+			<tr>
+				<td class="sel">审核备注</td>
+				<td colspan="4" style="word-break:break-all;">{$data['check_memo']}</td>
+			</tr>
+			</if>
+		</table>
+		<businesstpl file="process" />
+        <div class="main-content">
+			<div class="ta">
+				<if condition="$list">
+				<ul class="nav nav-tabs">
+					<li class="active"><a>货品列表</a></li>
+				</ul>
+				<table class="table table-bordered  table-hover">
+					<thead >
+						<tr>
+							<th>序</th>
+							<th>图片</th>
+							<th>品目</th>
+							<th>商品编号</th>
+							<th>货品编号</th>
+							<th>重量</th>
+							<th>含金量</th>
+							<th>金重</th>
+							<th>销售工费方式</th>
+							<th>工费</th>
+							<th>克单价</th>
+							<th>建议售价</th>
+							<th>优惠金额</th>
+							<th>实际售价</th>
+							<th>计价方式</th>
+							<th>销售状态</th>
+							<input type="hidden" class="weight" value="{$sun[0]['sun']}">
+						</tr>
+					</thead>
+					<volist name="list" id="v">
+					<tr height="30">
+						<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+						<td class="">
+							<if condition="empty($v['product_pic'])">
+							<img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
+							<else />
+							<a href="javascript:parent.image_preview_dialog('{$v['product_pic']}');">
+								<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$v.product_pic}">
+							</a>
+							</if>
+						</td>
+						<td class="text-left">{$v.goods_name}</td>
+						<td class="text-center">{$v.goods_code}</td>
+						<td class="text-center">{$v.product_code}</td>
+						<td class="text-right">{$v.p_total_weight}</td>
+						<td class="text-center"><if condition ="$v['sell_pricemode'] eq 1">{$v['purity']}‰<else/>--</if></td>
+						<td class="text-right">{$v.p_gold_weight}</td>
+						<td class="text-center"><if condition="$v.sell_feemode eq 0">件工费销售<else/>克工费销售</if></td>
+						<td class="text-right">{$v.detail_sell_fee}</td>
+						<td class="text-right"><if condition="$v['sell_pricemode'] eq 0">0<else/>{$v.gold_price}</if></td>
+						<td class="text-right">{:numberformat($v['sell_price'],2,'.',',')}</td>
+						<td class="text-right">{:numberformat($v['discount_price'],2,'.',',')}</td>
+						<td class="text-right">{:numberformat($v['actual_price'],2,'.',',')}</td>
+						<td class="text-center"><if condition='$v.sell_pricemode eq 0'>计件<else/>计重</if></td>
+						<td class="text-center">{$status[$v[status]]}</td>
+					</tr>
+					<tr height="30" style="color: #f90000">
+						<td  class=""></td>
+						<td  class="product_detail text-left">详情</td>
+						<td class="product_detail text-left" colspan="14" style="white-space: normal;">{:strip_tags($v['product_detail'])}</td>
+					</tr>
+					</volist>
+				</table>
+				</if>
+				<if condition="$sell_recovery_product_list">
+					<ul class="nav nav-tabs">
+						<li class="active"><a>以旧换新记录</a></li>
+					</ul>
+
+					<table class="table table-bordered  table-hover">
+						<thead >
+						<tr>
+							<th>序</th>
+							<th style="width:220px;">金料名称</th>
+							<th>金料编号</th>
+							<th>金重</th>
+							<th>回购金价</th>
+							<th>服务克工费</th>
+							<th style="width:220px;">纯度</th>
+							<th>抵扣费用</th>
+							<th >材质</th>
+							<th >颜色</th>
+						</tr>
+						</thead>
+						<tbody id="tbody" class="recovery+old_product_tbody">
+						<volist name="sell_recovery_product_list" id='v'>
+							<tr class="recovery_type_tr">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.recovery_name}</td>
+								<td class="text-center">{$v.rproduct_code}</td>
+								<td class="text-right">{$v.gold_weight}</td>
+								<td class="text-right">{$v.recovery_price}</td>
+								<td class="text-right">{$v.service_fee}</td>
+								<td class="text-right">{$v['purity']}‰</td>
+								<td class="text-right">{$v.cost_price}</td>
+								<td class=" " >{$v['material']}</td>
+								<td class=" " >{$v['color']}</td>
+							</tr>
+						</volist>
+						</tbody>
+					</table>
+				</if>
+				<if condition="$sell_cut_product_list">
+				<ul class="nav nav-tabs">
+					<li class="active"><a>截金记录</a></li>
+				</ul>
+
+				<table class="table table-bordered  table-hover">
+			        <thead >
+			            <tr>
+			                <th>序</th>
+			                <th style="width:220px;">关联货号</th>
+			                <th>金料编号</th>
+			                <th>截金总重</th>
+			                <th>截金金价</th>
+			                <th>服务克工费</th>
+			                <th style="width:220px;">纯度</th>
+			                <th>抵扣费用</th>
+							<th >材质</th>
+							<th >颜色</th>
+			            </tr>
+			        </thead>
+			        <tbody id="tbody" class="recovery_tbody">
+			        	<volist name="sell_cut_product_list" id='v'>
+		        		<tr class="recovery_type_tr">
+					        <td class="text-center">{$key+1}</td>
+					        <td class="text-center">{$v.product_code}</td>
+					        <td class="text-center">{$v.rproduct_code}</td>
+					        <td class="text-right">{$v.gold_weight}</td>
+					        <td class="text-right">{$v.recovery_price}</td>
+					        <td class="text-right">{$v.service_fee}</td>
+					        <td class="text-right">{$v['purity']}‰</td>
+					        <td class="text-right">{$v.cost_price}</td>
+							<td class=" " >{$v['material']}</td>
+							<td class=" " >{$v['color']}</td>
+				        </tr>
+			        	</volist>
+			        </tbody>
+			    </table>
+				</if>
+
+				<if condition="$sell_sub">
+				<!--change by alam 2018/5/8 start-->
+				<ul class="nav nav-tabs">
+					<li class="active"><a>其它费用</a></li>
+				</ul>
+
+				<table class="table table-bordered table-hover">
+			        <thead>
+			            <tr>
+			                <th>序</th>
+			                <th>类目名称</th>
+			                <th>类目费用</th>
+			            </tr>
+			        </thead>
+			        <tbody id="tbody" class="recovery_tbody">
+			        	<volist name="sell_sub" id='v'>
+			        		<tr class="recovery_type_tr">
+						        <td class="text-center">{$key+1}</td>
+						        <td class="text-center">{$v.name}</td>
+						        <td class="text-center">{$v.cost}</td>
+					        </tr>
+			        	</volist>
+			        </tbody>
+			    </table>
+				<!--change by alam 2018/5/8 end-->
+				</if>
+				
+				<if condition="$saccount_list">
+				<ul class="nav nav-tabs">
+					<li class="active"><a>付款信息</a></li>
+				</ul>
+				<table class="table table-bordered  table-hover">
+			        <thead >
+				        <tr>
+				            <th>序</th>
+							<th>收款类型</th>
+				            <th style="width:220px;">收款方式</th>
+							<th style="width:220px;">流水号</th>
+							<th>收款金额</th>
+							<th>默认币种</th>
+							<th style="width:220px;">默认汇率％</th>
+				            <th>币种</th>
+							<th style="width:220px;">汇率％</th>
+				            <th style="width:220px;">计算金额</th>
+				            <th>状态</th>
+				        </tr>
+			        </thead>
+			        <tbody class="pay_tbody">
+			        	<volist name="saccount_list" id="v">
+		        		<tr class="pay_type_tr">
+				            <td class="text-center">{$key+1}</td>
+							<td class="text-center pay_type"><if condition="$v[pay_type] eq 1">系统内支付<else />系统外支付</if></td>
+				            <td class="text-center pay_id">{$v.pay_name}</td>
+							<td class="text-center flow_id"><if condition="$v[pay_type] eq 1">{$v.flow_id}<else />-</if></td>
+							<td class="text-center pay_price">{$v.pay_price}</td>
+							<td class="text-center main_currency">{$v.main_currency_name}</td>
+							<td class="text-center main_exchange_rate">{$v.main_currency_rate}</td>
+				            <td class="text-center currency">{$v.currency_name}</td>
+							<td class="text-center exchange_rate">{$v.currency_rate}</td>
+				            <td class="text-center actual_price">{$v.receipt_price}</td>
+				            <td class="text-center">{$v.show_status}</td>
+				        </tr>
+			        	</volist>
+			        </tbody>
+			    </table>
+				</if>
+				<businesstpl file="operate" />
+				<div class="form-actions text-center">
+					<if condition='$data.status eq 0 && get_user_id() eq $data["creator_id"]'>
+					<a class="btn btn-danger del" href="#myModal" name="{$data.id}" class="del" role="button" data-toggle="modal">撤销</a>
+					</if>
+			        <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			    </div>
+			</div>
+			<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog-div">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							<h3 id="myModalLabel">取消警告</h3>
+						</div>
+						<div class="modal-body">
+							<p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要撤销吗?</p>
+						</div>
+						<div class="modal-footer">
+							<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+							<button id="del" class="btn btn-danger" data-dismiss="modal">确定</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script src="/public/js/cookie.js"></script>
+			<script src="/public/js/common.js"></script>
+			<script type="text/javascript">
+				$(function(){
+					setUser();
+				});
+				function setUser(){
+					$(".del").each(function(index, obj) {
+						$(this).unbind().click(function(){
+							var id=$(this).attr('name');
+							delUser(id);
+						})
+					});
+				}
+				function delUser(id){
+					$('#myModal').find('button').each(function(index, element) {
+						$(this).unbind().click(function(){
+							if($(this).attr('id')=='del'){
+								$.ajax({
+									url: "{:U('BSell/revoke')}",
+									type: 'post',
+									data:{id:id},
+									success: function(data) {
+										if(data.status==1){
+											window.location.href = data.url;
+										}
+										else{
+											alert(data.msg);
+										}
+									}
+								})
+							}
+						})
+					});
+				}
+			</script>
+<include file="./Application/Home/View/Public/footer.html" />

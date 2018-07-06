@@ -1,0 +1,579 @@
+<businesstpl file="header" />
+<style>
+    .js-check-wrap>form,.js-check-wrap>form>table{margin-bottom:10px;}
+    .my_page{text-align:left;}
+    .my_page a{position: relative;padding: 6px 12px;margin-left: -1px;line-height: 1.42857143;color: #428bca;text-decoration: none;background-color: #fff;border: 1px solid #ddd;}
+    .my_page span{position: relative;padding: 6px 12px;margin-left: -1px;line-height: 1.42857143;color:#fff;text-decoration: none;background-color:  #6f80a1;border: 1px solid #ddd;}
+    .my_page li{margin-top: 10px;display:none;}
+    .table tr th{text-align:center;}
+    input{width: 163px;margin-bottom:0px;}
+    .table {text-overflow: ellipsis;white-space: nowrap;overflow: hidden;}
+    .ta {overflow-x: auto;width: 100%;margin-bottom: 20px;}
+    .ta td{position:relative;}
+    .ta input{width: 177px;margin-bottom:0px;border:none;border-bottom:0px;padding:8px 0;box-shadow:none;border-radius:none;width:90%;text-align:center;}
+    .ta input:focus{box-shadow: none;outline:none;}
+    .ta td{padding: 0px;vertical-align: middle;}
+    .td_border{border:solid 1px #157ab5;}
+    .select_goods{display:inline-block;background:#fff url('public/images/icon-select.gif') no-repeat scroll 55% 55%;width:10%;height:36px;position:absolute;top:0;right:0;}
+    tr td img{ width:200px;height:60px;}
+    input.left{text-align:left;}
+    input.right{text-align:right;}
+    td.left{text-align:left;}
+    td.right{text-align:right;}
+    /*#tr_bill{display:none}*/
+    .myModal{display:block;position:absolute;width:100%;height:100%;left:0;top:0;line-height:35px;}
+    .sel{background: #f4f4f4;}
+</style>
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">入库操作</a></li>
+        <span style="float: right">
+            <p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+            <a href="#my_Modal" url="{:U('BStorage/split_done', array('id'=>$info['id']))}" class="modal_trigger btn btn-danger" role="button" data-toggle="modal">分称完成</a>
+            <button class="btn js-ajax-back-btn" type="submit">{:L('BACK')}</button>
+        </span>
+    </ul>
+    <form id="form" class="form-search" method="post" action="{:U('BStorage/split')}" >
+        <input type="hidden" name="id" value="{$info.id}">
+        <input type="hidden" name="type" value="{$info.type}">
+        <input type="hidden" name="num" value="0" >
+        <table class="table table-bordered table-hover">
+            <tbody>
+            <tr>
+                <td width="15%">包裹编号</td>
+                <td width="35%">{$info.batch}</td>
+                <td width="15%">关联订单</td>
+                <td width="35%">采购订单({$info.procure_batch})</td>
+            </tr>
+            <tr>
+                <td>包货种类</td>
+                <!-- <td>{$info.class_name}</td> -->
+                <td>{$info.class_name}<notempty name="info['show_type']">({$info.show_type})</notempty></td>
+                <!-- <td>制包金价</td>
+                <td><span id="gold_price">{$info.gold_price}</span>元</td>
+            </tr>
+            <tr> -->
+                <td>包货金重</td>
+                <td>{$info.weight}</td>
+                <!-- <td>包货克工费</td>
+                <td>{$info.fee}</td> -->
+            </tr>
+            <tr>
+                <td>件数</td>
+                <td><span id="num">0</span></td>
+                <!-- <td>价值</td>
+                <td>{$info.price}</td> -->
+                <td style="line-height: 50px;">包货状态</td>
+                <td style="line-height: 50px;">{$info.show_status}</td>
+            </tr>
+            <tr>
+                <td style="line-height: 50px;">备注</td>
+                <td><textarea name="memo" style="width:250px;height: 50px;"></textarea></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+   <form id="excel_into" method="post" action="{:U('BStorage/excel_input',array('type'=>$info['type']))}" enctype="multipart/form-data">
+        <p class="btn btn-primary btn-small excel_click" type="text">从excel文件中导入</p>
+        <p class="btn btn-primary btn-small" onclick="location.href='{$example_excel}'">点击此处下载模板</p>
+        <input type="file" name="excel_file" style="opacity:0;position:absolute;">
+    </form>
+    <div class="main-content">
+        <div class="ta">
+            <table class="table table-bordered table-hover table-striped">
+                <thead >
+                <tr>
+                    <th class="text-center" width="40">序</th>
+                    <th class="text-center">规格编码</th>
+                    <th class="text-center">货品编码</th>
+                    <th class="text-center">货品名称</th>
+                    <th class="text-center">标签价</th>
+                    <th class="text-center" width="100">操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                <volist name="product_list" id="v">
+                    <tr id="{$v.goods_id}" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+                        <td class="text-center">{$key+1}</td>
+                        <td class="text-center">{$v.goods_code}</td>
+                        <td class="text-center"><input class="product_code" type="text"style="padding:5px 3px;" value="{$v.product_code}"></td>
+                        <td class="text-left" style="padding:8px 3px">{$v.goods_name}</td>
+                        <!-- <td class="text-center"><input class="cost_price right" type="text" style="padding:5px 3px;" value="{$v.cost_price}"></td> -->
+                        <td class="text-center"><input class="sell_price right" type="text" style="padding:5px 3px;" value="{$v.sell_price}"> </td>
+                        <td class="text-center">
+                            <a href="javascript:;" onclick="init_memo_iframe(this)" title="{$v.memo}">备注<span class="memo" hidden>{$v.memo}</span></a>&nbsp;&nbsp;
+                            <a class="del" href="javascript:;">删除</a>
+                        </td>
+                    </tr>
+                </volist>
+                <tr id="last_tr">
+                    <td class="text-center"></td>
+                    <td></td>
+                    <td></td>
+                   <!--  <td></td> -->
+                    <td></td>
+                    <td></td>
+                    <td class="text-center" style="padding:8px 0;position:relative;height:19px;"><a href="#myModal" class="myModal"  role="button" data-toggle="modal" class="leave" role="button">+</a></td>
+                </tr>
+                </tbody>
+            </table>
+            <div>
+               <!-- 包裹总重<span id="real_weight">0.00</span>g-->
+                <input type="hidden" name="real_weight" value="0.00" >
+                <input type="hidden" name="num" value="0" >
+            </div>
+		</div>
+		<div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom:2%;" id="myModal" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h3 id="myModalLabel">商品选择</h3>
+					</div>
+					<div class="modal-body" style="max-height: 800px;padding: 0px;">
+                        <iframe style="height: 450px;" frameborder="0" class="appiframe" src="{:U('BStorage/goods_list',array('type'=>$info['type']))}" id="goods_list" name="goods_list"></iframe>
+                    </div>
+					<div class="modal-footer">
+						<button id="check" class="btn btn-primary pull-left" >选中</button>
+						<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+						<button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="pagination">
+			{$page}
+		</div>
+	</div>
+	<div class="form-actions text-center">
+		<p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+        <a href="#my_Modal" url="{:U('BStorage/split_done', array('id'=>$info['id']))}" class="modal_trigger btn btn-danger" role="button" data-toggle="modal">分称完成</a>
+        <button class="btn js-ajax-back-btn" type="submit">{:L('BACK')}</button>
+	</div>
+</div>
+
+<div class="modal small fade" id="my_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">提示</h3>
+        </div>
+        <div class="modal-body">
+            <p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定完成分称吗?</p>
+        </div>
+        <div class="modal-footer">
+            <button data-type="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+            <button data-type="del" class="btn btn-danger" data-dismiss="modal">确定</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+<script src="__PUBLIC__/js/jquery-form.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+
+<script>
+    var agc_gold=5;
+    window.load=function(){
+        var url="{:U('BStorage/goods_list',array('pricemode'=>$info['pricemode']))}";
+        $("#goods_list").attr("src",url);
+    }
+	var is_loading = false;
+
+	heightAuto($("#myModal"));
+    
+    table_order();
+
+    count_num();
+
+    count_weight();
+
+    $(".modal_trigger").unbind().click(function(){
+        var url = $(this).attr('url');
+        $('#my_Modal').find('button[data-type="del"]').unbind().click(function(){
+            var res=save();
+            if(res){
+                $.get(url, null, function(data){
+                    if(data.status == 1){
+                        location.href = data.referer;
+                    }
+                })
+            }
+        });
+    });
+
+    $(".js-ajax-close-btn").on('click', function(e) {
+        e.preventDefault();
+        Wind.use("artDialog", function() {
+            art.dialog({
+                id : "question",
+                icon : "question",
+                fixed : true,
+                lock : true,
+                background : "#CCCCCC",
+                opacity : 0,
+                content : "您确定需要关闭当前页面嘛？",
+                ok : function() {
+                    setCookie('refersh_time_admin_menu_index', 1);
+                    parent.close_current_app();
+                    return true;
+                }
+            });
+        });
+    });
+
+    $('.excel_click').click(function(){ $('input[name=excel_file]').click(); });
+
+    var $form = $('#excel_into');
+    var $file = $('input[name=excel_file]');
+    $file.unbind('change').change(function(){
+        if($file.val()){
+            $('.excel_click').html('导入中...');
+            $form.ajaxSubmit({
+                success: function (result) {
+                    result = JSON.parse(result);
+                    if(result.status == 1){
+
+                        $('#excel_into .msg').remove();
+                        $('#last_tr').before(result.data);
+
+                        del_input();
+
+                        table_order();
+
+                        count_num();
+
+                        count_weight();
+
+                        $('.weight').keyup(function(){
+                            count_weight();
+                        });
+
+                        $('.excel_click').html('导入成功');
+
+                        setTimeout(function(){$('.excel_click').html('从excel文件中导入');},800);
+
+                    }else if(result.status==0){
+                        $('#excel_into .msg').remove();
+                        $('#excel_into').append('<p style="color:red;" class="msg">'+result.msg+'<p>');
+                    }
+                }
+            });
+        }
+    });
+    
+    function save(){
+        var ret = true;
+        var storage_id = $('input[name="id"]').val();
+        var num = $('input[name=num]').val();
+        var type = $('input[name="type"]').val();
+
+        var datas = get_product_data();
+
+        $('.ta #tbody tr').each(function(){
+            if($(this).attr('id')>0){
+
+                var weightObj = $(this).find('.weight');
+
+                var product_code = $(this).find('.product_code').val()?$(this).find('.product_code').val():$(this).find('.product_code').html();
+
+                if(is_empty(product_code)){
+                    appear_error("请将商品采购数据填写完整！");
+                    ret = false;
+                    return false;
+                }else{
+                    appear_error('');
+                }
+            }
+        });
+
+        if(ret){
+            var post_data = {
+                storage_id: storage_id,
+                type: type,
+                num: num,
+                data: datas
+            };
+            var res=false;
+            $.ajax({
+                async: false,
+                url: $('#form').attr('action'),
+                type: 'post',
+                data: post_data,
+                async: false,
+                dataType: 'json',
+                success:function(result){
+                    if(result.status=='success'){
+                        res=true;
+                    }
+                }
+            });
+            return res;
+        }
+    }
+    $('.js-ajax-submit').click(function(){
+    	// 避免重复加载...
+    	if(is_loading) return;
+
+        var ret = true;
+        var storage_id = $('input[name="id"]').val();
+        var type = $('input[name="type"]').val();
+        var num = $('input[name=num]').val();
+
+        var datas = get_product_data();
+
+        $('.ta #tbody tr').each(function(){
+            if($(this).attr('id')>0){
+                
+                var weightObj = $(this).find('.weight');
+
+                var product_code = $(this).find('.product_code').val()?$(this).find('.product_code').val():$(this).find('.product_code').html();
+
+                if(is_empty(product_code)){
+                    appear_error("请将商品采购数据填写完整！");
+                    ret = false;
+                    return false;
+                }else{
+                    appear_error('');
+                }
+            }
+        });
+
+        if(ret){
+        	var post_data = {
+                storage_id: storage_id,
+                type:type,
+            	num: num,
+            	data: datas
+            };
+
+            is_loading = true;
+
+            $.ajax({
+                async: false,
+                url: $('#form').attr('action'),
+                type: 'post',
+                data: post_data,
+                dataType: 'json',
+                success:function(result){
+
+                	is_loading = false;
+
+                    if(result.status == "success"){
+                        appear_error('操作成功！');
+                    }else if(result.status == "fail"){
+                        appear_error('操作失败！'+result.msg);
+                    }
+                    if(result.referer){
+                        window.location.href = result.referer;
+                    }else{
+                        if (result.status === 'success') {
+                            //刷新当前页
+                            window.location.reload;
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    function get_product_data(){
+        var datas = new Array();
+        $('.ta tbody tr').each(function(){
+            var tr_ = $(this);
+            if(tr_.attr('id') > 0){
+            	if(!tr_.hasClass('excel')){
+            		var data = new Object();
+                    data.is_old = tr_.attr('data-pid') == undefined ? 0: tr_.attr('data-pid');
+                    data.product_code = tr_.find('.product_code').val();
+                    /* data.cost_price = tr_.find('.cost_price').val(); */
+                    data.sell_price = tr_.find('.sell_price').val();
+                    data.extras = tr_.find('.extras').val();
+                    data.goods_id = tr_.attr('id');
+                    data.goods_code = tr_.attr('goods_code');
+                    data.memo = tr_.find('memo').text();
+
+                    datas.push(data);
+            	}
+            }
+        });
+        return JSON.stringify(datas);
+    }
+
+    function appear_error(str){
+        var tips = $('.tips_error');
+        if(!tips.length){
+            $('.form-actions').append('<span class="tips_error" style="color:red;">'+ str +'</span>');
+        }else{
+            tips.html(str);
+        }
+    }
+
+    $("#myModal").draggable();
+
+    $('#goods_list').load(function(){
+
+    	count_weight();
+    	
+        $('#check').unbind("click").click(function(){
+            var htm = $('#goods_list').contents();
+            var tr = htm.find('.ta tbody tr');
+            var datas = new Array();
+
+            var checked_num = htm.find('input[type="checkbox"]:checked').length;
+
+            // 没勾选任何
+            if(checked_num == 0) return;
+
+            tr.each(function(){
+                var tr_ = $(this);
+                var id = tr_.find('.check_box').attr('id');
+                var goods_name = tr_.find('.goods_name').html();
+                var goods_num = parseInt(tr_.find('#goods_num').val());
+                var goods_code = tr_.find('.goods_code').html();
+                var goods_weight = tr_.find('.goods_weight').html();
+                var purity = tr_.find('.purity').html();
+
+                var pick_fee = tr_.find('.pick_fee').html();
+                var sell_fee = tr_.find('.sell_fee').html();
+
+                var htm = "";
+                if(tr_.find('.check_box').attr('checked')){
+                    for(var i=0; i<goods_num; i++){
+                        htm += add_line(id, goods_name, goods_code, goods_weight);
+                    }
+                    $('#last_tr').before(htm);
+
+                    del_input();
+
+                    table_order();
+                }
+            });
+
+            count_num();
+
+            count_weight();
+
+            $('.weight').keyup(function(){
+            	count_weight();
+            });
+            $('.d_weight').keyup(function(){
+               var w= parseFloat($(this).val());
+                var w1=parseFloat($(this).parent().parent().find(".weight").val());
+                if(w>w1){
+                    $(this).val(w1.toFixed(2));
+                }
+            });
+        });
+
+        $('#add').unbind("click").click(function(){$('#check').click();});
+    });
+    $('.d_weight').keyup(function(){
+        var w= parseFloat($(this).val());
+        var w1=parseFloat($(this).parent().parent().find(".weight").val());
+        if(w>w1){
+            $(this).val(w1.toFixed(2));
+        }
+    });
+    function add_line(id,goods_name,goods_code,weight){
+        var htm = '<tr id="'+id+'" goods_code="'+ goods_code +'">'
+            +'<td class="text-center"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
+            +'<td class="text-center">'+ goods_code +'</td>'
+            +'<td class="text-center"><input class="product_code" type="text"style="padding:5px 3px;"></td>'
+            +'<td class="text-left" style="padding:8px 3px">'+ goods_name +'</td>'
+            /* +'<td class="text-center"><input class="cost_price right" type="text"style="padding:5px 3px;" value="0.00"></td>' */
+            +'<td class="text-center"><input class="sell_price right input_init" type="text"style="padding:5px 3px;" value="0.00"></td>'
+            +'<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)" title="{$v.memo}">备注<span class="memo" hidden>{$v.memo}</span></a>&nbsp;&nbsp;<a class="del" href="javascript:;">删除</a></td>'
+            +'</tr>';
+
+        return htm;
+    }
+
+    function table_order(){
+        var len = $(".ta").find('table tr').length;
+        for(var i = 1; i<len; i++){
+            $(".ta").find('table tr:eq('+i+') td:first').text(i);
+        }
+    }
+
+    del_input();
+
+    function del_input(){
+        $('.del').each(function(){
+            $(this).click(function(){
+                var tr = $(this).parent('td').parent('tr');
+
+                tr.remove();
+
+                table_order();
+
+                count_num();
+
+                count_weight();
+            });
+        });
+    }
+    function check_weight(tag){
+        var weight=$(tag).val();
+        if(!/^[0-9\.]+$/.test(weight)||parseFloat(weight)<=0){
+            //	 $(tag).focus();
+            //	 $(tag).css('color','red');
+            return false;
+        }else{
+            $(tag).css('color','black');
+            return true;
+        }
+    }
+    function count_num(){
+        var total_num = parseInt($('.ta tbody tr').size()-1);
+        $('#num').text(total_num);
+        $('input[name=num]').val(total_num);
+    }
+
+    function count_weight(){
+        var total_weight = 0;
+
+        $('.ta tbody tr').each(function(){
+            var w = parseFloat($(this).find('.weight').val())>0?parseFloat($(this).find('.weight').val()):parseFloat($(this).find('.weight').html());
+            if(w > 0){
+                total_weight += w;
+            }
+        });
+        
+        total_weight = total_weight.toFixed(2);
+
+        setInputValue('real_weight', total_weight);
+
+        setShowText($('#real_weight'), total_weight);
+
+        return total_weight;
+    }
+
+    function setShowText(obj, total_weight){
+        $(obj).text(total_weight);
+    }
+
+    function setInputValue(inputName, inputValue){
+        if($('input[name="'+ inputName +'"]')[0] != undefined){
+            $('input[name="'+ inputName +'"]').val(inputValue);
+        }
+    }
+
+    function is_empty(str){
+        if(str!=null&&str!=""&&typeof(str)!="undefined"&&str!='NAN'){
+            return false;
+        }
+        return true;
+    }
+
+</script>
+
+
+<include file="./Application/Home/View/Public/footer.html" />

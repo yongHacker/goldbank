@@ -1,0 +1,386 @@
+<businesstpl file="header" />
+<link href="__PUBLIC__/appertain/business/css/BSellReturn.css" rel="stylesheet">
+</head>
+<body class="theme-blue">
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('BSellReturn/index')}">{:L('BUSINESS_BSELLRETURN_INDEX')}</a></li>
+            <li class="active"><a href="{:U('BSellReturn/' . $Think.ACTION_NAME, array('return_id' => $return_id))}">{:L('BUSINESS_BSELLRETURN_' . $Think.ACTION_NAME)}</a></li>
+            <span style="float: right">
+                <button type="button" class="btn btn-primary save" id="save" data-type="-1" data-url="{:U('BSellReturn/' . $Think.ACTION_NAME)}">{:L('SAVE')}</button>
+                <button type="button" class="btn btn-primary submit" id="commit" data-type="0" data-url="{:U('BSellReturn/' . $Think.ACTION_NAME)}">提交</button>
+                <notempty name="return_id">
+                <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+                </notempty>
+            </span>
+        </ul>
+        <table class="table table-bordered" id="order_base">
+            <tr>
+                <td class="sel" width="20%">销售员</td>
+                <td width="30%">{$employee_name}</td>
+                <td class="sel" width="20%">退货日期</td>
+                <td width="30%">
+                    <div class="input-prepend input-group">
+                        <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                        <input type="text" autocomplete="off" name="return_date" class="form-control datepicker js-date date" value="<empty name="return_info['return_time']">{$today}<else />{:date('Y-m-d', $return_info['return_time'])}</empty>" id="return_date">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="sel">门店</td>
+                <td>
+                    <select id="shop_id" name="shop_id" data-live-search="true" <notempty name="return_id">disabled="true"</notempty>>
+                        <if condition="$shop_id elt 0">
+                            <option value="0" currency_id="{$currency[0]['id']}" unit="{$currency[0]['unit']}" default_rate="{$currency[0]['exchange_rate']}">总部</option>
+                        </if>
+                        <volist name="shop" id="v">
+                            <option value="{$v.id}" show_common_payment="{$v.show_common_payment}" in_user="{$v.user_nicename}" currency_id="{$v.currency_id}" unit="{$v.unit}" default_rate="{$v.exchange_rate}" <if condition="$return_info['shop_id'] eq $v['id']">selected="selected"</if>>{$v.shop_name}</option>
+                        </volist>
+                    </select>
+                </td>
+                <td class="sel" class="gold">退货总额</td>
+                <td><input type="number" step="0.01" autocomplete="off" name="return_price" class="no_arrow left" id="return_price" value="<empty name="return_info['return_price']">0.00<else />{$return_info.return_price}</empty>"></td>
+            </tr>
+            <tr>
+                <td class="sel">会员</td>
+                <td class="search_input">
+                    <input type="hidden" id="client_id" value="<notempty name="return_info['client_id']">{$return_info.client_id}</notempty>">
+                    <input type="hidden" id="mobile" value="<notempty name="return_info['client_mobile']">{$return_info.client_mobile}</notempty>">
+                    <input type="text" autocomplete="off" name="click_name" onclick="$('#clientModel').modal('show');" id="click_name" value="<notempty name="return_info['client_name']">{$return_info.client_name}({$return_info.client_mobile})</notempty>">
+                    <a href="#clientModel" class="clientModel leave" data-toggle="modal" role="button"><span><i class="fa fa-search normal"></i></span></a>
+                </td>
+                <td class="sel">抹零金额</td>
+                <td><input type="number" step="0.001" autocomplete="off" name="extra_price" class="no_arrow left" id="extra_price" value="<empty name="return_info['extra_price']">0.00<else />{$return_info.extra_price}</empty>"></td>
+            </tr>
+            <tr>
+                <td class="sel">身份证号</td>
+                <td><input type="text" autocomplete="off" name="client_idno" id='client_idno' value="<notempty name="return_info['client_idno']">{$return_info.client_idno}</notempty>"></td>
+                <td class="sel">退货件数</td>
+                <td><span id="return_num"><empty name="return_info['count']">0<else />{$return_info.count}</empty></span></td>
+            </tr>
+            <tr>
+                <td class="sel">备注</td>
+                <td colspan="3"><textarea type="text" style="width: 80%;" id="memo"><notempty name="return_info['memo']">{$return_info.memo}</notempty></textarea></td>
+            </tr>
+        </table>
+
+        <businesstpl file="BExpence/add_expence" />
+
+        <form id="excel_into" class="form" method="post" action="#" enctype="multipart/form-data">
+            <a class="btn btn-primary btn-small sellModel" href="#sellModel" data-toggle="modal" role="button" type="text">选择销售单</a>
+        </form>
+        <div class="main-content">
+            <div class="ta" id="return_product">
+                <table class="table table-bordered table-hover" >
+                    <thead>
+                    <tr>
+                        <th style="width:60px;">序</th>
+                        <th style="width:60px;">图片</th>
+                        <th style="width:120px;">品目</th>
+                        <th style="width:120px;">商品编号</th>
+                        <th>货品编号</th>
+                        <th>附属货品编号</th>
+                        <th style="width:60px;">重量</th>
+                        <th style="width:60px;">含金量</th>
+                        <th style="width:60px;">金重</th>
+                        <th style="width:120px;">销售工费方式</th>
+                        <th style="width:60px;">工费</th>
+                        <th style="width:60px;">克单价</th>
+                        <th style="width:60px;">建议售价</th>
+                        <th style="width:60px;">优惠金额</th>
+                        <th style="width:60px;">实际售价</th>
+                        <th style="width:60px;">计价方式</th>
+                        <th style="width:120px;">退货价</th>
+                        <th style="width:60px;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="detail_tbody">
+                    <notempty name="return_info['return_product']">
+                        <volist name="return_info.return_product" id="v">
+                        <tr class="plus" data-detailid="{$v.id}" data-productid="{$v.product_id}" data-redetailid="{$v.redetail_id}">
+                            <td class="text-center"></td>
+                            <td class="text-center"><img src="<empty name="v['product_pic']">__TMPL__Public/assets/images/default-thumbnail.png<else />{$v.product_pic}</empty>"></td>
+                            <td class="text-left">{$v.goods_name}</td>
+                            <td class="text-center">{$v.goods_code}</td>
+                            <td class="text-center">{$v.product_code}</td>
+                            <td class="text-center">{$v.sub_product_code}</td>
+                            <td class="text-right">{$v.p_total_weight}</td>
+                            <td class="text-center"><if condition ="$v['sell_pricemode'] eq 1">{$v['purity']}‰<else/>--</if></td>
+                            <td class="text-right">{$v.p_gold_weight}</td>
+                            <td class="text-center"><if condition="$v.sell_feemode eq 0">件工费销售<else/>克工费销售</if></td>
+                            <td class="text-right">{$v.detail_sell_fee}</td>
+                            <td class="text-right"><if condition="$v['sell_pricemode'] eq 0">0<else/>{$v.gold_price}</if></td>
+                            <td class="text-right">{:numberformat($v['sell_price'],2,'.',',')}</td>
+                            <td class="text-right">{:numberformat($v['discount_price'],2,'.',',')}</td>
+                            <td class="text-right">{:numberformat($v['actual_price'],2,'.',',')}</td>
+                            <td class="text-center"><if condition='$v.sell_pricemode eq 0'>计件<else/>计重</if></td>
+                            <td class="text-center">
+                                <input type="number" step="0.001" autocomplete="off" name="detail_return_price" class="no_arrow" value="{$v.return_price}">
+                            </td>
+                            <td class="text-center" style="vertical-align: inherit;"><a class="del fa fa-trash" title="删除"></a></td>
+                        </tr>
+                        </volist>
+                    </notempty>
+                    <tr id="detail_last">
+                        <td class="text-center"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center productModel on" href="#productModel" data-toggle="modal" role="button"><a href="javascript:void(0);">+</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="javascript:void(0);">退款明细</a></li>
+            </ul>
+            默认币种：<span class="count_unit">{$currency[0]['currency_name']}</span>
+            &nbsp;&nbsp;&nbsp;
+            默认汇率：<span class="default_rate">{$currency[0]['exchange_rate']}</span>%
+            <volist name="payment" id="vo">
+                {$vo.pay_name}
+            </volist>
+            <div class="ta">
+                <table class="table table-bordered table-hover">
+                    <thead >
+                    <tr>
+                        <th width="60">序</th>
+                        <th width="200">退款方式</th>
+                        <th width="200">币种</th>
+                        <th width="200">退款金额</th>
+                        <th width="200">计算单位</th>
+                        <th width="200">汇率％</th>
+                        <th width="200">计算金额</th>
+                        <th width="200">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody" class="pay_tbody">
+                        <notempty name="saccount_list">
+                            <volist name="saccount_list" id="v" key="k">
+                                <tr <if condition="$k eq count($saccount_list)">id="pay_last"</if> class="pay_type_tr" data-payid={$v.pay_id}>
+                                    <td class="text-center"></td>
+                                    <td class="text-center pay_id">
+                                        <select name="pay_id">
+                                            <option value="0" pay_type="">选择收款方式</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center currency">
+                                        <select name="currency" style="min-width:90px;">
+                                            <option value="0">选择币种</option>
+                                            <volist name="currency" id="vo">
+                                                <if condition="$v['currency_id'] eq $vo['id']">
+                                                    <option value="{$vo.id}" selected=selected exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                                                <else/>
+                                                    <option value="{$vo.id}" exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                                                </if>
+                                            </volist>
+                                        </select>
+                                    </td>
+                                    <td class="text-center pay_price">
+                                        <input type="number" name="pay_price" step="0.001" autocomplete="off" class="no_arrow" value="{$v.pay_price}" placeholder="付款金额">
+                                    </td>
+                                    <td class="text-center unit">{$v.unit}</td>
+                                    <td class="text-right exchange_rate">{$v.exchange_rate}</td>
+                                    <td class="text-right actual_price">{$v.receipt_price}</td>
+                                    <if condition="$k neq count($saccount_list)">
+                                        <td class="text-center pay_del" style="color: #3daae9;cursor:pointer;">删除</td>
+                                    <else />
+                                        <td class="text-center" id="add_pay_type">+添加退款方式</td>
+                                    </if>
+                                    <input type="hidden" name="saccount_id" value="{$v.id}">
+                                </tr>
+                            </volist>
+                        <else />
+                            <tr id="pay_last" class="pay_type_tr">
+                                <td class="text-center"></td>
+                                <td class="text-center pay_id">
+                                    <select name="pay_id">
+                                        <option value="0" pay_type="0">选择退款方式</option>
+                                    </select>
+                                </td>
+                                <td class="text-center currency" >
+                                    <select name="currency">
+                                        <option value="0">选择币种</option>
+                                        <volist name="currency" id="vo">
+                                            <option value="{$vo.id}" exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                                        </volist>
+                                    </select>
+                                </td>
+                                <td class="text-center pay_price">
+                                    <input type="number" name="pay_price" step="0.001" autocomplete="off" class="no_arrow" value="0.00" placeholder="付款金额">
+                                </td>
+                                <td class="text-center unit"></td>
+                                <td class="text-center exchange_rate"></td>
+                                <td class="text-right actual_price">0.00</td>
+                                <td class="text-center" id="add_pay_type">+添加退款方式</td>
+                            </tr>
+                        </notempty>
+                        <tr id="count_pay">
+                            <td class="text-center"></td>
+                            <td class="text-center" colspan="2">
+                                计算金额=退款金额*汇率/默认汇率
+                            </td>
+                            <td class="text-center" colspan="2">
+                                总计：<span id="count_return_price">0.00</span>
+                                <span class="count_unit">{$currency[0]['unit']}</span>
+                            </td>
+                            <td class="text-center" colspan="2">
+                                已经支付：<span id="count_price">0.00</span>
+                                <span class="count_unit">{$currency[0]['unit']}</span>
+                            </td>
+                            <td class="text-center" colspan="2">
+                                还需支付：<span id="need_price">0.00</span>
+                                <span class="count_unit">{$currency[0]['unit']}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--退款方式html-->
+                <div id="pay_html" hidden="hidden">
+                    <select name="pay_id">
+                        <option value="0" pay_type="0">选择退款方式</option>
+                    </select>
+                </div>
+                <!--币种方式html-->
+                <div id="currency_html" hidden="hidden">
+                    <select name="currency">
+                        <option value="0">选择币种</option>
+                        <volist name="currency" id="vo">
+                            <option value="{$vo.id}" exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions text-center">
+                <div>
+                    <input type="hidden" id="return_id" value="{$return_id}">
+                    <input type="hidden" id="del_saccount_detail" value="">
+                    <button type="button" class="btn btn-primary save" id="save" data-type="-1" data-url="{:U('BSellReturn/' . $Think.ACTION_NAME)}">{:L('SAVE')}</button>
+                    <button type="button" class="btn btn-primary commit" id="commit" data-type="0" data-url="{:U('BSellReturn/' . $Think.ACTION_NAME)}">提交</button>
+                    <notempty name="return_id">
+                    <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+                    </notempty>
+                </div>
+            </div>
+        </div>
+
+        <!-- iframe start -->
+
+        <!-- 会员列表 -->
+        <div class="modal small fade" id="clientModel" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <b id="clientModalLabel">选择会员</b>
+                    </div>
+                    <div class="modal-body">
+                        <iframe frameborder="0" class="appiframe" src="{:U('BSellReturn/client_list')}" id="client_iframe" name="client_iframe">
+
+                        </iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+                        <button id="select_client" class="btn btn-primary" data-dismiss="modal">选中</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 销售清单 -->
+        <div class="modal small fade" id="sellModel" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="sellModelLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <b id="sellModelLabel">销售清单</b>
+                    </div>
+                    <div class="modal-body">
+                        <iframe frameborder="0" class="appiframe" data-src="{:U('BSellReturn/sell_list')}" src="{:U('BSellReturn/sell_list')}" id="sell_iframe" name="sell_iframe">
+
+                        </iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="sell_check" class="btn btn-primary pull-left" data-url="{:U('BSellReturn/sell_product')}">选中</button>
+                        <button id="sell_cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+                        <button id="sell_add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 选择货品 -->
+        <div class="modal small fade" id="productModel" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="productModelLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <b id="productModelLabel">选择货品</b>
+                    </div>
+                    <div class="modal-body">
+                        <iframe frameborder="0" class="appiframe" data-src="{:U('BSellReturn/product')}" src="{:U('BSellReturn/product')}" id="product_iframe" name="product_iframe">
+
+                        </iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="product_check" class="btn btn-primary pull-left">选中</button>
+                        <button id="product_cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+                        <button id="product_add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- iframe end -->
+
+        <script src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+        <script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+        <script src="__PUBLIC__/js/common.js"></script>
+        <script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+        <script src="__PUBLIC__/appertain/business/js/BSellReturn.js"></script>
+        <script>
+            var return_id = '{$return_info.id}';
+
+            var payments = '{$payment}';
+            var _default_exchange_rate = "{$currency[0]['exchange_rate']}";
+            //初始化其它费用操作附加函数
+            expence_postfix_function = ['reflush_table'];
+            //初始化退款方式
+            init_payment();
+            //初始化删除退款方式
+            del_pay_type();
+            //添加一行退款方式
+            add_pay_type();
+            //币种选取
+            change_exchange_rate();
+            // 初始化退款明细
+            stat_finance();
+
+            if (return_id != '') {
+                // 排序
+                table_order();
+                // 初始化iframe的url
+                update_iframe_url();
+                // 刷新iframe中的勾选
+                refresh_detail_ids();
+                // 还原旧的退款明细 - 退款方式
+                rollback_pay_type();
+            }
+        </script>
+    </div>
+</body>

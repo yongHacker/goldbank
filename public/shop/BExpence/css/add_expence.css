@@ -1,0 +1,6 @@
+    #expence_table input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    #expence_table input[type="number"] { -moz-appearance: textfield; text-align: right; }
+    #expence_table th { width: calc(50% - 30px); }
+    #expence_table th:last-child, #expence_table th:first-child { width: 60px; }
+    select[name="expence_id"] { width: 220px; }
+    input[name="expence_price"] { width: 220px; }

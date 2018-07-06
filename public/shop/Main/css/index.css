@@ -1,0 +1,12 @@
+.home_info li em {
+    width: 120px;
+    display: inline-block;
+    font-style: normal;
+    font-weight: bold;;
+}
+li {
+    list-style: none;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #666;
+}

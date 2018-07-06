@@ -1,0 +1,946 @@
+<businesstpl file="header" />
+<style>
+.no_arrow::-webkit-outer-spin-button, .no_arrow::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0;}
+.no_arrow { -moz-appearance: textfield;}
+.form, .form>table { margin-bottom: 10px;}
+.table tr th { text-align: center;}
+input { width: 163px; margin-bottom: 0px;}
+.table { text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.ta { overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta td { position: relative;}
+.ta input[type="text"], .ta input[type="number"] { width: 177px; margin-bottom: 0px; border: none; border-bottom: 0px; padding: 8px 0; box-shadow: none; border-radius: none; width: 90%; text-align: center;}
+.ta input:focus { box-shadow: none; outline: none; -webkit-box-shadow: 0px 0px 0px; -moz-box-shadow: 0px 0px 0px; box-shadow: 0px 0px 0px;}
+.td_border { border: solid 1px #157ab5;}
+.select_goods { display: inline-block; background: #fff url('public/images/icon-select.gif') no-repeat scroll  55% 55%; width: 10%; height: 36px; position: absolute; top: 0; right: 0;}
+tr td img { width: 200px; height: 60px;}
+input.left { text-align: left;}
+input.right { text-align: right;}
+td.left { text-align: left;}
+td.right { text-align: right;}
+.sel { background: #f4f4f4;}
+.myModal { display: block; position: absolute; width: 100%; height: 100%; left: 0; top: 0; line-height: 35px;}
+.fomular_tr .row { margin: 0;}
+.fomular p { text-align: right; position: relative;}
+.fomular p small { position: absolute; right: -56px; size: 12px; color: #999;}
+.fomular.bottom { border-top: 1px solid #ccc;}
+</style>
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class="theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#">结算开单</a></li>
+		</ul>
+
+		<form id="form" class="form form-search" method="post" action="{:U('BSettlement/add')}">
+
+			<div class="row hide">
+				<div class="span4">累计料：<span id="all_weight">0.00</span>
+				</div>
+				<div class="span4">累计款：<span id="all_price">0.00</span>
+				</div>
+			</div>
+
+			<table class="table table-bordered">
+				<tbody>
+					<tr>
+						<td class="sel">供应商</td>
+						<td>
+							<select id="company_name">
+								<option value="">--请选择--</option>
+								<volist name="supplier_info" id="v">
+								<option value="{$v.id}">{$v.company_name}</option>
+								</volist>
+							</select>
+							<span class="form-required">*</span>
+						</td>
+						<td class="sel">结算日期</td>
+						<td>
+							<div class="input-prepend input-group">
+								<span class="add-on input-group-addon">
+									<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+								</span>
+								<input id="input_date" class="form-control datepicker js-date" name="input_date" value="{$today}" type="text">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">欠料</td>
+						<td id="account_info_weight"></td>
+						<td class="sel">欠款</td>
+						<td id="account_info_price"></td>
+					</tr>
+					<tr>
+						<td style="line-height: 30px;">料结克重</td>
+						<td style="line-height: 30px;"><span id="d_weights">0.00</span>克</td>
+						<td>来料克重</td>
+						<td><span id="r_gold_weights">0.00</span>克</td>
+					</tr>
+					<tr>
+						<td>向供应商买料</td>
+						<td class="buy_w">0.00克</td>
+						<td>向供应商卖料</td>
+						<td class="sell_w">0.00克</td>
+					</tr>
+					<tr>
+						<td style="line-height: 30px;">来往金额</td>
+						<td colspan="">
+							<div class="input-append">
+								<input type="number" class="span2 no_arrow" step="0.01" name="price">
+								<span class="add-on">元</span>
+							</div>
+						</td>
+						<td style="line-height: 30px;">抹零金额</td>
+						<td colspan="">
+							<div class="input-append">
+								<input type="number" class="span2 no_arrow" step="0.01" name="extra_price">
+								<span class="add-on">元</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="line-height: 60px;">备注</td>
+						<td colspan="3">
+							<textarea name="memo" style="width: 220px;"></textarea>
+						</td>
+					</tr>
+					<tr class="fomular_tr hide">
+						<td>计算详细</td>
+						<td colspan="3">
+							<div class="row fomular">
+								<div class="span3">
+									<p>
+										<span class="f_w"></span> g<small>欠料</small>
+									</p>
+									<p class="hide">
+										<span class="f_buy_w text-success"></span> g<small>买金克重</small>
+									</p>
+									<p class="hide">
+										<span class="f_sell_w text-error"></span> g<small>卖金克重</small>
+									</p>
+									<p class="hide">
+										<span class="f_mrecord_w_come real text-error"></span> g<small>来料克重</small>
+									</p>
+									<p class="hide">
+										<span class="f_mrecord_w real text-success"></span> g<small>料结克重</small>
+									</p>
+									<p class="hide">
+										<span class="f_ca_p">&nbsp;</span>
+									</p>
+								</div>
+
+								<div class="span3">
+									<p>
+										<span class="f_p"></span> 元<small>欠款</small>
+									</p>
+									<p class="hide">
+										<span class="f_buy_p text-error"></span> 元<small>买金总价</small>
+									</p>
+									<p class="hide">
+										<span class="f_sell_p text-success"></span> 元<small>卖金总价</small>
+									</p>
+									<p class="hide">
+										<span class="f_mrecord_w_come">&nbsp;</span>
+									</p>
+									<p class="hide">
+										<span class="f_mrecord_w">&nbsp;</span>
+									</p>
+									<p class="hide">
+										<span class="f_ca_p real text-success"></span> 元<small>结算金额</small>
+									</p>
+									<p class="hide">
+										<span class="f_ca_extra_p real text-success"></span> 元<small>抹零金额</small>
+									</p>
+								</div>
+							</div>
+							<div class="row fomular bottom">
+								<div class="span3">
+									<p>
+										<span class="f_last_w"></span> g<small>仍欠</small>
+									</p>
+								</div>
+								<div class="span3">
+									<p>
+										<span class="f_last_p"></span> 元<small>仍欠</small>
+									</p>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div style="float: left; font-weight: bold; margin-bottom: 20px;">【来料】</div>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th class="sel" style="width: 150px;">序</th>
+						<th class="sel">来自金料编码</th>
+						<th class="sel">金料名称</th>
+						<th class="sel" style="width: 200px;">金价</th>
+						<th class="sel" style="width: 200px;">克重</th>
+						<th class="sel" style="width: 200px;">折纯克重</th>
+						<th class="sel" style="width: 150px;">操作</th>
+					</tr>
+				</thead>
+				<tbody class="rproduct">
+					<tr id="last_rproduct">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="text-center" id="add_rproduct" style="cursor: pointer;"><a href="javascript:void(0);">+</a></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div style="float: left; font-weight: bold; margin-bottom: 20px;">【去料】</div>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th class="sel" style="width: 150px;">序</th>
+						<th class="sel">金料编码</th>
+						<th class="sel">金料名称</th>
+						<th class="sel" style="width: 200px;">来源</th>
+						<th class="sel" style="width: 200px;">金价</th>
+						<th class="sel" style="width: 200px;">克重</th>
+						<th class="sel" style="width: 200px;">折纯克重</th>
+						<th class="sel" style="width: 150px;">操作</th>
+					</tr>
+				</thead>
+				<tbody class="product">
+					<tr id="last_product">
+						<td class="text-center">总计</td>
+						<td class="text-left" colspan="6"><input type="number" autocomplete="off" step="0.001" class="right no_arrow" id="product_weight" value="0.00" /></td>
+						<td class="text-center showorder1 on" href="#showorder1" data-toggle="modal" role="button"><a href="javascript:void(0);">+</a></td>
+					</tr>
+				</tbody>
+			</table>
+			<div>向供应商买卖金料</div>
+			<table class="table table-bordered ta">
+				<tbody class="buy_sell">
+					<tr>
+						<th class="sel" width="5%"><input type="radio" class="type" checked="checked" name="type" data-value="buy" onclick="weight_choose_change('buy');"></th>
+						<th class="sel" width="10%">买料克重</th>
+						<th class="sel" width="22%"><input type="text" autocomplete="off" class="cal_price w" id="buy_weight" name="buy_weight">克</th>
+						<th class="sel" width="10%">买料金价</th>
+						<th class="sel" width="22%"><input type="text" autocomplete="off" class="cal_price g" id="buy_price" name="buy_price">元</th>
+						<th class="sel" width="10%">买料支出</th>
+						<th class="sel show_price" width="21%" id="buy_prices" data-show="buy_w"></th>
+					</tr>
+					<tr>
+						<th class="sel"><input type="radio" class="type" name="type" data-value="sell" onclick="weight_choose_change('sell');"></th>
+						<th class="sel">卖料克重</th>
+						<th class="sel"><input type="text" autocomplete="off" disabled="true" class="cal_price w" id="sell_weight" name="sell_weight">克</th>
+						<th class="sel">卖料金价</th>
+						<th class="sel"><input type="text" autocomplete="off" disabled="true" class="cal_price g" id="sell_price" name="sell_price">元</th>
+						<th class="sel">卖料价值</th>
+						<th class="sel show_price" id="sell_prices" data-show="sell_w"></th>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+
+		<div class="form-actions text-center">
+			<p type="text" class="btn btn-primary js-ajax-submit" data-type="save">{:L('SAVE')}</p>
+			<p type="text" class="btn btn-primary js-ajax-submit" data-type="submit">{:L('COMMIT')}</p>
+		</div>
+
+	</div>
+	<div class="modal small fade" style="width: 80%; left: 400px; display: none; top: 2%; bottom: 2%;" id="showorder1" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="cursor: move">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<b id="showorder" style="margin: 0; font-family: 'Microsoft Yahei', verdana; color: #157ab5;">金料列表</b>
+				</div>
+				<div class="modal-body" style="max-height: 800px; padding: 0px;">
+					<iframe frameborder="0" class="appiframe" src="{:U('BSettlement/get_product_gold')}" id="show_order" name="show_order"> </iframe>
+				</div>
+				<div class="modal-footer">
+					<button id="check" class="btn btn-primary pull-left">选中</button>
+					<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+					<button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/js/jquery-form.js"></script>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+
+	<script type="text/javascript">
+		// 当前页面的标识ID
+		var location_id = location_id();
+		window.onbeforeunload = function(){
+			localStorage.removeItem('p_id' + location_id);
+		}
+
+		$(document).ready(function() {
+			$("#buy_weight").val('');
+			$("#buy_price").val('');
+			$("#sell_weight").val('');
+			$("#sell_price").val('');
+			$("select").val('');
+		});
+
+		var account_info = {};
+
+		function autoFomula() {
+			var _fomular = $('.fomular');
+
+			$('.fomular_tr').show();
+
+			account_info.weight = empty(account_info.weight) ? 0.00 : (isNaN(account_info.weight) ? 0.00 : account_info.weight);
+			account_info.price = empty(account_info.price) ? 0.00 : (isNaN(account_info.price) ? 0.00 : account_info.price);
+
+			_fomular.find('.f_w').text(parseFloat(account_info.weight).toFixed(2));
+			_fomular.find('.f_p').text(parseFloat(account_info.price).toFixed(2));
+
+			var _radio_checked_type = $('[name="type"]:checked').data('value');
+
+			var _buy_p = 0;
+			var _buy_gprice = 0;
+			var _buy_w = 0;
+			if (_radio_checked_type == 'buy') {
+
+				_buy_w = $('[name="buy_weight"]').val();
+				_buy_w = _buy_w == '' ? 0 : _buy_w;
+
+				_buy_gprice = $("#buy_price").val();
+				_buy_gprice = _buy_gprice == '' ? 0 : _buy_gprice;
+			}
+
+			_buy_p = _buy_w * _buy_gprice;
+			if (_buy_w > 0) {
+				_fomular.find('.f_buy_w').closest('p').show();
+				_fomular.find('.f_buy_w').text('- ' + parseFloat(_buy_w).toFixed(2));
+
+				_fomular.find('.f_buy_p').closest('p').show();
+				_fomular.find('.f_buy_p').text('+ ' + parseFloat(_buy_p).toFixed(2));
+			} else {
+				_fomular.find('.f_buy_w').closest('p').hide();
+				_fomular.find('.f_buy_p').closest('p').hide();
+			}
+
+			var _sell_w = 0;
+			var _sell_gprice = 0;
+			var _sell_p = 0;
+
+			if (_radio_checked_type == 'sell') {
+				_sell_w = $('[name="sell_weight"]').val();
+				_sell_w = _sell_w == '' ? 0 : _sell_w;
+
+				_sell_gprice = $('#sell_price').val();
+				_sell_gprice = _sell_gprice == '' ? 0 : _sell_gprice;
+			}
+
+			_sell_p = _sell_w * _sell_gprice;
+			if (_sell_w > 0) {
+				_fomular.find('.f_sell_w').closest('p').show();
+				_fomular.find('.f_sell_w').text('+ ' + parseFloat(_sell_w).toFixed(2));
+
+				_fomular.find('.f_sell_p').closest('p').show();
+				_fomular.find('.f_sell_p').text('- ' + parseFloat(_sell_p).toFixed(2));
+			} else {
+				_fomular.find('.f_sell_w').closest('p').hide();
+				_fomular.find('.f_sell_p').closest('p').hide();
+			}
+
+			// 来往金额
+			var _ca_p = $('[name="price"]').val();
+			_ca_p = _ca_p == '' ? 0 : _ca_p;
+			_ca_p = parseFloat(_ca_p).toFixed(2);
+
+			if (_ca_p != '' && _ca_p > 0) {
+				_fomular.find('.f_ca_p').closest('p').show();
+				_fomular.find('.f_ca_p.real').text('- ' + parseFloat(_ca_p).toFixed(2));
+				_fomular.find('.f_ca_p.real').removeClass('text-error');
+				_fomular.find('.f_ca_p.real').addClass('text-success');
+			} else if (_ca_p != '' && _ca_p < 0) {
+				_fomular.find('.f_ca_p').closest('p').show();
+				_fomular.find('.f_ca_p.real').text('+ ' + (-parseFloat(_ca_p)).toFixed(2));
+				_fomular.find('.f_ca_p.real').removeClass('text-success');
+				_fomular.find('.f_ca_p.real').addClass('text-error');
+			} else {
+				_fomular.find('.f_ca_p').closest('p').hide();
+			}
+
+			// 抹零金额
+			var _ca_extra_p = $('[name="extra_price"]').val();
+			_ca_extra_p = _ca_extra_p == '' ? 0 : _ca_extra_p;
+			_ca_extra_p = parseFloat(_ca_extra_p).toFixed(2);
+
+			if (_ca_extra_p != '' && _ca_extra_p > 0) {
+				_fomular.find('.f_ca_extra_p').closest('p').show();
+				_fomular.find('.f_ca_extra_p.real').text('- ' + parseFloat(_ca_extra_p).toFixed(2));
+				_fomular.find('.f_ca_extra_p.real').removeClass('text-error');
+				_fomular.find('.f_ca_extra_p.real').addClass('text-success');
+			} else if (_ca_extra_p != '' && _ca_extra_p < 0) {
+				_fomular.find('.f_ca_extra_p').closest('p').show();
+				_fomular.find('.f_ca_extra_p.real').text('+ ' + (-parseFloat(_ca_extra_p)).toFixed(2));
+				_fomular.find('.f_ca_extra_p.real').removeClass('text-success');
+				_fomular.find('.f_ca_extra_p.real').addClass('text-error');
+			} else {
+				_fomular.find('.f_ca_extra_p').closest('p').hide();
+			}
+
+			// 来料
+			var _mrecord_w_come = 0;
+			$('.rproduct tr').each(function() {
+				if ($(this).attr('id') != 'last_rproduct') {
+					var r_gold_weight = $(this).find('.r_gold_weight').val() == '' ? 0 : $(this).find('.r_gold_weight').val();
+					_mrecord_w_come += parseFloat(r_gold_weight);
+				}
+			});
+			_mrecord_w_come = empty(_mrecord_w_come) ? 0 : (isNaN(_mrecord_w_come) ? 0 : _mrecord_w_come);
+			if (_mrecord_w_come > 0) {
+				_fomular.find('.f_mrecord_w_come').closest('p').show();
+				_fomular.find('.f_mrecord_w_come.real').text('+ ' + parseFloat(_mrecord_w_come).toFixed(2));
+			} else {
+				_fomular.find('.f_mrecord_w_come').closest('p').hide();
+			}
+
+			// 去料（料结）
+			var _mrecord_w = $('#product_weight').val();
+			_mrecord_w = empty(_mrecord_w) ? 0 : (isNaN(_mrecord_w) ? 0 : _mrecord_w);
+			if (_mrecord_w > 0) {
+				_fomular.find('.f_mrecord_w').closest('p').show();
+				_fomular.find('.f_mrecord_w.real').text('- ' + parseFloat(_mrecord_w).toFixed(2));
+			} else {
+				_fomular.find('.f_mrecord_w').closest('p').hide();
+			}
+		    $("#d_weights").html(parseFloat(_mrecord_w).toFixed(2));
+
+			var _last_w = parseFloat(account_info.weight).toFixed(2);
+			var _last_p = parseFloat(account_info.price).toFixed(2);
+
+			_last_w = _last_w * 1 + _mrecord_w_come * 1 - _mrecord_w - _buy_w + _sell_w * 1;
+			_last_p = _last_p - _ca_p * 1 - _ca_extra_p * 1 + _buy_p * 1 - _sell_p;
+
+			_last_w = empty(_last_w) ? 0 : (isNaN(_last_w) ? 0 : _last_w);
+			_last_p = empty(_last_p) ? 0 : (isNaN(_last_p) ? 0 : _last_p);
+
+			_fomular.find('.f_last_w').text(parseFloat(_last_w).toFixed(2));
+			_fomular.find('.f_last_p').text(parseFloat(_last_p).toFixed(2));
+		}
+
+		$('#product_weight').keyup(function() {
+			autoFomula();
+		});
+
+		init_keyup();
+		function init_keyup() {
+			$('[name="price"],[name="extra_price"],[name="r_gold_price"],[name="r_gold_weight"]').unbind('keyup').keyup(function() {
+
+				if (isNaN($(this).val())) {
+					var input_val = $(this).val().substr(-1);
+
+					var new_c = $(this).val().substr(0, $(this).val().length - 1)
+
+					$(this).val(new_c);
+				}
+
+				autoFomula();
+
+			});
+		}
+
+		init_add_rproduct();
+		function init_add_rproduct() {
+			$('#add_rproduct').unbind('click').click(function() {
+				var gold_price = "{$price['gold_price']}";
+				var recovery_price = "{$price['recovery_price']}";
+
+				var html = '';
+				html += '<tr class="add_rproduct_row">';
+				html += '<td class="text-center"></td>';
+				html += '<td class="text-center"><input type="text" autocomplete="off" name="p_rproduct_code" class="p_rproduct_code" value=""></td>';
+				html += '<td class="text-center"><input type="text" autocomplete="off" name="r_recovery_name" class="r_recovery_name" value=""></td>';
+				html += '<td class="text-center hide"><input type="text" autocomplete="off" name="r_gold_price" class="r_gold_price" value="'+ gold_price +'"></td>';
+				html += '<td class="text-center"><input type="text" autocomplete="off" name="r_recovery_price" class="r_recovery_price" value="'+ recovery_price +'"></td>';
+				html += '<td class="text-center"><input type="text" autocomplete="off" name="r_total_weight" class="r_total_weight input_init" value="0.00"></td>';
+				html += '<td class="text-center"><input type="text" autocomplete="off" name="r_gold_weight" class="r_gold_weight input_init" value="0.00"></td>';
+				html += '<td class="text-center"><a href="javascript:void(0);" class="del">删除</i></a></td>';
+				html += '</tr>';
+
+				$("#last_rproduct").before(html);
+
+				rule_table_order('.rproduct');
+
+				init_keyup();
+
+				remove_rproduct();
+			});
+		}
+
+		function remove_rproduct() {
+			$('.rproduct').find('.del').unbind('click').click(function() {
+				$(this).closest('tr').remove();
+
+				rule_table_order('.rproduct');
+
+				autoFomula();
+			});
+		}
+
+		heightAuto($("#showorder1"));
+
+		$("#showorder1").on("shown.bs.modal", function() {
+			$("#show_order").contents().find("#procure_list").focus();
+		})
+
+		$('#show_order').load(function() {
+			$('#check, #add').unbind("click").click(function() {
+				var htm = $('#show_order').contents();
+				var tr = htm.find('.ta tbody tr');
+				var checked_num = htm.find('input[type="checkbox"]:checked').length;
+				// 没勾选任何
+				if (checked_num == 0)
+					return;
+				tr.each(function() {
+					var tr_ = $(this);
+					var id = tr_.find('.check_box').attr('id');
+					var product_code = tr_.find('.rproduct_code').html();
+					var goods_name = tr_.find('.recovery_name').html();
+					var source = tr_.find('.source').html();
+					var gold_price = tr_.find('.gold_price').html();
+					var weight = tr_.find('.total_weight').html();
+					var d_weight = tr_.find('.gold_weight').html();
+					var htm = "";
+					if (tr_.find('.check_box').attr('checked')) {
+						
+						if (!check_record_exist('p_id' + location_id, id)) {
+							htm = add_line(
+								id,
+								product_code,
+								goods_name,
+								source,
+								gold_price,
+								weight,
+								d_weight
+							);
+							$('#last_product').before(htm);
+							refresh_tr_seq($('.product'), 'id', 'p_id' + location_id, 'last_product');
+						}
+					}
+				});
+
+				remove_product();
+
+				rule_table_order('.product');
+
+				count_product_weight();
+
+				autoFomula();
+			});
+		});
+
+		function remove_product() {
+			$('.product').find('.del').each(function() {
+				$(this).click(function() {
+					var tr = $(this).closest('tr');
+					var id = tr.attr('id');
+
+					var check = localStorage.getItem('p_id' + location_id);
+					if (!empty(check)) {
+						var new_arr = [];
+						var checked = check.split(',');
+
+						for (var i in checked) {
+							if (checked[i] != id) {
+								new_arr.push(checked[i]);
+							}
+						}
+						localStorage.setItem('p_id' + location_id,new_arr);
+					}
+
+					var checked = localStorage.getItem('p_id' + location_id);
+					//删除后将图片换回复选框
+					var framehtml = $('#show_order').contents();
+					var checkbox = framehtml.find(".ta").find("tbody input[id='"+ id+ "']");
+					checkbox.show();
+					checkbox.prop('checked',false);
+
+					tr.remove();
+
+					rule_table_order('.product');
+
+					count_product_weight();
+
+					autoFomula();
+				});
+			});
+		}
+
+		function add_line(id, product_code, goods_name, source, gold_price, weight, d_weight) {
+			var htm = '<tr id="'+id+'" product_code="'+ product_code +'">'
+					+ '<td class="text-center"></td>'
+					+ '<td class="text-center">' + product_code + '</td>'
+					+ '<td class="text-center">' + goods_name + '</td>'
+					+ '<td class="text-center" style="padding:8px 3px">' + source + '</td>'
+					+ '<td class="text-center" style="padding:8px 3px">' + gold_price + '</td>'
+					+ '<td class="text-center" style="padding:8px 3px">' + weight + '</td>'
+					+ '<td class="text-center d_weight" style="padding:8px 3px">' + d_weight + '</td>'
+					+ '<td class="text-center"><a class="del"href="javascript:;">删除</a></td>'
+					+ '</tr>';
+			return htm;
+		}
+
+		// 去料总计
+		function count_product_weight()
+		{
+			var _mrecord_w = 0;
+			$('.product tr').each(function() {
+				if ($(this).attr('id') != 'last_product') {
+					_mrecord_w += parseFloat($(this).find('.d_weight').html());
+				}
+			});
+		    $('#product_weight').val(parseFloat(_mrecord_w).toFixed(2));
+		}
+
+		var is_loading = false;
+		// 提交表单 - ajax
+		$('.js-ajax-submit').click(function() {
+
+			var submit_type = $(this).data('type');
+
+			if (is_loading == true)
+				return;
+
+			var settle_time = $('#input_date').val();
+			var supplier_id = $('#company_name').val();
+			var memo = $('[name="memo"]').val();
+
+			var type = $("input[type=radio]:checked").data("value");
+
+			var buy_weight = parseFloat(empty($('input[name="buy_weight"]').val()) ? 0 : $('input[name="buy_weight"]').val());
+			var buy_price = parseFloat(empty($('input[name="buy_price"]').val()) ? 0 : $('input[name="buy_price"]').val());
+
+			var sell_weight = parseFloat(empty($('input[name="sell_weight"]').val()) ? 0 : $('input[name="sell_weight"]').val());
+			var sell_price = parseFloat(empty($('input[name="sell_price"]').val()) ? 0 : $('input[name="sell_price"]').val());
+
+			var d_weights = parseFloat(empty($("#d_weights").html()) ? 0 : $("#d_weights").html());
+			var price = $("input[name='price']").val();
+			price = price == '' ? 0 : price;
+			price = parseFloat(price);
+			//抹零金额
+			var extra_price = $("input[name='extra_price']").val();
+			extra_price = extra_price == '' ? 0 : extra_price;
+			extra_price = parseFloat(extra_price);
+
+			var p_id = localStorage.getItem('p_id' + location_id);
+
+			var rproduct_counts = $('.rproduct tr:not(#last_rproduct)').length;
+
+			if (supplier_id == '') {
+				artdialog_alert('请选择供应商');
+				return;
+			}
+			if (!empty(buy_price) && (isNaN(buy_price) || buy_price < 0)) {
+				artdialog_alert('买料价格式不正确' + buy_price);
+				return;
+			} else if (buy_price != 0 && buy_price > price) {
+				artdialog_alert('结算金额不能低于买料价格');
+				return;
+			}
+
+			if (!empty(buy_weight) && (isNaN(buy_weight) || buy_weight < 0)) {
+				artdialog_alert('买料克重格式不正确' + buy_weight);
+				return;
+			}
+			if (!empty(sell_price) && (isNaN(sell_price) || sell_price < 0)) {
+				artdialog_alert('卖料金价格式不正确' + sell_price);
+				return;
+			}
+			if (!empty(sell_weight) && (isNaN(sell_weight) || sell_weight < 0)) {
+				artdialog_alert('卖料价格式不正确' + sell_weight);
+				return;
+			}
+
+			if ((type == 'buy' && (buy_weight == 0 || buy_price == 0) && (p_id == '' || p_id == null) && price == 0 && rproduct_counts == 0) || (type == 'sell' && (sell_weight == 0 || sell_price == 0) && (p_id == '' || p_id == null) && price == 0 && rproduct_counts == 0)) {
+				artdialog_alert('这是一张空的结算单！');
+				return;
+			}
+
+			var before_weight = $('.f_w').text();
+			var before_price = $('.f_p').text();
+			var after_weight = $('.f_last_w').text();
+			var after_price = $('.f_last_p').text();
+
+			// 来料数据判断
+			var rproduct_data = [];
+			if (rproduct_counts > 0) {
+				var check = true;
+
+				$('.rproduct tr:not(#last_rproduct)').each(
+				function(i, e) {
+					var _rproduct_tr = $(this);
+
+					var p_rproduct_code = _rproduct_tr.find('[name="p_rproduct_code"]').val();
+					var r_recovery_name = _rproduct_tr.find('[name="r_recovery_name"]').val();
+
+					var r_gold_price = _rproduct_tr.find('[name="r_gold_price"]').val();
+					r_gold_price = empty(r_gold_price) ? 0: r_gold_price;
+
+					var r_recovery_price = _rproduct_tr.find('[name="r_recovery_price"]').val();
+					r_recovery_price = empty(r_recovery_price) ? 0 : r_recovery_price;
+
+					var r_total_weight = _rproduct_tr.find('[name="r_total_weight"]').val();
+					r_total_weight = empty(r_total_weight) ? 0 : r_total_weight;
+
+					var r_gold_weight = _rproduct_tr.find('[name="r_gold_weight"]').val();
+					r_gold_weight = empty(r_gold_weight) ? 0 : r_gold_weight;
+
+					if (empty(r_recovery_name)) {
+						artdialog_alert('请填写第' + (i + 1) + '个来料名称！');
+						check = false;
+						return;
+					}
+
+					if (empty(r_recovery_price) || isNaN(r_recovery_price) || r_recovery_price <= 0) {
+						artdialog_alert('请填写第' + (i + 1) + '个来料回购金价！');
+						check = false;
+						return;
+					}
+
+					if (empty(r_gold_weight) || isNaN(r_gold_weight) || r_gold_weight <= 0) {
+						artdialog_alert('请填写第' + (i + 1) + '个来料金重！');
+						check = false;
+						return;
+					}
+
+					if (parseFloat(r_gold_weight) > parseFloat(r_total_weight)) {
+						artdialog_alert('第' + (i + 1) + '个来料记录总重有误！');
+						check = false;
+						return;
+					}
+
+					var purity = parseFloat(r_gold_weight) / parseFloat(r_total_weight);
+
+					var rproduct_info = {
+						// 来自去料编号
+						from_rproduct_code : p_rproduct_code,
+						recovery_name : r_recovery_name,
+						recovery_price : r_recovery_price,
+						gold_price : r_gold_price,
+						gold_weight : r_gold_weight,
+						total_weight : r_total_weight,
+						purity : purity.toFixed(6)
+					};
+
+					rproduct_data.push(rproduct_info);
+				})
+
+				if (!check) {
+					return;
+				}
+			}
+
+			is_loading = true;
+
+			var postdata = {
+				// 结算单属性
+				price : price,
+				extra_price : extra_price,
+				supplier_id : supplier_id,
+				settle_time : settle_time,
+				memo : memo,
+				submit_type : submit_type,
+				// 买卖料、金价
+				material_weight : buy_weight,
+				material_g_price : buy_price,
+				sell_weight : sell_weight,
+				sell_price : sell_price,
+				type : type,
+				// 去料
+				mrecord_weight : d_weights,
+				p_id : p_id,
+				// 来料
+				rproduct_data : rproduct_data,
+				// 计算详情
+				before_weight : before_weight,
+				before_price : before_price,
+				after_weight : after_weight,
+				after_price : after_price
+			};
+
+			$.ajax({
+				async : false,
+				url : $('#form').attr('action'),
+				type : 'post',
+				data : postdata,
+				dataType : 'json',
+				success : function(result) {
+					is_loading = false;
+
+					if (result.status == "success") {
+						artdialog_alert('操作成功！', 'succeed');
+						// if (submit_type == "submit") {
+						    if(result.referer){
+								setTimeout(function() {
+									window.location.href = result.referer;
+								}, 800);
+							} else {
+								setTimeout(function() {
+									window.location.reload;
+								}, 800);
+							}
+						// }
+					} else if (result.status == "fail") {
+						artdialog_alert('操作失败！' + result.msg);
+						is_loading = false;
+					}
+				},
+				error : function() {
+					is_loading = false;
+				}
+			});
+		});
+
+		$('#company_name').change(function() {
+
+			if (is_loading)
+				return;
+
+			var supplier_id = $(this).val();
+
+			var last_tr = $('#last_tr').clone();
+
+			$('#tbody').html(last_tr);
+
+			if (supplier_id !== '') {
+				is_loading = true;
+
+				$('#show_select').show();
+
+				var url = '{:U("BSettlement/get_company_account_info")}';
+				$.post(url, {
+					supplier_id : supplier_id
+				}, function(rsdata) {
+					is_loading = false;
+
+					rsdata = eval("(" + rsdata + ")");
+
+					initAccountInfo(rsdata.account_info);
+
+					account_info = rsdata.account_info;
+					autoFomula();
+
+				})
+			} else {
+				initAccountInfo();
+			}
+		});
+
+		$('.cal_price').unbind('keyup').keyup(function() {
+			var _tr = $(this).closest('tr');
+
+			if (isNaN($(this).val())) {
+				var input_val = $(this).val().substr(-1);
+				var new_c = $(this).val().substr(0, $(this).val().length - 1)
+				$(this).val(new_c);
+			}
+
+			var weight = _tr.find('.w').val();
+			weight = empty(weight) ? 0 : weight;
+			weight = isNaN(weight) ? 0 : weight;
+
+			var gold_price = _tr.find('.g').val();
+			gold_price = empty(gold_price) ? 0 : gold_price;
+			gold_price = isNaN(gold_price) ? 0 : gold_price;
+
+			var prices = (parseFloat(weight) * parseFloat(gold_price)).toFixed(2);
+
+			_tr.find('.show_price').html(prices);
+			$('.' + _tr.find('.show_price').data('show')).html(weight + '克');
+
+			autoFomula();
+		});
+
+		// 向供应商买卖金料 单选框 选择买卖类型
+		function weight_choose_change(str) {
+			if (str == "buy") {
+				$(".buy_sell").find("#buy_weight").removeAttr("disabled");
+				$(".buy_sell").find("#buy_price").removeAttr("disabled");
+				$(".buy_sell").find("#sell_weight").attr("disabled", "true");
+				$(".buy_sell").find("#sell_price").attr("disabled", "true");
+				$(".buy_sell").find("#sell_weight").val("");
+				$(".buy_sell").find("#sell_price").val("");
+				$(".buy_sell").find("#sell_prices").html("");
+				$(".sell_w").html("0克");
+			}
+
+			if (str == "sell") {
+				$(".buy_sell").find("#sell_weight").removeAttr("disabled");
+				$(".buy_sell").find("#sell_price").removeAttr("disabled");
+				$(".buy_sell").find("#buy_weight").attr("disabled", "true");
+				$(".buy_sell").find("#buy_price").attr("disabled", "true");
+				$(".buy_sell").find("#buy_weight").val("");
+				$(".buy_sell").find("#buy_price").val("");
+				$(".buy_sell").find("#buy_prices").html("");
+				$(".buy_w").html("0克");
+			}
+
+			autoFomula();
+		}
+
+		initAccountInfo();
+
+		function initAccountInfo(obj) {
+			var price = obj == undefined ? 0 : obj.price == undefined ? 0 : obj.price;
+			var total_price = obj == undefined ? 0 : obj.total_price == undefined ? 0 : obj.total_price;
+
+			var weight = obj == undefined ? 0 : obj.weight == undefined ? 0 : obj.weight;
+			var total_weight = obj == undefined ? 0 : obj.total_weight == undefined ? 0 : obj.total_weight;
+
+			$("#all_price").html(parseFloat(total_price).toFixed(2) + "元");
+			$("#all_weight").html(parseFloat(total_weight).toFixed(2) + "克");
+
+			$('#account_info_weight').text(parseFloat(weight).toFixed(2) + "克");
+			$('#account_info_price').text(parseFloat(price).toFixed(2) + "元");
+		}
+
+		function setShowText(obj, total_weight) {
+			$(obj).text(total_weight);
+		}
+
+		function setInputValue(inputName, inputValue) {
+			if ($('input[name="' + inputName + '"]')[0] != undefined) {
+				$('input[name="' + inputName + '"]').val(inputValue);
+			}
+		}
+
+		// 各种辅助函数
+		function check_price(tag) {
+			var price = $(tag).val() ? $(tag).val() : $(tag).html();
+			if (!/^[0-9\.]+$/.test(price) || price < 0) {
+				return false;
+			} else {
+				$(tag).css('color', 'black');
+				return true;
+			}
+		}
+		function is_empty(str) {
+			if (str != null && str != "" && typeof (str) != "undefined" && str != 'NAN') {
+				return false;
+			}
+			return true;
+		}
+		function check_num(tag) {
+			var num = $(tag).val() ? $(tag).val() : $(tag).html();
+			if (!/^[0-9]+$/.test(num) || num <= 0) {
+				return false;
+			} else {
+				$(tag).css('color', 'black');
+			}
+			return true;
+		}
+	</script>
+
+	<include file="./Application/Home/View/Public/footer.html" />

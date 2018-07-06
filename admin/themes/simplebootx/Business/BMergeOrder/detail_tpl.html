@@ -1,0 +1,113 @@
+<table class="table table-bordered " style="white-space:normal;">
+    <tbody >
+    <tr>
+        <td style="background-color:#f5f5f5">金料仓库</td>
+        <td>{$info['from_whname']}</td>
+        <td style="background-color:#f5f5f5">日期</td>
+        <td>{:date('Y-m-d',$info['merge_time'])}({:date('Y-m-d H:i:s',$info['create_time'])})</td>
+    </tr>
+    <tr>
+        <td style="background-color:#f5f5f5">开单人</td>
+        <td>{$info['user_nicename']}</td>
+        <td style="background-color:#f5f5f5">备注</td>
+        <td  style="max-width: 200px;">{$info['memo']}</td>
+    </tr>
+    <!--记录-->
+    <if condition="ACTION_NAME eq 'merge_index_detail'">
+        <tr>
+            <td style="background-color:#f5f5f5">审核人</td>
+            <td>{$info['user_nicename']}</td>
+            <td style="background-color:#f5f5f5">审核时间</td>
+            <td  style="max-width: 200px;"><if condition="$info['check_time']">{:date('Y-m-d H:i:s',$info['check_time'])}<else/></if></td>
+        </tr>
+        <tr>
+            <td style="background-color:#f5f5f5">审核备注</td>
+            <td  colspan="3">{$info['check_memo']}</td>
+        </tr>
+    </if>
+    <!--审核-->
+    <if condition="ACTION_NAME eq 'merge_check_detail'">
+        <tr>
+            <td>审核备注</td>
+            <td colspan="3"><textarea  name="check_memo" id="check_memo" rows="2" cols="60" style="width:96%;">{$info.check_memo}</textarea></td>
+        </tr>
+    </if>
+    </tbody >
+</table>
+<div class="ta">
+    <ul class="nav nav-tabs">
+        <li class="active"><a>合并前</a></li>
+    </ul>
+    <table class="table table-bordered  table-hover">
+        <thead >
+        <tr>
+            <th>序</th>
+            <th>金料编号</th>
+            <th>金料名称</th>
+            <th>总重</th>
+            <th >纯度(‰)</th>
+            <th>金重</th>
+            <th>金价</th>
+            <th>当前金价</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="v">
+            <tr>
+                <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                <td class="text-center">{$v.rproduct_code}</td>
+                <td>{$v.recovery_name}</td>
+                <td class="text-right">{$v.total_weight}</td>
+                <td class="text-right">{$v.purity}</td>
+                <td class="text-right">{$v.gold_weight}</td>
+                <td class="text-right">{$v.recovery_price}</td>
+                <td class="text-right">{$v.gold_price}</td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <if condition="$recovery_product_list">
+        <ul class="nav nav-tabs">
+            <li class="active"><a>合并后</a></li>
+        </ul>
+        <table class="table table-bordered  table-hover">
+            <thead >
+            <tr>
+                <th style="width:50px;">序</th>
+                <th style="width:200px;">金料编号</th>
+                <th style="width:220px;">金料名称</th>
+                <th>总重</th>
+                <th style="width:220px;">纯度</th>
+                <th>金重</th>
+                <th>金价</th>
+                <th>当前金价</th>
+                <!--<th>服务克工费</th>-->
+                <th>成本价</th>
+                <th>材质</th>
+                <th>颜色</th>
+            </tr>
+            </thead>
+            <tbody id="tbody" class="recovery_product_tbody">
+            <volist name="recovery_product_list" id='v'>
+                <tr class="recovery_type_tr">
+                    <td class="text-center">{$key+1}</td>
+                    <td class="text-center">{$v.rproduct_code}</td>
+                    <td class="text-center">{$v.recovery_name}</td>
+                    <td class="text-right">{$v.total_weight}</td>
+                    <td class="text-right">{$v['purity']}‰</td>
+                    <td class="text-right">{$v.gold_weight}</td>
+                    <td class="text-right">{$v.recovery_gold_price}</td>
+                    <td class="text-right">{$v.gold_price}</td>
+                    <!--<td class="text-center">{$v.service_fee}</td>-->
+                    <td class="text-right">{$v.cost_price}</td>
+                    <td class="">{$v.material}</td>
+                    <td class="">{$v.color}</td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+    </if>
+</div>
+<div class="pagination">{$page}</div>
+<businesstpl file="process" />
+<businesstpl file="operate" />

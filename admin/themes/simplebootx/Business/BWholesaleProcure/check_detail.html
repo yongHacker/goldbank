@@ -1,0 +1,143 @@
+<businesstpl file="header" />
+<body class="theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('BWholesaleProcure/check_detail')}">{:L('BUSINESS_BWHOLESALEPROCURE_check_DETAIL')}</a></li>
+		<button type="button" onclick="history.go( -1 )" class="btn btn-primary " style="float:right">返回</button>
+	</ul>
+	<table class="table table-bordered " style="white-space:normal;">
+		<tbody >
+		<tr>
+			<td style="background-color:#f5f5f5">供应商</td>
+			<td>{$bwprocure['company_name']}</td>
+			<td style="background-color:#f5f5f5">日期</td>
+			<td>{:date('Y-m-d',$bwprocure['procure_time'])}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">应付总额</td>
+			<td>{$bwprocure['price']}</td>
+			<td style="background-color:#f5f5f5">件数</td>
+			<td style="max-width: 200px;">{$bwprocure['count']}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">发票</td>
+			<td><a href="javascript:parent.image_preview_dialog('{$bwprocure.bill_pic}');">
+				<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$bwprocure.bill_pic}"></a></td>
+			<td style="background-color:#f5f5f5">附件</td>
+			<td style="max-width: 200px;"></td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">开单人</td>
+			<td>{$bwprocure['creator_name']}</td>
+			<td style="background-color:#f5f5f5">备注</td>
+			<td  style="max-width: 200px;">{$bwprocure['memo']}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">审核备注</td>
+			<td colspan="4" style="word-break:break-all;"><textarea  name="check_memo" id="check_memo" rows="2" cols="60" style="width:96%;"></textarea></td>
+		</tr>
+		</tbody >
+	</table>
+	<div class="ta">
+		<table class="table table-bordered  table-hover">
+			<thead >
+			<tr>
+				<th>序</th>
+				<th>图片</th>
+				<th>商品编号</th>
+				<th>商品名称</th>
+				<th>规格</th>
+				<th>采购单价</th>
+				<th>采购量</th>
+				<th>采购总价</th>
+			</tr>
+			</thead>
+			<tbody>
+			<volist name="list" id="v">
+				<tr>
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td class="">
+						<if condition="empty($v['product_pic'])">
+							<img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
+							<else />
+							<a href="javascript:parent.image_preview_dialog('{$v['product_pic']}');">
+								<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$v.product_pic}">
+							</a>
+						</if>
+					</td>
+					<td class="text-center">{$v.goods_code}</td>
+					<td>{$v.goods_name}</td>
+					<td>{$v.goods_spec}</td>
+					<td>{$v.procure_price}</td>
+					<td>{$v.goods_stock}</td>
+					<td>{$v.price}</td>
+				</tr>
+			</volist>
+			</tbody>
+		</table>
+	</div>
+	<div class="pagination">{$page}</div>
+	<div class="form-actions text-center">
+		<button type="button" class="btn btn-primary baocun pass" name="{$bwprocure['id']?$bwprocure['id']:''}" id="baocun">审核通过</button>
+		<!-- <button type="button" class="btn btn-primary baocun" id="baocun_print">添加并打印</button>-->
+		<a class="btn btn-danger nopass" href="javascript:void(0);" name="{$bwprocure['id']?$bwprocure['id']:''}">审核不通过</a>
+		<a class="btn" href="javascript:history.back(-1);">返回</a>
+		<span class="tips_error"></span>
+
+	</div>
+</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script type="text/javascript">
+	$(".pass").on('click',function(){
+		var id=$(this).attr("name");
+		var check_memo=$('#check_memo').val();
+		$.ajax({
+			url: "{:U('BWholesaleProcure/wprocure_check_post')}",
+			type: 'post',
+			data:{id:id,check_memo:check_memo,type:1},
+			beforeSend:function(){
+				$(".pass").attr("disabled",true);
+				$(".pass").text("审核中...");
+			},
+			success: function(data) {
+				if(data.status==1){
+					$(".tips_error").text("审核完成！");
+					setTimeout(self.location=data.url,3000);
+				}else{
+					$(".tips_error").text(data.msg);
+					$(".pass").text("审核通过");
+					$(".pass").attr("disabled",false);
+				}
+			}
+
+		})
+	})
+
+	$(".nopass").on('click',function(){
+		var id=$(this).attr("name");
+		var check_memo=$('#check_memo').val();
+		$.ajax({
+			url: "{:U('BWholesaleProcure/wprocure_check_post')}",
+			type: 'post',
+			data:{id:id,check_memo:check_memo,type:2},
+			beforeSend:function(){
+				$(".nopass").attr("disabled",true);
+				$(".nopass").text("审核中...");
+			},
+			success: function(data) {
+				if(data.status==1){
+					$(".tips_error").text("审核完成！");
+					setTimeout(self.location=data.url,3000);
+				}else{
+					$(".tips_error").text(data.msg);
+					$(".nopass").text("审核不通过");
+					$(".nopass").attr("disabled",false);
+				}
+
+			}
+		})
+	})
+</script>
+</body>
+

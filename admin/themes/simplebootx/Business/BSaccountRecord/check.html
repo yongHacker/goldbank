@@ -1,0 +1,286 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="javascript:;">{:L('BUSINESS_BSACCOUNTRECORD_CHECK')}</a></li>
+		</ul>
+		<form class="well form-search" method="post" action="{:U('BSaccountRecord/check')}">
+			门店：
+			<select id="shop" name="shop_id" data-live-search="true">
+				<option value="-1" checked>全部</option>
+				<option value="0" <if condition="$_REQUEST['shop_id'] eq 0 && is_numeric($_REQUEST['shop_id'])">selected=selected</if>>总部</option>
+				<volist name="shop" id="v">
+					<option value="{$v.id}" show_common_payment="{$v.show_common_payment}" <if condition="$v['id'] eq $_REQUEST['shop_id']">selected=selected</if>  in_user="{$v.user_nicename}"  checked>{$v.shop_name}</option>
+				</volist >
+			</select> &nbsp;&nbsp;
+			收款方式：
+			<select name="pay_id"  style="width: auto">
+				<option value="0" pay_type="{$vo.pay_type}">选择收款方式</option>
+				<volist name="payment" id="vo">
+					<option value="{$vo.id}" <if condition="$vo['id'] eq $_REQUEST['pay_id']">selected=selected</if> pay_type="{$vo.pay_type}">{$vo.pay_name}</option>
+				</volist>
+			</select> &nbsp;&nbsp;
+			币种：
+			<select name="currency_id"  style="width: auto">
+				<option value="0" >选择币种</option>
+				<volist name="currency" id="vo">
+					<option value="{$vo.id}" <if condition="$vo['id'] eq $_REQUEST['currency_id']">selected=selected</if> exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+				</volist>
+			</select> &nbsp;&nbsp;
+			时间：
+			<input type="text" autocomplete="off" name="start_time" class="js-datetime" value="{$_REQUEST['start_time']}" style="width: 120px;" autocomplete="off">-
+			<input type="text" autocomplete="off" class="js-datetime" name="end_time" value="{$_REQUEST['end_time']}" style="width: 120px;" autocomplete="off"> &nbsp; &nbsp;
+			单号：
+			<input type="text" autocomplete="off" name="keyword" style="width: 200px;" value="{$_REQUEST['keyword']}" placeholder="请输入单号...">
+			<input type="submit" class="btn btn-primary" value="搜索" />
+			<a class="btn btn-danger" href="{:U('BSaccountRecord/check')}">清空</a>
+		</form>
+			<div class="table-actions">
+				<notempty name="term">
+				<button class="btn btn-primary btn-small js-ajax-submit" type="submit" data-action="{:U('BSaccountRecord/listorders')}">{:L('SORT')}</button>
+				</notempty>
+
+				<button class="btn btn-primary btn-small" id="btn_staffModel" href="#" style="cursor:pointer;" >审核</button>
+				&nbsp;&nbsp;&nbsp;&nbsp;支付总金额：<span id="pay_price" >0.00</span>&nbsp;&nbsp;实收总金额：<span id="receipt_price" >0.00</span>
+			</div>
+			<table class="table table-hover table-bordered table-list">
+				<thead>
+					<tr>
+						<th width="15"><label><input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x"></label></th>
+						<th width="50">序</th>
+						<th>收款方式</th>
+						<th>默认币种</th>
+						<th >默认汇率%</th>
+						<th width="50">币种</th>
+						<th>币种汇率%</th>
+						<th>订单号</th>
+						<th>账单类型</th>
+						<!-- <th >流水号</th> -->
+						<th >支付金额<br/>({$count_info.pay_price})</th>
+						<th >实收金额<br/>({$count_info.receipt_price})</th>
+						<th >创建时间</th>
+						<th width="70">状态</th>
+					</tr>
+				</thead>
+				<foreach name="list" item="vo">
+				<tr>
+					<td><if condition="$vo['status'] eq 0">
+						<input type="checkbox" class="js-check check_id" data-yid="js-check-y" data-xid="js-check-x" name="ids[]" value="{$vo.id}" title="ID:{$vo.id}">
+						</if>
+					</td>
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td>
+						{$vo.pay_name}
+					</td>
+					<td>{$vo.main_currency_name}</td>
+					<td class="text-right">{$vo.main_currency_rate}</td>
+					<td>{$vo.currency_name}</td>
+					<td class="text-right">{$vo.currency_rate}</td>
+					<td class="text-center">
+						<if condition="$vo['type'] eq 1">
+							<a href="{:U('BSell/index_detail',array('id'=>$vo['sn_id']))}">{$vo.order_id}</a></td>
+							<elseif condition="$vo['type'] eq 3" />
+							<a href="{:U('BSellReturn/detail',array('return_id'=>$vo['sn_id']))}">{$vo.order_id}</a>
+							<else />
+						</if>
+					</td>
+					<td class="text-center">{$vo[type] == 1 ? '销售收款' :  '销售退款'}</td>
+					<!-- <td class="text-center">{$vo.flow_id}</td> -->
+					<td class="text-right">{$vo.pay_price}<input type="hidden" name="pay_price" value="{$vo.pay_price}"></td>
+					<td class="text-right">{$vo.receipt_price}<input type="hidden" name="receipt_price" value="{$vo.receipt_price}"></td>
+					<td class="text-center">{:date('Y-m-d H:i',$vo['create_time'])}</td>
+					<td class="text-center">
+						<if condition="$vo['status'] eq 1">
+							审核通过
+						<elseif condition="$vo['status'] eq 2"/>
+							审核不通过
+						<else/>
+							未审核
+						</if>
+					</td>
+				</tr>
+				</foreach>
+			</table>
+			<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>
+
+<div class="modal small fade" style="top:10%;bottom: 2%;height:350px;display:none" id="staffModel" hidden=hidden
+	 tabindex="-1"role="dialog" aria-labelledby="staffModel" aria-hidden="true">
+	<div class="modal-dialog-div">
+		<div class="modal-content">
+			<div class="modal-header" style="cursor:move">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<b id="myModalLabel"
+				   style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">备注</b>
+			</div>
+			<div class="modal-body" style="max-height: 800px;padding: 0px;">
+				<fieldset>
+					<div class="control-group">
+						<div class="controls">
+							<textarea name="memo" id="memo" style="resize:none;width: 300px;margin-left: 125px;height: 170px;"></textarea>
+							<span class="form-required">*</span>
+						</div>
+					</div>
+				</fieldset>
+				<!--<form class="form-horizontal">
+				<fieldset>
+					<div class="control-group" >
+						<div class="controls" style="margin-left: 125px">
+							支付总金额：<span id="pay_price" ></span>
+						</div>
+					</div>
+					<div class="control-group">
+						<div class="controls" style="margin-left: 125px">
+							实收总金额：<span id="receipt_price" ></span>
+						</div>
+					</div>
+					<div class="control-group" >
+						<div class="controls" style="margin-left: 125px">
+							<textarea name="memo" id="memo" style="resize:none;width: 300px;height: 170px;"></textarea>
+							<span class="form-required">*</span>
+						</div>
+					</div>
+				</fieldset>-->
+				<div class="form-actions" style="margin-bottom: 0px;border: 1px solid #fff;">
+					<button class="btn btn-primary js-ajax-submit" type="submit" data-action="{:U('BSaccountRecord/check_post',array('check'=>1))}" data-subcheck="true">审核通过</button>
+					<button class="btn btn-danger  btn-small js-ajax-submit" type="submit" data-action="{:U('BSaccountRecord/check_post',array('uncheck'=>1))}" data-subcheck="true">审核不通过</button>
+					<a button data-dismiss="modal" aria-hidden="true" class="btn ">{:L('BACK')}</a>
+				</div>
+				<!--</form>-->
+			</div>
+			<div class="modal-footer" style="border-top: 1px solid #fff;">
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var is_loading = false;
+	$('.js-check-all').click(function(){
+		var pay_price = 0;
+		var receipt_price = 0;
+		if ($(this).is(':checked')){
+			$('.check_id').each(function () {
+				console.log($(this).parent().parent().length);
+				pay_price = pay_price + parseFloat($(this).parent().parent().find('input[name=pay_price]').val())*100;
+				receipt_price = receipt_price + parseFloat($(this).parent().parent().find('input[name=receipt_price]').val())*100;
+			});
+		}
+		$('#pay_price').text(pay_price/100);
+		$('#receipt_price').text(receipt_price/100);
+	})
+	$('.check_id').click(function(){
+		var pay_price = 0;
+		var receipt_price = 0;
+		$('.check_id:checked').each(function () {
+			console.log($(this).parent().parent().length);
+			pay_price = pay_price + parseFloat($(this).parent().parent().find('input[name=pay_price]').val())*100;
+			receipt_price = receipt_price + parseFloat($(this).parent().parent().find('input[name=receipt_price]').val())*100;
+		});
+		$('#pay_price').text(pay_price/100);
+		$('#receipt_price').text(receipt_price/100);
+	})
+	$('#btn_staffModel').click(function(){
+
+		if($('#check_msg')[0] != undefined){
+			$('#check_msg').remove();
+		}
+		var check_input=$('.check_id:checked');
+		var checked_num = check_input.length;
+
+		if(checked_num > 0){
+			var check_tr=check_input.parent().parent();
+			$('#staffModel').modal('show');
+
+			$('.js-ajax-submit').unbind('click').click(function(){
+
+				if(is_loading) return;
+
+				var _url = $(this).data('action');
+				var ids = [];
+				var $btn = $(this);
+
+				$('.check_id:checked').each(function(){
+					ids.push($(this).val())
+				});
+
+				var postdata = {
+					memo: $('#memo').val(),
+					ids: ids
+				};
+
+				is_loading = true;
+
+				$.post(_url, postdata, function(rsData){
+
+					is_loading = false;
+
+					// console.log(rsData)
+
+					var data = rsData;
+
+					if (data.state === 'success') {
+                        $('<span class="tips_success text-error">' + data.info + '</span>').appendTo($btn.parent()).fadeIn('slow').delay(1500).fadeOut();
+                    } else if (data.state === 'fail') {
+                        $('<span class="tips_error text-error">' + data.info + '</span>').appendTo($btn.parent()).fadeIn('fast');
+                    }
+                    
+                    if (data.referer) {
+                        //返回带跳转地址
+                    	window.location.href = data.referer;
+                    } else {
+                    	if (data.state === 'success') {
+                    		//刷新当前页
+                            reloadPage(window);
+                    	}
+                    }
+
+				})
+
+			});
+
+		}else{
+			$(this).after('<span style="color:red;" id="check_msg">勾选对账流水！<span>');
+		}
+
+	});
+
+</script>
+<!--门店改变，改变收款方式  -->
+<script>
+	$("select[name='shop_id']").change(function(){
+		init_payment();//更改门店更改收款方式
+	});
+	//初始化收款方式
+	init_payment();
+	//更改门店更改收款方式
+	function init_payment(){
+		var payments='{$payment_json}';
+		var job_html='<option value="0" >选择收款方式</option>';
+		var change_select=$('select[name=pay_id]');
+		var sector_obj= $('select[name=shop_id]');
+		get_payment(payments,sector_obj,change_select,job_html);
+
+	}
+	/**
+	 *
+	 * @param payments 所有的收款方式
+	 * @param sector_id  选择的门店的id
+	 * @param change_select 需要联动改变的select对象
+	 * @param job_html     select对象的html内容
+	 */
+	function get_payment(payments,sector_obj,change_select,job_html){
+		var payments_json=eval(payments);
+		var sector_id=sector_obj.val();
+		var common_payment=sector_obj.find("option:selected").attr('show_common_payment');
+		$.each(payments_json, function (n, v) {
+			if(sector_id==-1||sector_id== v.shop_id||(v.shop_id==0&&common_payment=='1')){
+				job_html+='<option value="'+ v.id+'" pay_type="'+v.pay_type+'">'+ v.pay_name+'</option>';
+			}
+		});
+		change_select.html(job_html);
+	}
+</script>

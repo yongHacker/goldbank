@@ -1,0 +1,526 @@
+<businesstpl file="header" />
+<style>
+.js-check-wrap>form, .js-check-wrap>form>table { margin-bottom: 10px;}
+.my_page { text-align: left;}
+.my_page a { position: relative; padding: 6px 12px; margin-left: -1px; line-height: 1.42857143; color: #428bca; text-decoration: none; background-color: #fff; border: 1px solid #ddd;}
+.my_page span { position: relative; padding: 6px 12px; margin-left: -1px; line-height: 1.42857143; color: #fff; text-decoration: none; background-color: #6f80a1; border: 1px solid #ddd;}
+.my_page li { margin-top: 10px; display: none;}
+.table tr th { text-align: center;}
+input { width: 163px; margin-bottom: 0px;}
+.table { text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.ta { overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta td { position: relative;}
+.ta input { width: 177px; margin-bottom: 0px; border: none; border-bottom: 0px; padding: 8px 0; box-shadow: none; border-radius: none; width: 90%; text-align: center;}
+.ta input:focus { box-shadow: none; outline: none;}
+.td_border { border: solid 1px #157ab5;}
+.select_goods { display: inline-block; background: #fff url('public/images/icon-select.gif') no-repeat scroll 55% 55%; width: 10%; height: 36px; position: absolute; top: 0; right: 0;}
+tr td img { width: 200px; height: 60px;}
+input.left { text-align: left;}
+input.right { text-align: right;}
+td.left { text-align: left;}
+td.right { text-align: right;}
+.myModal { display: block; position: absolute; width: 100%; height: 100%; left: 0; top: 0; line-height: 35px;}
+.sel { background: #f4f4f4;}
+.click_pic img { width: 80px; height: 80px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;}
+.aui_content img { width: auto; height: auto;}
+.click_pic { display: inline-block; margin-right: 4px;}
+</style>
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class=" theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BProcure/check_index')}">采购审核列表</a></li>
+			<li class="active"><a href="#">采购单详情</a></li>
+			<span style="float: right">
+				<if condition="$info['status'] eq 0">
+					<button  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</button>
+					<button  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</button>
+				</if>
+				<p class="btn js-ajax-back-btn" type="text">{:L('BACK')}</p>
+			</span>
+		</ul>
+
+		<form id="form" class="form form-search" method="post" action="{:U('BProcure/check')}">
+			<input id="id" type="hidden" name="id" value="{$info.id}">
+			<table class="table table-bordered  table-hover">
+				<tbody>
+					<tr>
+						<td class="sel" width="20%">供应商</td>
+						<td width="30%">{$info['company_name']}</td>
+						<td class="sel" width="20%">采购日期</td>
+						<td width="30%">{:date('Y-m-d', $info['procure_time'])}（创建日期：{:date('Y-m-d', $info['create_time'])}）</td>
+					</tr>
+					<tr>
+						<td class="sel">采购金额</td>
+						<td>
+							￥ {:numberformat($info['price'], 2, '.', ',')}
+							<if condition="$info['extra_price'] neq '0'">&nbsp;&nbsp;（抹零金额：{:numberformat($info['extra_price'], 2, '.', ',')}元）</if>
+						</td>
+						<td class="sel">采购件数</td>
+						<td>{$info['num']} 件</td>
+					</tr>
+					<tr>
+						<td class="sel">采购总工费</td>
+						<td>￥ {:numberformat($info['fee'], 2, '.', ',')}
+							<if condition="$info['extra_price'] neq '0'">&nbsp;&nbsp;（抹零金额：{:numberformat($info['extra_price'], 2, '.', ',')}元）</if>
+						</td>
+						<td class="sel">采购总克重</td>
+						<td>{$info['weight']} 克 （折纯总重 {$info['gold_weight']}）</td>
+					</tr>
+					<tr>
+						<td class="sel">采购单号</td>
+						<td>{$info['batch']}</td>
+						<td class="sel">状态</td>
+						<td>{$info.show_status}</td>
+					</tr>
+					<tr id="tr_bill">
+						<td class="sel" class="sel">备注</td>
+						<td class="sel" colspan="3">{$info.memo}</td>
+					</tr>
+					<tr>
+						<td class="sel">发票图片</td>
+						<td colspan="3">
+							<if condition="$info[bill_pic] neq ''">
+							<volist name="info.bill_pic_list" id="v">
+							<p class="click_pic">
+								<img src="{$v}">
+							</p>
+							</volist>
+							</if>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">审核备注</td>
+						<td colspan="3"><textarea id="check_memo" style="width:80%;">{$info.check_memo}</textarea></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<businesstpl file="process" />
+
+			<div class="main-content">
+				<if condition="$sub_list">
+				<div class="ta">
+					<p>其它费用</p>
+					<table class="table table-bordered  table-hover table-striped">
+						<thead>
+							<tr>
+								<th class="text-center">序</th>
+								<th class="text-center">费用类目</th>
+								<th class="text-center">费用金额</th>
+							</tr>
+						</thead>
+						<tbody id="tbody">
+							<volist name="sub_list" id="v">
+							<tr>
+								<td class="text-center">
+									<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+								</td>
+								<td class="text-center">{$v.name}</td>
+								<td class="text-right">{$v.cost}</td>
+							</tr>
+							</volist>
+						</tbody>
+					</table>
+				</div>
+				</if>
+
+				<if condition="$product_list">
+				<div class="ta">
+					<table class="table table-bordered table-hover table-striped">
+						<thead>
+							<tr>
+								<if condition="$product_list[0]['type'] eq 1">
+								<th class="text-center" width="40">序</th>
+								<th class="text-center">规格编码</th>
+								<th class="text-center">货品编码</th>
+								<th class="text-center">附属货品编码</th>
+								<th class="text-center">货品名称</th>
+								<th class="text-center">规格</th>
+								<th class="text-center">库龄/月</th>
+								<th class="text-center">含金量</th>
+								<th class="text-center">质检编号</th>
+								<th class="text-center">款号</th>
+								<th class="text-center">金重</th>
+								<th class="text-center">金价</th>
+								<th class="text-center">尺寸</th>
+								<th class="text-center">证书类型</th>
+								<th class="text-center">证书号</th>
+								<th class="text-center">证书费</th>
+								<th class="text-center">附加费用</th>
+								<th class="text-center">成本价</th>
+								<th class="text-center">标签价</th>
+								</if>
+								<if condition="$product_list[0]['type'] eq 2">
+								<th class="text-center" width="40">序</th>
+								<th class="text-center">金料名称</th>
+								<th class="text-center">金价</th>
+								<th class="text-center">金重</th>
+								<th class="text-center">总重</th>
+								<th class="text-center">纯度(‰)</th>
+								<th class="text-center">成本价</th>
+								</if>
+								<if condition="$product_list[0]['type'] eq 3">
+								<th class="text-center" width="40">序</th>
+								<th class="text-center">规格编码</th>
+								<th class="text-center">货品编码</th>
+								<th class="text-center">附属货品编码</th>
+								<th class="text-center">货品名称</th>
+								<th class="text-center">规格</th>
+								<th class="text-center">库龄/月</th>
+								<th class="text-center">检测号</th>
+								<th class="text-center">形状</th>
+								<th class="text-center">石重</th>
+								<th class="text-center">颜色</th>
+								<th class="text-center">净度</th>
+								<th class="text-center">切工</th>
+								<th class="text-center">抛光</th>
+								<th class="text-center">荧光</th>
+								<th class="text-center">对称</th>
+								<th class="text-center">成本价</th>
+								<th class="text-center">标签价</th>
+								<th class="text-center">证书类型</th>
+								<th class="text-center">证书号</th>
+								<th class="text-center">证书费</th>
+								<th class="text-center">附加费用</th>
+								</if>
+								<if condition="$product_list[0]['type'] eq 4">
+								<th class="text-center" width="40">序</th>
+								<th class="text-center">规格编码</th>
+								<th class="text-center">货品编码</th>
+								<th class="text-center">附属货品编码</th>
+								<th class="text-center">货品名称</th>
+								<th class="text-center">规格</th>
+								<th class="text-center">库龄/月</th>
+								<th class="text-center">检测号</th>
+								<th class="text-center">款式</th>
+								<th class="text-center">材质</th>
+								<th class="text-center">材质颜色</th>
+								<th class="text-center">尺寸</th>
+								<th class="text-center">货重</th>
+								<th class="text-center">金重</th>
+								<th class="text-center">主石数</th>
+								<th class="text-center">主石重</th>
+								<th class="text-center">主石价</th>
+								<th class="text-center">主石颜色</th>
+								<th class="text-center">主石净度</th>
+								<th class="text-center">主石切工</th>
+								<th class="text-center">附石数</th>
+								<th class="text-center">附石重</th>
+								<th class="text-center">附石价</th>
+								<th class="text-center">加工费</th>
+								<th class="text-center">成本价</th>
+								<th class="text-center">标签价</th>
+								<th class="text-center">证书类型</th>
+								<th class="text-center">证书号</th>
+								<th class="text-center">证书费</th>
+								<th class="text-center">附加费用</th>
+								</if>
+								<if condition="$product_list[0]['type'] eq 5">
+								<th class="text-center" width="40">序</th>
+								<th class="text-center">规格编码</th>
+								<th class="text-center">货品编码</th>
+								<th class="text-center">附属货品编码</th>
+								<th class="text-center">货品名称</th>
+								<th class="text-center">规格</th>
+								<th class="text-center">库龄/月</th>
+								<th class="text-center">检测号</th>
+								<th class="text-center">尺寸</th>
+								<th class="text-center">货重</th>
+								<th class="text-center">主石数</th>
+								<th class="text-center">主石重</th>
+								<th class="text-center">主石价</th>
+								<th class="text-center">成本价</th>
+								<th class="text-center">标签价</th>
+								<th class="text-center">证书类型</th>
+								<th class="text-center">证书号</th>
+								<th class="text-center">证书费</th>
+								<th class="text-center">附加费用</th>
+								</if>
+								<if condition="$product_list[0]['type'] eq 6">
+								<th class="text-center" width="40">序</th>
+								<th class="text-center">规格编码</th>
+								<th class="text-center">货品编码</th>
+								<th class="text-center">附属货品编码</th>
+								<th class="text-center">货品名称</th>
+								<th class="text-center">规格</th>
+								<th class="text-center">库龄/月</th>
+								<th class="text-center">成本价</th>
+								<th class="text-center">标签价</th>
+								<th class="text-center">附加费用</th>
+								</if>
+							</tr>
+						</thead>
+						<tbody id="tbody">
+							<volist name="product_list" id="v">
+							<if condition="$product_list[0]['type'] eq 1">
+							<tr id="{$v.goods_id}" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.goods_code}</td>
+								<td class="text-center">{$v.product_code}</td>
+								<td class="text-center">{$v.sub_product_code}</td>
+								<td class="text-center">{$v.goods_name}</td>
+								<td class="text-center">{$v.goods_spec}</td>
+								<td class="text-center">{$v.product_age}</td>
+								<td class="text-center">{$v.purity}</td>
+								<td class="text-center">{$v.qc_code}</td>
+								<td class="text-center">{$v.design}</td>
+								<td class="text-center">{$v.weight}</td>
+								<td class="text-center">{$v.buy_price}</td>
+								<td class="text-center">{$v.ring_size}</td>
+								<td class="text-center">{$v.certify_type_name}</td>
+								<td class="text-center">{$v.certify_code}</td>
+								<td class="text-center">{$v.certify_price}</td>
+								<td class="text-center">{$v.extras}</td>
+								<td class="text-center">{$v.cost_price}</td>
+								<td class="text-center">{$v.sell_price}</td>
+							</tr>
+							<notempty name="v['memo']">
+							<tr>
+								<td class="text-center">备注</td>
+								<td colspan="17">{$v.memo}</td>
+							</tr>
+							</notempty>
+							</if>
+							<if condition="$product_list[0]['type'] eq 2">
+							<tr id="{$v.id}" rproduct_code="{$v.rproduct_code}" data-pid="{$v.id}">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.recovery_name}</td>
+								<td class="text-center">{$v.gold_price}</td>
+								<td class="text-center">{$v.gold_weight}</td>
+								<td class="text-center">{$v.total_weight}</td>
+								<td class="text-center">{$v.purity}</td>
+								<td class="text-center">{$v.cost_price}</td>
+							</tr>
+							<notempty name="v['memo']">
+							<tr>
+								<td class="text-center">备注</td>
+								<td colspan="6">{$v.memo}</td>
+							</tr>
+							</notempty>
+							</if>
+							<if condition="$product_list[0]['type'] eq 3">
+							<tr id="{$v.goods_id}" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.goods_code}</td>
+								<td class="text-center">{$v.product_code}</td>
+								<td class="text-center">{$v.sub_product_code}</td>
+								<td class="text-left" style="padding: 8px 3px">{$v.goods_name}</td>
+								<td class="text-left" style="padding: 8px 3px">{$v.goods_spec}</td>
+								<td class="text-center">{$v.product_age}</td>
+								<td class="text-center">{$v.qc_code}</td>
+								<td class="text-center">{$v.shape}</td>
+								<td class="text-center">{$v.caratage}</td>
+								<td class="text-center">{$v.color}</td>
+								<td class="text-center">{$v.clarity}</td>
+								<td class="text-center">{$v.cut}</td>
+								<td class="text-center">{$v.polish}</td>
+								<td class="text-center">{$v.symmetric}</td>
+								<td class="text-center">{$v.fluorescent}</td>
+								<td class="text-center">{$v.cost_price}</td>
+								<td class="text-center">{$v.sell_price}</td>
+								<td class="text-center">{$v.certify_type_name}</td>
+								<td class="text-center">{$v.certify_code}</td>
+								<td class="text-center">{$v.certify_price}</td>
+								<td class="text-center">{$v.extras}</td>
+							</tr>
+							<notempty name="v['memo']">
+							<tr>
+								<td class="text-center">备注</td>
+								<td colspan="21">{$v.memo}</td>
+							</tr>
+							</notempty>
+							</if>
+							<if condition="$product_list[0]['type'] eq 4">
+							<tr id="{$v.goods_id}" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.goods_code}</td>
+								<td class="text-center">{$v.product_code}</td>
+								<td class="text-center">{$v.sub_product_code}</td>
+								<td class="text-left" style="padding: 8px 3px">{$v.goods_name}</td>
+								<td class="text-left" style="padding: 8px 3px">{$v.goods_spec}</td>
+								<td class="text-center">{$v.product_age}</td>
+								<td class="text-center">{$v.qc_code}</td>
+								<td class="text-center">{$v.design}</td>
+								<td class="text-center">{$v.material}</td>
+								<td class="text-center">{$v.material_color}</td>
+								<td class="text-center">{$v.ring_size}</td>
+								<td class="text-center">{$v.total_weight}</td>
+								<td class="text-center">{$v.gold_weight}</td>
+								<td class="text-center">{$v.main_stone_num}</td>
+								<td class="text-center">{$v.main_stone_caratage}</td>
+								<td class="text-center">{$v.main_stone_price}</td>
+								<td class="text-center">{$v.color}</td>
+								<td class="text-center">{$v.clarity}</td>
+								<td class="text-center">{$v.cut}</td>
+								<td class="text-center">{$v.side_stone_num}</td>
+								<td class="text-center">{$v.side_stone_caratage}</td>
+								<td class="text-center">{$v.side_stone_price}</td>
+								<td class="text-center">{$v.process_cost}</td>
+								<td class="text-center">{$v.cost_price}</td>
+								<td class="text-center">{$v.sell_price}</td>
+								<td class="text-center">{$v.certify_type_name}</td>
+								<td class="text-center">{$v.certify_code}</td>
+								<td class="text-center">{$v.certify_price}</td>
+								<td class="text-center">{$v.extras}</td>
+							</tr>
+							<notempty name="v['memo']">
+							<tr>
+								<td class="text-center">备注</td>
+								<td colspan="28">{$v.memo}</td>
+							</tr>
+							</notempty>
+							</if>
+							<if condition="$product_list[0]['type'] eq 5">
+							<tr id="{$v.goods_id}" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.goods_code}</td>
+								<td class="text-center">{$v.product_code}</td>
+								<td class="text-center">{$v.sub_product_code}</td>
+								<td class="text-left" style="padding: 8px 3px">{$v.goods_name}</td>
+								<td class="text-left" style="padding: 8px 3px">{$v.goods_spec}</td>
+								<td class="text-center">{$v.product_age}</td>
+								<td class="text-center">{$v.qc_code}</td>
+								<td class="text-center">{$v.ring_size}</td>
+								<td class="text-center">{$v.p_weight}</td>
+								<td class="text-center">{$v.stone_num}</td>
+								<td class="text-center">{$v.stone_weight}</td>
+								<td class="text-center">{$v.stone_price}</td>
+								<td class="text-center">{$v.cost_price}</td>
+								<td class="text-center">{$v.sell_price}</td>
+								<td class="text-center">{$v.certify_type_name}</td>
+								<td class="text-center">{$v.certify_code}</td>
+								<td class="text-center">{$v.certify_price}</td>
+								<td class="text-center">{$v.extras}</td>
+							</tr>
+							<notempty name="v['memo']">
+							<tr>
+								<td class="text-center">备注</td>
+								<td colspan="17">{$v.memo}</td>
+							</tr>
+							</notempty>
+							</if>
+							<if condition="$product_list[0]['type'] eq 6">
+							<tr id="{$v.goods_id}" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.goods_code}</td>
+								<td class="text-center">{$v.product_code}</td>
+								<td class="text-center">{$v.sub_product_code}</td>
+								<td class="text-left" style="padding: 8px 3px">{$v.goods_name}</td>
+								<td class="text-left" style="padding: 8px 3px">{$v.goods_spec}</td>
+								<td class="text-center">{$v.product_age}</td>
+								<td class="text-center">{$v.cost_price}</td>
+								<td class="text-center">{$v.sell_price}</td>
+								<td class="text-center">{$v.extras}</td>
+							</tr>
+							<notempty name="v['memo']">
+							<tr>
+								<td class="text-center">备注</td>
+								<td colspan="8">{$v.memo}</td>
+							</tr>
+							</notempty>
+							</if>
+							</volist>
+						</tbody>
+					</table>
+				</div>
+				</if>
+			</div>
+			
+			<businesstpl file="operate" />
+
+			<div class="form-actions text-center">
+				<if condition="$info['status'] eq 0">
+					<button class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</button>
+					<button class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</button>
+				</if>
+				<p class="btn js-ajax-back-btn" type="text">{:L('BACK')}</p>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/js/jquery-form.js"></script>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+
+	<script>
+		initPicReview();
+		function initPicReview() {
+			$('.click_pic').unbind('click').click(function() {
+				var img_url = $(this).find('img').attr('src');
+				image_preview_dialog(img_url);
+			})
+		}
+		$(".modal_trigger").unbind().click(function() {
+			var url = $(this).attr('url');
+			$('#my_Modal').find('button[data-type="del"]').unbind().click(function() {
+				$.post(url, null, function(data) {
+					if (data.status == 1) {
+						location.href = data.referer;
+					}
+				})
+			});
+		});
+
+		var is_loading = false;
+
+		$('.js-ajax-submit').click(function() {
+
+			if (is_loading)
+				return;
+
+			is_loading = true;
+
+			var id = $('#id').val();
+			var type = $(this).data('type');
+			var check_memo = $('#check_memo').val();
+
+			$.ajax({
+				async : false,
+				url : $('#form').attr('action'),
+				type : 'post',
+				data : {
+					id : id,
+					type : type,
+					check_memo : check_memo
+				},
+				dataType : 'json',
+				success : function(result) {
+					is_loading = false;
+
+					if (result.status == "success") {
+						appear_error('操作成功！');
+					} else if (result.status == "fail") {
+						appear_error('操作失败！' + result.msg);
+					}
+					if (result.referer) {
+						window.location.href = result.referer;
+						return false;
+					} else {
+						if (result.status === 'success') {
+							//刷新当前页
+							window.location.href = window.location.href;
+							return false;
+						}
+					}
+				},
+				error : function() {
+					is_loading = false;
+					appear_error('操作失败，网络错误！');
+				}
+			});
+			return false;
+		});
+
+		function appear_error(str) {
+			var tips = $('.tips_error');
+			if (!tips.length) {
+				$('.form-actions').append('<span class="tips_error" style="color:red;">' + str + '</span>');
+			} else {
+				tips.html(str);
+			}
+		}
+	</script>
+	<include file="./Application/Home/View/Public/footer.html" />

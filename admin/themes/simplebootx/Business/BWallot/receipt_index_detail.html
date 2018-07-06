@@ -1,0 +1,99 @@
+<businesstpl file="header" />
+<body class="theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('BWallot/receipt_index_detail')}">{:L('BUSINESS_BALLOT_receipt_INDEX_DETAIL')}</a></li>
+		<button type="button" onclick="history.go( -1 )" class="btn btn-primary " style="float:right">返回</button>
+	</ul>
+	<table class="table table-bordered " style="white-space:normal;">
+		<tbody >
+		<tr>
+			<td style="background-color:#f5f5f5">发货仓库</td>
+			<td>{$allocation['from_whname']}</td>
+			<td style="background-color:#f5f5f5">日期</td>
+			<td>{:date('Y-m-d H:i:s',$allocation['create_time'])}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">收货仓库</td>
+			<td>{$allocation['to_whname']}</td>
+			<td style="background-color:#f5f5f5">状态</td>
+			<td style="max-width: 200px;">{$status[$allocation['status']]}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">开单人</td>
+			<td>{$allocation['user_nicename']}</td>
+			<td style="background-color:#f5f5f5">备注</td>
+			<td  style="max-width: 200px;">{$allocation['memo']}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">审核人</td>
+			<td>{$allocation['user_nicename']}</td>
+			<td style="background-color:#f5f5f5">审核时间</td>
+			<td  style="max-width: 200px;"><if condition="$allocation['check_time']">{:date('Y-m-d H:i:s',$allocation['check_time'])}<else/></if></td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">审核备注</td>
+			<td  colspan="3">{$allocation['check_memo']}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">出库人</td>
+			<td>{$allocation['outbound_name']}</td>
+			<td style="background-color:#f5f5f5">出库审核时间</td>
+			<td  style="max-width: 200px;"><if condition="$allocation['outbound_time']">{:date('Y-m-d H:i:s',$allocation['outbound_time'])}<else/></if></td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">入库备注</td>
+			<td  colspan="3">{$allocation['outbound_memo']}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">入库人</td>
+			<td>{$allocation['receipt_name']}</td>
+			<td style="background-color:#f5f5f5">入库审核时间</td>
+			<td  style="max-width: 200px;"><if condition="$allocation['receipt_time']">{:date('Y-m-d H:i:s',$allocation['receipt_time'])}<else/></if></td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">出库备注</td>
+			<td  colspan="3">{$allocation['receipt_memo']}</td>
+		</tr>
+		</tbody >
+	</table>
+	<div class="ta">
+		<table class="table table-bordered  table-hover">
+			<thead >
+			<tr>
+				<th>序</th>
+				<th>图片</th>
+				<th>品目</th>
+				<!--  <th>规格</th>-->
+				<th>商品编号</th>
+				<th>销售量</th>
+				<th>计价方式</th>
+				<input type="hidden" class="weight" value="{$sun[0]['sun']}">
+			</tr>
+			</thead>
+			<volist name="list" id="v">
+				<tr >
+					<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td class="text-center">
+						<if condition="empty($v['product_pic'])">
+							<img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
+							<else />
+							<a href="javascript:parent.image_preview_dialog('{$v['product_pic']}');">
+								<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$v.product_pic}">
+							</a>
+						</if>
+					</td>
+					<td class="text-left">{$v.goods_name}</td>
+					<td class="text-center">{$v.goods_code}</td>
+					<td class="text-center">{$v.goods_stock}</td>
+					<td class="text-center"><if condition='$v.sell_pricemode eq 0'>计件<else/>计重</if></td>
+				</tr>
+			</volist>
+		</table>
+	</div>
+	<div class="pagination">{$page}</div>
+</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+</body>
+

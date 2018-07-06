@@ -1,0 +1,48 @@
+<!--用于选择客户的页面的公共模板-->
+    <div class="well form-search">
+   <!-- 姓名:
+    <input type="text" autocomplete="off" name="user_nicename" style="width: 100px;" value="{:I('request.user_nicename/s','')}" placeholder="请输入姓名" >-->
+    综合搜索:
+    <input type="text" autocomplete="off" name="search"  value="{:I('request.search/s','')}" placeholder="请输入手机号/姓名">
+    <input id ="from" class="btn btn-primary" value="搜索" type="submit">
+    <a id ="add_user" href="{:U('add_client')}" class="btn btn-primary" type="text" onclick="aa()">添加会员</a>
+</div>
+
+</form>
+<table class="table table-bordered  table-hover">
+    <thead  style="background:#e5e5ea">
+    <tr >
+        <th>选择</th>
+        <th>序号</th>
+        <th>会员姓名</th>
+        <th>手机</th>
+    </tr>
+    </thead>
+    <tbody id="table">
+    <volist name="list" id="v">
+        <tr class="check_tr">
+            <td class="text-center"><input name="save"  class="save check_box" uid="{$v.id}" employee_id="{$v.employee_id}"  realname="{$v.realname}" id_no="{$v.id_no}"  mobile="{$v.client_moblie}" u_name="{$v.user_nicename}" type="radio" ></td>
+            <td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+            <td>{$v.user_nicename}</td>
+            <td>{$v.mobile}</td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="pagination">{$page}</div>
+</div>
+</body>
+
+<script>
+    $('.check_tr').click(function(){
+        var checkbox = $(this).find('input[type=radio]');
+
+        if(!checkbox.is(':checked')){
+            checkbox.prop('checked', true);
+        }
+    });
+    function keyLogin(event){
+        if (event.keyCode==13|| event.whick==13)  //回车键的键值为13
+            document.getElementById("from").click(); //调用登录按钮的登录事件
+    }
+</script>

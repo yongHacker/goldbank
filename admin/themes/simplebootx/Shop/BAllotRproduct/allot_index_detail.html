@@ -1,0 +1,52 @@
+<shoptpl file="header" />
+<body class="theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('BAllotRproduct/allot_index_detail')}">{:L(MODULE_NAME.'_BAllotRproduct_ALLOT_INDEX_DETAIL')}</a></li>
+		<span style='float: right'>
+			<!--<if condition="in_array($allocation['status'],array(-1,2,3,4,6))">
+				<a href="{:U('BAllot/edit',array('id'=>$allocation['id']))}"><button type="button" class="btn btn-primary" >编辑</button></a>
+			</if>-->
+			<if condition="in_array($allocation['status'],array(0)) && get_user_id() eq $allocation['creator_id']">
+				<a class="btn btn-danger del" href="#myModal" name="{$allocation['id']}" class="del" role="button" data-toggle="modal">撤销</a>
+			</if>
+			<a class="btn" href="javascript:history.back(-1);">返回</a>
+		</span>
+	</ul>
+	<shoptpl file="BAllotRproduct/detail_tpl" />
+	<if condition="in_array($allocation['status'],array(0,-1,2,3,4,6)) ">
+	<div class="form-actions text-center">
+		<!--<if condition="in_array($allocation['status'],array(-1,2,3,4,6)) ">
+		<a href="{:U('BAllotRproduct/edit',array('id'=>$allocation['id']))}"><button type="button" class="btn btn-primary" >编辑</button></a>
+		</if>-->
+		<if condition="in_array($allocation['status'],array(0)) && get_user_id() eq $allocation['creator_id']">
+			<a class="btn btn-danger del" href="#myModal" name="{$allocation['id']}" class="del" role="button" data-toggle="modal">撤销</a>
+		</if>
+		<a class="btn" href="javascript:history.back(-1);">返回</a>
+		<span class="tips_error"></span>
+	</div>
+	<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog-div">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h3 id="myModalLabel">撤销警告</h3>
+				</div>
+				<div class="modal-body">
+					<p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要撤销吗?</p>
+				</div>
+				<div class="modal-footer">
+					<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+					<button id="del" class="btn btn-primary" data-dismiss="modal">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	</if>
+</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script src="__PUBLIC__/js/shop_common.js"></script>
+<script src="__PUBLIC__/shop/BAllotRproduct/js/allot_index_detail.js"></script>
+</body>
+

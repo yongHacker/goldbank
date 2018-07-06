@@ -1,0 +1,23 @@
+<if condition="$operate_record">
+    <p>操作日志</p>
+    <table class="table table-bordered  table-hover table-striped">
+        <thead >
+        <tr>
+            <th class="text-center">序</th>
+            <th class="text-center">操作人</th>
+            <th class="text-center">操作类型</th>
+            <th class="text-center">操作时间</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <volist name="operate_record" id="v">
+            <tr>
+                <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                <td class="text-left">{$v.employee_name}</td>
+                <td class="text-center">{$v.operate_name}</td>
+                <td class="text-center">{:date('Y-m-d H:i:s',$v['operate_time'])}</td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+</if>

@@ -1,0 +1,220 @@
+<systemtpl file="header" />
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('Company/index')}">{:L('SYSTEM_COMPANY_INDEX')}</a></li>
+			<li><a href="{:U('Company/add')}">{:L('SYSTEM_COMPANY_ADD')}</a></li>
+		</ul>
+		<form class="well form-search" method="post" action="{:U('Company/index')}">
+            综合搜索:
+            <input id="search_name" name="search_name" style="width: 100px;" value="{$Think.request.search_name}" placeholder="关键字查询" type="text">
+            <input class="btn btn-primary" value="搜索" type="submit">
+        </form>
+    <if condition="$company_list">
+    <div class="main-content">
+        <div class="ta">
+            <table class="table table-bordered  table-hover table-striped">
+                <thead  >
+                <tr>
+                	<th class="text-center">序</th>
+                	<th class="text-center">商户号</th>
+                    <th class="text-center">商户名称</th>
+                    <th class="text-center">法定代表人</th>
+                    <th class="text-center">关联用户</th>
+                    <th class="text-center">登录账号</th>
+                    <th class="text-center">地址</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="company_list" id="v">
+                    <tr>
+                        <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                        <td class="coded text-left">{$v.company_code}</td>
+                        <td class="coded text-left">{$v.company_name}</td>
+                        <td class="jhmc text-left">{$v.company_legal_person}</a></td>
+                        <td class="clrq text-center">{$v.name3}</td>
+                        <td class="clrq text-center">{$v.login_mobile}</td>
+                        <td class="clrq text-left">{$v.company_addr}</td>
+                        <td class="text-center">
+                        	<a href="{:U('Company/detail',array('id'=>$v['company_id']))}" name="{$v.company_id}" title="查看" class="detail fa fa-file-text-o"></a>
+	                        <a href="{:U('Company/edit',array('id'=>$v['company_id']))}" name="{$v.company_id}" class="edit fa fa-edit" title="编辑"></a>
+
+	                        <in name="v.company_status" value="1,3">
+		                        <if condition="$v.company_status neq 3">
+	                            	<a href="{:U('Company/lock',array('id'=>$v['company_id']))}" name="{$v.company_id}" class="js-ajax-lock lock fa fa-unlock-alt" title="锁定" role="button" data-toggle="modal"></a>
+	                            <else/>
+	                            	<a href="{:U('Company/unlock',array('id'=>$v['company_id']))}" name="{$v.company_id}" class="js-ajax-unlock unlock fa fa-lock" title="解锁" role="button" data-toggle="modal"></a>
+	                            </if>
+	                        <else/>
+	                        	<a href="{:U('Company/deleted',array('id'=>$v['company_id']))}" name="{$v.company_id}" class="js-ajax-lock delete fa fa-trash" data-msg="确定要删除吗" title="删除" role="button" data-toggle="modal"></a>
+	                        </in>
+
+                            <a href="{:U('Company/set_pwd',array('id'=>$v['company_uid']))}" name="{$v.company_uid}" class="edit fa fa-credit-card" title="更换密码"></a>
+
+                            <eq name="v.company_status" value='1'>
+                                <a href="{:U('Company/set_role',array('id'=>$v['company_uid']))}" name="{$v.company_uid}" class="edit fa fa-gavel" title="设置权限"></a>
+                                <a href="{:U('Company/set_shop_role',array('id'=>$v['company_uid']))}" name="{$v.company_uid}" class="edit fa fa-home" title="设置门店权限"></a>
+                            </eq>
+
+		                </td>
+                    </tr>
+                </volist>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">{$page}</div>
+        <else/>
+        <include file="./public/common/default_empty.html" />
+    </if>
+      <include file="./public/common/footer.html" />
+	</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script>
+if('{$company_list}'==''||'{$company_list}'==null||typeof('{$company_list}')=='undefined'){
+	$('.ta').hide();
+	$('.ts').show();
+}
+//锁定操作，锁定数据后刷新页面
+if ($('a.js-ajax-lock').length) {
+    Wind.use('artDialog', function () {
+        $('.js-ajax-lock').on('click', function (e) {
+            e.preventDefault();
+            var $_this = this,
+                $this = $($_this),
+                href = $this.data('href'),
+                msg = $this.data('msg');
+            href = href?href:$this.attr('href');
+            art.dialog({
+                title: false,
+                icon: 'question',
+                content:msg?msg: '确定要锁定吗？',
+                follow: $_this,
+                close: function () {
+                    $_this.focus();; //关闭时让触发弹窗的元素获取焦点
+                    return true;
+                },
+                okVal:"确定",
+                ok: function () {
+                	
+                    $.getJSON(href).done(function (data) {
+                        if (data.code==200) {
+                            reloadPage(window);
+                        } else if (data.code==400) {
+                        	reloadPage(window);
+			art.dialog({   
+				content: data.info,
+				icon: 'warning',  
+				ok: function () {   
+					this.title('操作失败！');   
+					return true;   
+				}
+			}); 
+                        }
+                    });
+                },
+                cancelVal: '关闭',
+                cancel: true
+            });
+        });
+
+    });
+}
+//锁定操作，锁定数据后刷新页面
+if ($('a.js-ajax-unlock').length) {
+    Wind.use('artDialog', function () {
+        $('.js-ajax-unlock').on('click', function (e) {
+            e.preventDefault();
+            var $_this = this,
+                $this = $($_this),
+                href = $this.data('href'),
+                msg = $this.data('msg');
+            href = href?href:$this.attr('href');
+            art.dialog({
+                title: false,
+                icon: 'question',
+                content:msg?msg: '确定要解锁吗？',
+                follow: $_this,
+                close: function () {
+                    $_this.focus();; //关闭时让触发弹窗的元素获取焦点
+                    return true;
+                },
+                okVal:"确定",
+                ok: function () {
+                	
+                    $.getJSON(href).done(function (data) {
+                        if (data.code==200) {
+                            reloadPage(window);
+                        } else if (data.code==400) {
+                            //art.dialog.alert(data.info);
+                        	//alert(data.info);//暂时处理方案
+			art.dialog({   
+				content: data.info,
+				icon: 'warning',  
+				ok: function () {   
+					this.title('操作失败！');   
+					return true;   
+				}
+			}); 
+                        }
+                    });
+                },
+                cancelVal: '关闭',
+                cancel: true
+            });
+        });
+
+    });
+}
+//删除操作，删除数据后刷新页面
+if ($('a.js-ajax-delete').length) {
+    Wind.use('artDialog', function () {
+        $('.js-ajax-delete').on('click', function (e) {
+            e.preventDefault();
+            var $_this = this,
+                $this = $($_this),
+                href = $this.data('href'),
+                msg = $this.data('msg');
+            href = href?href:$this.attr('href');
+            art.dialog({
+                title: false,
+                icon: 'question',
+                content:msg?msg: '确定要删除吗？',
+                follow: $_this,
+                close: function () {
+                    $_this.focus();; //关闭时让触发弹窗的元素获取焦点
+                    return true;
+                },
+                okVal:"确定",
+                ok: function () {
+                	
+                    $.getJSON(href).done(function (data) {
+                        if (data.code==200) {
+                            reloadPage(window);
+                        } else if (data.code==400) {
+                        	reloadPage(window);
+			art.dialog({   
+				content: data.info,
+				icon: 'warning',  
+				ok: function () {   
+					this.title('操作失败！');   
+					return true;   
+				}
+			}); 
+                        }
+                    });
+                },
+                cancelVal: '关闭',
+                cancel: true
+            });
+        });
+
+    });
+}
+</script>
+</body>
+</html>

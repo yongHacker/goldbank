@@ -1,0 +1,19 @@
+<systemtpl file="header" />
+</head>
+<body>
+<div class="wrap">
+	<ul class="nav nav-tabs">
+		<li <if condition="$setting_url eq 'status_index'"> class="active"</if>><a href="{:U('Status/index')}">{:L('SYSTEM_STATUS_INDEX')}</a></li>
+		<if condition="$setting_url eq 'status_edit'">
+			<li <if condition="$setting_url eq 'status_edit'"> class="active"</if>><a href="{:U('Status/edit')}">{:L('SYSTEM_STATUS_EDIT')}</a></li>
+		<else/>
+			<li <if condition="$setting_url eq 'status_add'"> class="active"</if>><a href="{:U('Status/add')}">{:L('SYSTEM_STATUS_ADD')}</a></li>
+		</if>
+		<li <if condition="$setting_url eq 'appversion_index'"> class="active"</if>><a href="{:U('AppVersion/index')}">{:L('SYSTEM_APPVERSION_INDEX')}</a></li>
+		<if condition="$setting_url eq 'appversion_edit'">
+			<li <if condition="$setting_url eq 'appversion_edit'"> class="active"</if>><a href="{:U('AppVersion/edit')}">{:L('SYSTEM_APPVERSION_EDIT')}</a></li>
+		<else/>
+			<li <if condition="$setting_url eq 'appversion_add'"> class="active"</if>><a href="{:U('AppVersion/add')}">{:L('SYSTEM_APPVERSION_ADD')}</a></li>
+		</if>
+		<!--<li <if condition="$setting_url eq 'setting_procure_setting'"> class="active"</if>><a href="{:U('Setting/procure_setting')}">{:L('SYSTEM_SETTING_PROCURE_SETTING')}</a></li>-->
+	</ul>

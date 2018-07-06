@@ -1,0 +1,554 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BSell/css/edit.css">
+</head>
+<body class=" theme-blue">
+<div class="wrap js-check-wrap"  >
+    <ul class="nav nav-tabs">
+        <!--<li><a href="{:U('sells/index')}">销售列表</a></li>-->
+        <li class="active"><a href="{:U('sells/add')}">{:L('SHOP_BSELL_EDIT')}</a></li>
+    </ul>
+    <table class="table table-bordered" id="order_base">
+        <tr>
+            <td class="sel">门店</td>
+            <td width="25%">
+                <select id="shop" name="shop_id" data-live-search="true" disabled="disabled">
+                    <volist name="shop" id="v">
+                        <option value="{$v.id}" in_user="{$v.user_nicename}" currency_id="{$v.currency_id}" unit="{$v.unit}"
+                                default_rate="{$v.exchange_rate}"  <if condition="$v['id'] eq $data['shop_id']">selected=selected</if>>{$v.shop_name}</option>
+                    </volist >
+                </select>
+            </td>
+            <td class="sel">销售员</td>
+            <td width="25%">{$data.user_nicename}</td>
+        </tr>
+        <tr>
+            <td width="8%">销售方式</td>
+            <td width="25%" >
+                <if condition="$data['sell_type'] eq 1">
+                    <span><label style="display: inline"><input type="radio" style="width: auto" value="1" name="sell_type" <if condition="$data['sell_type'] eq 1">checked="checked"</if>>&nbsp;&nbsp;零售&nbsp;&nbsp;</label></span>
+                    <else/>
+                    <span><label style="display: inline"><input type="radio" style="width: auto" value="2" name="sell_type" <if condition="$data['sell_type'] eq 2">checked="checked"</if>>&nbsp;&nbsp;以旧换新</label></span>
+                </if>
+            </td>
+            <td class="sel">外部订单号</td>
+            <td ><input type="text" autocomplete="off" id ='sn_id' name="sn_id" value="{$data['sn_id']}"></td>
+        </tr>
+        <tr>
+            <td class="sel" width="20%">会员姓名</td>
+            <td class="search_input" width="25%">
+                <input type="text" autocomplete="off" id="mobile-name" value="{$data.buy_name}({$data.mobile})" class="form-control" onclick="$('#myModal3').modal('show');">
+                <input type="hidden" autocomplete="off" id="mobile" value="{$data.buy_name}" class="form-control" onclick="$('#myModal3').modal('show');"> <!--style="display: none;"-->
+                <input type="hidden" id="uid" class="form-control" value="{$data.client_id}">
+                <input type="hidden" id="employee_id" class="form-control" value="">
+                <a href="#myModal3" class="myModal3 leave" data-toggle="modal"   role="button"><span><i class="fa fa-search normal"></i></span></a>
+            </td>
+            <td class="sel" width="20%">开单日期</td>
+            <td width="25%">
+                {$data.create_time|date='Y-m-d',###}
+            </td>
+
+        </tr>
+        <tr style="display: none">
+            <td class="sel">销售数量</td>
+            <td width="25%" id="total_num">{$data['count']}</td>
+            <td class="sel">销售时间</td>
+            <td width="25%">
+                <input id="sell_date" class="form-control datepicker js-date span2" name="sell_date" value="{$data.sell_time|date='Y-m-d',###}" type="text">
+            </td>
+        </tr>
+        <tr>
+            <td class="sel" style="border-bottom: 1px solid #ddd;" class="gold">销售总额</td>
+            <td width="25%" style="border-bottom: 1px solid #ddd;"><span id="count">{$data.real_sell_price}</span></td>
+            <td class="sel">抹零金额</td>
+            <td colspan>
+                <div class="input-append" style="margin-bottom:0;">
+                    <input type="number" step="0.01" class="span2" id="extra_price" value="{$data['extra_price']}">
+                    <span class="add-on">元</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+        <if condition="$data['sell_type'] eq 2">
+            <tr>
+                <td>身份证号</td>
+                <td colspan="3"><input type="text" autocomplete="off" id ='client_idno' name="client_idno" value="{$data['client_idno']}"></td>
+            </tr>
+        </if>
+        <tr>
+            <td class="sel">备注</td>
+            <td width="25%" colspan="3"><textarea type="text" id="remark" value="{$data['memo']}">{$data['memo']}</textarea></td>
+        </tr>
+    </table>
+    <div class="main-content" >
+        <div class="ta" id="order_product" style="overflow-x: auto;">
+            <table class="table table-bordered  table-hover" >
+                <thead >
+                <tr>
+                    <th>序</th>
+                    <th style="width: 160px;">货品编号</th>
+                    <th>名称</th>
+                    <th>规格</th>
+                    <th>含金量(‰)</th>
+                    <th hidden="hidden">零售价/金价</th>
+                    <th>销售工费方式</th>
+                    <th style="width: 80px;">件/克工费</th>
+                    <th style="width: 80px;">克单价</th>
+                    <th>重量(克)</th>
+                    <th>实称克重(克)</th>
+                    <th style="width: 80px;">建议售价</th>
+                    <th style="width: 80px;">单品优惠</th>
+                    <th style="width: 80px;">销售价</th>
+                    <th>计价方式</th>
+                    <th hidden="hidden">id</th>
+                    <th>是否截金</th>
+                    <th>截后克重</th>
+                    <th class="text-center" style="width: 40px;">操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody" class="sell_tbody">
+                <volist name="list" id="v">
+                    <tr id='zz' class='' sell_feemode='{$v.sell_feemode}' gold_price='{$v.gold_price}' gold_type='{$v.type}' product_code='{$v.product_code}'>
+                        <td class="goods_order text-center" ></td>
+                        <td class="goods_code text-center">{$v.product_code}</td>
+                        <td class="goods_name">{$v.common_goods_name}</td>
+                        <td class="goods_spec t">{$v.goods_spec}</td>
+                        <td class="goods_purity text-center">{$v.purity}</td>
+                        <if condition="$v.g_sell_pricemode eq 0">
+                            <td class="sell_feemode">--</td>
+                            <td hidden="hidden" class="price">{$v.g_sell_price}</td>
+                            <td class="goods_gram_price">{$v.detail_sell_fee} </td>
+                            <td class="gold_price"><input type="text" autocomplete="off" name="sell_g_price" readonly="readonly" class="sell_g_price" value='{$v.gold_price}'></td>
+                            <else/>
+                            <td class="sell_feemode">{$v['sell_feemode']==1?'克工费销售':'件工费销售'}</td>
+                            <td hidden="hidden">'+$(this).attr('gold_price')+'</td>
+                            <td class="goods_gram_price">{$v.detail_sell_fee} </td>
+                            <td class="gold_price"><input type="text" autocomplete="off" name="sell_g_price" class="sell_g_price" value='{$v.gold_price}'></td>
+                        </if>
+                        <td class="procure_weight">{$v.p_total_weight}</td>
+                        <if condition="$v.g_sell_pricemode eq 0">
+                            <td class="goods_weight">--</td>
+                            <else/>
+                            <td class="goods_weight"><input type="text" autocomplete="off"   class="g text-right" name="goods_weight" value='{$v.sell_weight}' /></td>
+                        </if>
+                        <td  class="be_onsale_price">{$v.sell_price}</td>
+                        <td  class="discount_price"><input type="text" autocomplete="off" name="discount_price" class="discount_price"   value="{$v.discount_price}"></td>
+                        <td  class="goods_unit_price price2"><input type="text" autocomplete="off" name="price2" class="price2" price='{$v.actual_price}'  value='{$v.actual_price}'></td>
+                        <td class="jijia text-center"><if condition="$v.g_sell_pricemode eq 0">计价<else/>计重</if></td>
+                        <td class="goods_id" hidden ="hidden"><input id ="pid" type="text"  value='{$v.product_id}'></td>
+
+                        <if condition="$v.g_sell_pricemode eq 0">
+                            <td class="is_cut">/</td>
+                            <td class="cut_weight">/</td>
+                            <else/>
+                            <td class="is_cut">
+                                <if condition="$v['is_cut'] eq 1">
+                                    <select name="is_cut"><option selected="selected" value="1">是</option><option  value="0">否</option></select>
+                            <td class="cut_weight text-right"><input type="text" class="text-right" product_code="{$v.product_code}" name="cut_weight" value="{$v.cut_weight}"></td>
+                            <else/>
+                            <select name="is_cut"><option value="1">是</option><option selected="selected" value="0">否</option></select>
+                            <td class="cut_weight text-right">{$v.cut_weight}<input class="text-right" type="hidden" product_code="{$v.product_code}" name="cut_weight " value="{$v.cut_weight}"></td>
+                        </if>
+
+                        </td>
+
+                        </if>
+                        <td class="text-center">
+                            <input type="hidden" value="{$v.id}" p_id="{$v.product_id}" name="sell_detail_id">
+                            <a href="javascript:void(0);" name="{$v.id}"  class="del" role="button" >删除</i></a>
+                        </td>
+                    </tr>
+                </volist>
+                <tr id="last">
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="price"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center myModal2 on" href="#myModal2" style="cursor:pointer;" data-toggle="modal" role="button"><a href="javascript:void(0);">+</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div <if condition="$data['sell_type'] eq 2">class="ta" <else/>class="ta hide"</if> id="recovery_old_product" style="overflow-x: auto;">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="javascript:void(0);">以旧换新</a></li>
+            </ul>
+            <table class="table table-bordered  table-hover table-responsive">
+                <thead>
+                <tr>
+                    <th>序</th>
+                    <th style="width: 160px;">金料名称</th>
+                    <th style="width: 160px;">金料编号</th>
+                    <th style="width: 160px;">总重</th>
+                    <th>纯度(‰)</th>
+                    <th>金重</th>
+                    <th>回购金价</th>
+                    <th>当前金价</th>
+                    <th>服务克工费</th>
+                    <!-- <th>损耗率</th>-->
+                    <th style="width: 80px;">抵抗费用</th>
+                    <th>材质</th>
+                    <th>颜色</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="old_product_tbody">
+                <volist name="sell_recovery_product_list" id="v">
+                    <tr class="old_product_tr" id="old_product_tr" old_data="old_data" data-type="update">
+                        <td class="text-center"></td>
+                        <td class="text-center td_recovery_name">
+                            <input type="text" autocomplete="off" name="recovery_name" class="recovery_name" value="{$v.recovery_name}">
+                        </td>
+                        <td class="text-center td_rproduct_code">
+                            <input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" class="rproduct_code" value="{$v.rproduct_code}">
+                        </td>
+                        <td class="text-center td_total_weight">
+                            <input type="number" step="0.001" autocomplete="off" name="total_weight" class="total_weight no_arrow" value="{$v.total_weight}">
+                        </td>
+                        <td class="text-center td_purity">
+                            <input type="number" step="0.001" autocomplete="off" name="purity" class="purity no_arrow" value="{$v['purity']}">
+                        </td>
+                        <td class="text-center td_gold_weight">
+                            <input type="number" step="0.001" autocomplete="off" name="gold_weight" class="gold_weight no_arrow" value="{$v.gold_weight}">
+                        </td>
+                        <td class="text-center td_recovery_price">
+                            <input type="number" step="0.001" autocomplete="off" name="recovery_price" class="recovery_price no_arrow" value="{$v['recovery_price']}">
+                        </td>
+                        <td class="text-center td_gold_price">
+                            <input type="number" step="0.001" autocomplete="off" name="gold_price" class="gold_price no_arrow" value="{$v.gold_price}">
+                        </td>
+                        <td class="text-center td_service_fee">
+                            <input type="number" step="0.001" autocomplete="off" name="service_fee" class="service_fee no_arrow" value="{$v.service_fee}">
+                        </td>
+                        <td class="text-center td_cost_price">
+                            <input type="number" autocomplete="off" name="cost_price" class="cost_price no_arrow" value="{$v.cost_price}">
+                        </td>
+                        <td class="text-center td_material">
+                            <input type="text" autocomplete="off" name="material" class="material no_arrow" value="{$v.material}">
+                        </td>
+                        <td class="text-center td_color">
+                            <input type="text" autocomplete="off" name="color" class="color no_arrow" value="{$v.color}">
+                        </td>
+                        <td class="text-center">
+                            <input type="hidden" value="{$v.id}" name="old_product_id">
+                            <a href="javascript:void(0);" old_product_id="{$v.id}" class="old_product_del">删除</i></a>
+                        </td>
+                    </tr>
+                </volist>
+                <tr id="old_product_last">
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <!--<td class="text-center"></td>-->
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center" id="add_old_product" style="cursor: pointer;">
+                        <a href="javascript:void(0);">+</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="recovery_table" <if condition="$sell_cut_product_list">class="ta" <else/>class="ta hide"</if>>
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="javascript:void(0);">截金列表</a></li>
+        </ul>
+        <table class="table table-bordered  table-hover">
+            <thead >
+            <tr>
+                <th>序</th>
+                <th style="width:220px;">关联货号</th>
+                <th >金料名称</th>
+                <th >金料编号</th>
+                <th >截金总重</th>
+                <!-- <th style="width:220px;">旧金金重</th>-->
+                <th >截金金价</th>
+                <th >服务克工费</th>
+                <th style="width:220px;">纯度(‰)</th>
+                <!-- <th style="width:220px;">损耗率</th>-->
+                <th >抵扣费用</th>
+                <th>材质</th>
+                <th>颜色</th>
+            </tr>
+            </thead>
+            <tbody id="tbody" class="recovery_tbody">
+            <volist name="sell_cut_product_list" id="v">
+                <tr  class="recovery_type_tr" product_code="{$v.product_code}">
+                    <td class="text-center"></td>
+                    <td class="text-center product_code">{$v.product_code}<input type="hidden" name="product_id" value="{$v.product_id}" placeholder="货品id"></td>
+                    <td class="text-center recovery_name"><input type="text" autocomplete="off" name="recovery_name" value="{$v.recovery_name}" ></td>
+                    <td class="text-center rproduct_code"><input type="text" autocomplete="off" readonly="readonly" name="rproduct_code" value="{$v.rproduct_code}" ></td>
+                    <td class="text-right total_weight"><input type="number" class="no_arrow" autocomplete="off" name="total_weight" value="{$v.gold_weight}" placeholder="总重"></td>
+                    <!--<td class="text-right gold_weight"><input type="text" autocomplete="off" name="gold_weight" value="" placeholder="金重"></td>-->
+                    <td class="text-center recovery_price" ><input type="number" class="no_arrow" autocomplete="off" name="recovery_price" value="{$v.recovery_price}" placeholder="回购金价"></td>
+                    <td class="text-center service_fee" ><input type="number" class="no_arrow" autocomplete="off" name="service_fee" value="{$v.service_fee}" placeholder="服务克工费"></td>
+                    <td class="text-center purity" >{$v['purity']}<input type="hidden" name="purity" value="{$v['purity']/1000}" placeholder="纯度"></td>
+                    <!--<td class="text-center attrition" ><input type="text" autocomplete="off" name="attrition" value="" placeholder="损耗"></td>-->
+                    <td class="text-center cost_price" ><input type="number" class="no_arrow" autocomplete="off" name="cost_price" value="{$v.cost_price}" placeholder="回收价"></td>
+                    <td class="text-center td_material">
+                        <input type="text" autocomplete="off" name="material" class="material no_arrow" value="{$v.material}">
+                    </td>
+                    <td class="text-center td_color">
+                        <input type="text" autocomplete="off" name="color" class="color no_arrow" value="{$v.color}">
+                    </td>
+                    <input type="hidden" value="{$v.id}" name="sell_cut_product_id">
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+    </div>
+    <div class="ta" id="sub_datas">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="javascript:void(0);">其它费用</a></li>
+        </ul>
+        <table class="table table-bordered table-hover" >
+            <thead>
+            <tr>
+                <th class="text-center">序</th>
+                <th class="text-center">费用类目</th>
+                <th class="text-center">费用金额</th>
+                <th class="text-center" style="width: 40px;">操作</th>
+            </tr>
+            </thead>
+            <tbody id="sub_tbody">
+            <volist name="sell_sub" id="v">
+                <tr>
+                    <td class="text-center"></td>
+                    <td class="text-center expence_id">
+                        <select name="expence_id" style="width:220px;">
+                            <option value="0">选择类目</option>
+                            <volist name="expence_list" id="val">
+                                <option value="{$val.id}" <if condition="$val['id'] eq $v['expence_id'] ">selected=selected</if>>{$v.name}</option>
+                            </volist >
+                        </select>
+                    </td>
+                    <td class="text-center sub_price"><input type="number" autocomplete="off" class="sub_cost" step="0.01" value="{$v.cost}" placeholder="类目金额" style="width:220px;"></td>
+                    <td class="text-center sub_del" role="button" style="cursor:pointer;">
+                        <input type="hidden" value="{$v.id}" name="sub_datas_id">
+                        <a href="javascript:void(0);">删除</a>
+                    </td>
+                </tr>
+            </volist>
+            <tr id="sub_last">
+                <td class="text-center"></td>
+                <td class="text-center expence_id">
+                    <select name="expence_id" style="width:220px;">
+                        <option value="0">选择类目</option>
+                        <volist name="expence_list" id="v">
+                            <option value="{$v.id}" checked>{$v.name}</option>
+                        </volist >
+                    </select>
+                </td>
+                <td class="text-center sub_price">
+                    <input type="number" autocomplete="off" class="sub_cost" step="0.01" value="" placeholder="类目金额" style="width:220px;">
+                </td>
+                <td class="text-center" id="sub_add" role="button" style="cursor:pointer;"><a href="javascript:void(0);">+</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <!--其它费用类目html-->
+        <div id="expence_html" hidden="hidden">
+            <select name="expence_id" style="width:220px;">
+                <option value="0" checked>选择类目</option>
+                <volist name="expence_list" id="v">
+                    <option value="{$v.id}">{$v.name}</option>
+                </volist >
+            </select>
+        </div>
+    </div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="javascript:void(0);">收款明细</a></li>
+    </ul>
+    默认币种：<span class="count_unit">{$currency[0]['currency_name']}</span>&nbsp;&nbsp;&nbsp;默认汇率：<span class="default_rate">{$currency[0]['exchange_rate']}</span>%
+    <div class="ta">
+        <table class="table table-bordered  table-hover">
+            <thead >
+            <tr>
+                <th>序</th>
+                <th style="width:220px;">收款方式</th>
+                <th >币种</th>
+                <th style="width:220px;">流水号</th>
+                <th >收款金额</th>
+                <th style="width:220px;">计算单位</th>
+                <th style="width:220px;">汇率％</th>
+                <th >收款类型</th>
+                <th style="width:220px;">计算金额</th>
+                <th style="width:160px;">操作</th>
+            </tr>
+            </thead>
+            <tbody id="tbody" class="pay_tbody">
+            <volist name="saccount_list" id="v">
+                <tr class="pay_type_tr">
+                    <td class="text-center"></td>
+                    <td class="text-center pay_id">
+                        <select name="pay_id">
+                            <option value="0" pay_type="{$vo.pay_type}">选择收款方式</option>
+                            <volist name="payment" id="vo">
+                                <if condition="$v['pay_id'] eq $vo['id']">
+                                    <option  value="{$vo.id}"  pay_type="{$vo.pay_type}" selected="selected" >{$vo.pay_name}</option>
+                                    <else/>
+                                    <option  value="{$vo.id}"  pay_type="{$vo.pay_type}"  >{$vo.pay_name}</option>
+                                </if>
+
+                            </volist>
+                        </select>
+                    </td>
+                    <td class="text-center currency">
+                        <select name="currency" style="min-width:90px;">
+                            <option value="0" >选择币种</option>
+                            <volist name="currency" id="vo">
+                                <if condition="$v['currency_id'] eq $vo['id']">
+                                    <option  value="{$vo.id}" selected=selected   exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                                    <else/>
+                                    <option  value="{$vo.id}"   exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                                </if>
+                            </volist>
+                        </select>
+                    </td>
+                    <td class="text-right flow_id">
+                        <if condition="$v.flow_id neq ''">
+                            <input type="text" name="flow_id" value="{$v.flow_id}">
+                            <else/>
+                            -<input type="hidden" name="flow_id" value="">
+                        </if>
+                    </td>
+                    <td class="text-right pay_price"><input type="number" class="no_arrow" autocomplete="off" name="pay_price" value="{$v.pay_price}" placeholder="收款金额"></td>
+                    <td class="text-center unit">{$v.unit}</td>
+                    <td class="text-right exchange_rate">{$v.exchange_rate}</td>
+                    <td class="text-center pay_type">{$v['pay_type']>0?'系统内支付':'系统外支付'}</td>
+                    <td class="text-right actual_price">{$v.receipt_price}</td>
+                    <td class="text-center pay_del" style="color: #3daae9;cursor:pointer;">删除</td>
+                    <input type="hidden" value="{$v.id}" name="saccount_id">
+                </tr>
+            </volist>
+            <tr id="last" >
+                <td class="text-center" ></td>
+                <td class="text-center" colspan="8"></td>
+                <!-- <td class="text-center pay_id">
+                     <select name="pay_id">
+                         <option value="0" pay_type="{$vo.pay_type}">选择收款方式</option>
+                         <volist name="payment" id="vo">
+                             <option value="{$vo.id}" pay_type="{$vo.pay_type}">{$vo.pay_name}</option>
+                         </volist>
+                     </select>
+                 </td>
+                 <td class="text-center currency"  >
+                     <select name="currency" style="min-width:90px;">
+                         <option value="0" >选择币种</option>
+                         <volist name="currency" id="vo">
+                             <option value="{$vo.id}" exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                         </volist>
+                     </select>
+                 </td>
+                 <td class="text-right flow_id">
+                     &lt;!&ndash; <input type="text" autocomplete="off" name="flow_id" value="" placeholder="流水号"> &ndash;&gt;
+                     -<input type="hidden" name="flow_id" >
+                 </td>
+                 <td class="text-right pay_price"><input type="number" step="0.01" autocomplete="off" name="pay_price" value="0"></td>
+                 <td class="text-center unit"></td>
+                 <td class="text-center exchange_rate"></td>
+                 <td class="text-center pay_type"></td>
+                 <td class="text-right actual_price">0.00</td>-->
+                <td class="text-center" id="add_pay_type" style="color: #3daae9;cursor:pointer;">+添加收款方式</td>
+            </tr>
+            <tr id="count_pay">
+                <td class="text-center"></td>
+                <td class="text-center" colspan="3">计算金额=收款金额*汇率/默认汇率</td>
+                <td class="text-center" colspan="2">总计：<span id="count_sell_price">0.00</span><span class="count_unit">{$currency[0]['unit']}</span></td>
+                <td class="text-center" colspan="2">已经支付：<span id="count_price">0.00</span><span class="count_unit">{$currency[0]['unit']}</span></td>
+                <td class="text-center" colspan="2">还需支付：<span id="need_price">0.00</span><span  class="count_unit">{$currency[0]['unit']}</span></td>
+                <!-- <td class="text-center" colspan="5">还需支付：<span id="need_price">0.00</span>{$currency[0]['unit']}</td>-->
+            </tr>
+            </tbody>
+        </table>
+        <!--收款方式html-->
+        <div id="pay_html" hidden="hidden">
+            <select name="pay_id"  >
+                <option value="0" pay_type="0">选择收款方式</option>
+                <volist name="payment" id="vo">
+                    <option value="{$vo.id}" pay_type="{$vo.pay_type}">{$vo.pay_name}</option>
+                </volist>
+            </select>
+        </div>
+        <!--币种方式html-->
+        <div id="currency_html" hidden="hidden">
+            <select name="currency" style="min-width:90px;" >
+                <option value="0" >选择币种</option>
+                <volist name="currency" id="vo">
+                    <option value="{$vo.id}" exchange_rate="{$vo.exchange_rate}" unit="{$vo.unit}">{$vo.currency_name}</option>
+                </volist>
+            </select>
+        </div>
+    </div>
+    <div class="form-actions">
+        <div class="center-block" style="width:260px; margin: 0 auto;">
+            <input type="hidden" value="{$data.id}" name="sell_id">
+            <button type="button" class="btn btn-primary baocun" id="baocun" data-type="-1">{:L('SAVE')}</button>
+            <button type="button" class="btn btn-primary submit" id="submit" data-type="0">提交</button>
+            <div class="tishi" style="color: red;"></div>
+            <div>
+            </div>
+            <div class="modal small fade" style="width:80%;left:400px;top:2%;bottom: 2%;display:none" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">货品列表</b>
+                        </div>
+                        <div class="modal-body" style="max-height: 500px;padding: 0px;margin:0px">
+                            <iframe  frameborder="0" class="appiframe" src="{:U('BSell/product_list')}" id="goods_index" name="goods_index">
+
+                            </iframe>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="check" class="btn btn-primary pull-left" >选中</button>
+                            <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                            <button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <b id="clientModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">选择会员</b>
+                        </div>
+                        <div class="modal-body" style="max-height: 500px;padding: 0px;">
+                            <iframe  frameborder="0" class="appiframe" src="{:U('BSell/client_list')}" id="goods_index2" name="goods_index2" onload="loadFrame(this)">
+
+                            </iframe>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                            <button id="add-2" class="btn btn-primary" data-dismiss="modal">选中</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+            <script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+            <script src="__PUBLIC__/js/common.js"></script>
+            <script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+            <script src="__PUBLIC__/js/shop_common.js"></script>
+            <script src="__PUBLIC__/shop/BSell/js/edit.js"></script>

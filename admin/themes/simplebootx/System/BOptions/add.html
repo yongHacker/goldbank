@@ -1,0 +1,95 @@
+<systemtpl file="header" />
+<style>
+	a .fa{
+		text-decoration:none !important;
+		display: inline-block !important;
+		font-size: 16px !important;
+	}
+	.fa.fa-toggle-on,
+	.fa.fa-toggle-off{
+		text-decoration:none;
+		display: inline-block;
+		font-size:24px;
+
+	}
+	.fa.fa-toggle-on{
+		color:#2ecc71 !important;
+	}
+	.fa.fa-toggle-off{
+		color:#ccc !important;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BOptions/index')}">{:L('SYSTEM_BOPTIONS_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BOptions/add')}">{:L('SYSTEM_BOPTIONS_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BOptions/add')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">选择商户:</label>
+					<div class="controls">
+						<select name="company_id" style="width:200px;">
+			            	<option value="">--请选择商户--</option>
+			            	<foreach name="company_list" item="vo">
+			            		<option <if condition="I('request.company_id') eq $vo['company_id']">selected="selected"</if> value="{$vo.company_id}">{$vo.company_name}</option>
+			            	</foreach>
+			            </select>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">键名:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="option_name">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">键值:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="option_value">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">备注</label>
+					<div class="controls">
+						<textarea name="memo" rows="2" cols="20" id="memo" class="inputtext" style="height: 100px; width: 500px;"></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="status" class="col-sm-3 control-label">是否启用</label>
+					<div class="controls">
+						<input type="radio" name="status" value="1" checked="">是 &nbsp; &nbsp;&nbsp;
+						<input type="radio" name="status" value="0">否
+					</div>
+					<label id="mobilewar" class="control-label" style="color:red"></label>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script>
+	$(".open").click(function (e) {
+		e.preventDefault();
+		if ($(this).hasClass("fa-toggle-off")) {
+			$(this).removeClass("fa-toggle-off");
+			$(this).addClass("fa-toggle-on");
+			$(this).parent("td").find("input.val").val("1");
+		}
+		else {
+			$(this).removeClass("fa-toggle-on");
+			$(this).addClass("fa-toggle-off");
+			$(this).parent("td").find("input.val").val("0")
+		}
+	});
+</script>

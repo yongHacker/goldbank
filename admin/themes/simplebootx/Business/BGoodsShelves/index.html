@@ -1,0 +1,95 @@
+<businesstpl file="header" />
+	<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+<style>
+.my_page{
+text-align:left;
+}
+.my_page a{
+position: relative;
+/* float: left; */
+padding: 6px 12px;
+margin-left: -1px;
+line-height: 1.42857143;
+color: #428bca;
+text-decoration: none;
+background-color: #fff;
+border: 1px solid #ddd;
+}
+.my_page span{
+position: relative;
+/* float: left; */
+padding: 6px 12px;
+margin-left: -1px;
+line-height: 1.42857143;
+color:#fff;
+text-decoration: none;
+background-color:  #6f80a1;
+border: 1px solid #ddd;
+}
+.sel{background: #f4f4f4;}
+.my_page li{margin-top: 10px;display:none;}
+.table tr th{text-align:center;}
+</style>
+</head>
+<body class=" theme-blue" onkeydown="keyLogin(event);">  
+    <div class="wrap js-check-wrap"  >
+       <ul class="nav nav-tabs">
+			<!--<li class="active"><a href="{:U('sells/index')}">销售列表</a></li>-->
+			<li class="active"><a href="{:U('BGoodsShelves/index')}">{:L('BUSINESS_BGOODSSHELVES_INDEX')}</a></li>
+		</ul>
+		
+	<form class="well form-search search_row" method="post" action="{:U('BGoodsShelves/index')}">
+            综合搜索:
+            <input id="search_name" name="search_name" style="width: 155px;" value="{:I('search_name')}" placeholder="输入商品或者上架人员" type="text">
+          状态：
+            <select name="status">
+				<option value="-2" checked>选择状态</option>
+				<volist name="status_list" id="v">
+					<option <if
+						condition="$_POST['status'] eq $v['value'] || $_GET['status'] eq $v['value']">
+					selected="selected" </if> value="{$v.value}" >{$v.comment}
+					</option>
+				</volist>
+            </select>
+        <input class="btn btn-primary" value="搜索" type="submit">
+		<a class="btn btn-danger" href="{:U('BGoodsShelves/index')}">清空</a>
+		<input class="btn btn-primary export" url="{:U('BGoodsShelves/export_excel')}" value="导出" type="button" onclick="export_excel();">
+        </form>
+      
+	<if condition="$list">
+        <div class="main-content">
+        
+	<div class="ta table-striped ">
+
+		<table class="table table-bordered  table-hover">
+		  <thead>
+			<tr >
+				<th>序</th>
+			  <th>商品</th>
+				<th>上架人员</th>
+			   <th>审核人</th>
+			   <th>状态</th>
+			 <!-- <th>操作</th>-->
+			</tr>
+		  </thead>
+		  <volist name="list" id="v">
+			<tr id="del_{$v.order_id}">
+				<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+				<td class="text-center">{$v.goods_name}</td>
+				<td class="text-left"><if condition="$v['realname']">{$v['realname']}<else/>{$v['user_nicename']}</if></td>
+				<td class="text-left"><if condition="$v['check_realname']">{$v['check_realname']}<else/>{$v['check_name']}</if></td>
+				<td class="text-center">
+					{$status[$v['status']]}
+				</td>
+			</tr>
+			</volist>
+		</table>
+	<else />
+	<include file="./public/common/default_empty.html" />
+	</if>
+	</div>
+<div class="pagination">{$page}</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<include file="./public/common/footer.html" />
+

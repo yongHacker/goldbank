@@ -1,0 +1,111 @@
+<businesstpl file="header" />
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li<?php if(!isset($request_data['status']) || $request_data['status'] != 0){?> class="active" <?php }?>>
+                <a href="#">采购结算单审核</a>
+			</li>
+		</ul>
+
+		{$search_html}
+
+		<div class="main-content">
+			<div class="ta">
+				<table class="table table-bordered  table-hover table-striped">
+					<thead>
+						<tr>
+							<th>序</th>
+							<th class="text-center">结算单号</th>
+							<th class="text-center">供应商</th>
+							<th class="text-center">来往金额</th>
+							<th class="text-center">抹零金额</th>
+							<th class="text-center">来料/去料</th>
+							<th class="text-center">买料/卖料</th>
+							<th class="text-center">结算日期</th>
+							<th class="text-center">结欠克重</th>
+							<th class="text-center">结欠金额</th>
+							<th class="text-center">创建时间</th>
+							<th class="text-center">状态</th>
+							<th class="text-center">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<volist name="settle_list" id="v">
+						<tr>
+							<td class="text-center">
+								<input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>" />
+								<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+							</td>
+							<td class="text-center">{$v.batch}</td>
+							<td class="text-center">{$v.company_name}</td>
+							<td class="text-right">
+								<if condition="$v['ca_r_price'] eq 0">
+									-
+									<else />
+									{:numberformat($v['ca_r_price'], 2, '.', ',')}
+								</if>
+							</td>
+							<td class="text-right">
+                                <if condition="$v['ca_r_extra_price'] eq 0">
+                                	-
+                                    <else />
+                                    {:numberformat($v['ca_r_extra_price'], 2, '.', ',')}
+                                </if>
+                            </td>
+							<td class="text-right">
+                                <if condition="$v['mr2_weight'] neq 0 || $v['mr_weight'] neq 0">
+                                    <if condition="$v['mr2_weight'] eq 0">0<else />{:numberformat(abs($v['mr2_weight']), 2, '.', ',')}</if>
+                                     / 
+                                    <if condition="$v['mr_weight'] eq 0">0<else />{:numberformat(abs($v['mr_weight']), 2, '.', ',')}</if>
+                                <elseif condition="$v['mr2_weight'] eq 0 && $v['mr_weight'] eq 0" />
+                                    - / -
+                                <else />
+                                    {:numberformat(abs($v['mr2_weight']), 2, '.', ',')} / {:numberformat(abs($v['mr_weight']), 2, '.', ',')}
+                                </if>
+                            </td>
+							<td class="text-right">
+								<if condition="$v['mo_weight'] gt 0">
+								{:numberformat(abs($v['mo_weight']), 2, '.', ',')} / 0
+								<elseif condition="$v['mo_weight'] lt 0" />
+								0 /{:numberformat(abs($v['mo_weight']), 2, '.', ',')}
+								<else />
+								-
+								</if>
+							</td>
+							<td class="text-center">{$v['after_weight']}</td>
+							<td class="text-center">{$v['after_price']}</td>
+							<td class="text-center">{:date('Y-m-d', $v['settle_time'])}</td>
+							<td class="text-center">{:date('Y-m-d H:i:s',
+								$v['create_time'])}</td>
+							<td class="text-center">{$status[$v[status]]}</td>
+							<td class="text-center">
+							<!--<a href="{:U('BSettlement/detail', array('id'=> $v['id']))}">查看</a>-->
+								<a href="{:U('BSettlement/check', array('id'=> $v['id']))}">审核</a>
+							</td>
+						</tr>
+						</volist>
+					</tbody>
+				</table>
+			</div>
+			<div class="ts" style="display: none;">
+				<include file="./public/common/default_empty.html" />
+			</div>
+			<div class="pagination">{$page}</div>
+			<include file="./public/common/footer.html" />
+		</div>
+
+		<script src="/public/js/cookie.js"></script>
+		<script src="/public/js/common.js"></script>
+		<script>
+			if ('{:count($settle_list)}' == 0 || '{$settle_list}' == ''
+					|| '{$settle_list}' == null
+					|| typeof ('{$settle_list}') == 'undefined') {
+				$('.ta').hide();
+				$('.ts').show();
+			}
+		</script>
+</body>
+</html>

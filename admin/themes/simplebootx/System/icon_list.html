@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>
+        svg本地图标库
+    </title>
+
+    <meta name="author" content="ThinkCMF">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Font Awesome, the iconic font and CSS toolkit</title>
+    <link rel="stylesheet" href="/public/svg/css/svg_demo.css">
+</head>
+<body class="font-awesome ">
+<div id="wrap"> <!-- necessary for sticky footer. wrap all content except footer -->
+    <div class="head">
+        <span class="t">所有图标</span>
+        <span class="p">SVG本地图库 1.1.0总共有<b class="svg-num"></b>个图标</span>
+    </div>
+    <div class="container">
+        <div class="layout">
+            <h3 class="hd">erp图库</h3>
+            <div class="cont">
+            </div>
+
+        </div>
+    </div>
+</div>
+<img src="">
+<footer id="footer" class="footer hidden-print">
+</footer>
+<script src="/public/js/jquery.js"></script>
+<script src="/public/js/jquery.tmpl.min.js"></script>
+
+<script id="icon" type="text/x-jquery-tmpl">
+    {{each(i,data) icon}}
+       <div class="col-md-3 col-sm-4">
+           <div class="svg-box">
+               <svg class="svg svg-small" viewBox="0 0 200 200" data-id="${data}"></svg>
+               <span>${data}</span>
+           </div>
+       </div>
+       {{/each}}
+
+</script>
+<script src="/public/svg/js/svg_demo.js">
+</script>
+<script src="/public/svg/js/svg.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<businesstpl file="header" />
+<style>
+td a.weixin { color: #ddd; }
+td a.down { color: #2fa4e7; }
+</style>
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+        <form class="well form-search search_row" method="post" action="{:U('BAdjust/product_record')}">
+			综合搜索:
+			<input type="text" autocomplete="off" name="product_code" value="{:I('request.product_code/s','')}" placeholder="请输入货品编码">
+            商品分类:
+			<select name="adjust_type">
+				<option value="0">全部分类</option>
+				<volist name="adjust_type" id="vo">
+					<option value="{$key}" <if condition="I('request.adjust_type/d', 0) == $key">selected="selected"</if>>{$vo}</option>
+				</volist>
+			</select>
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:U('BAdjust/product_record')}">清空</a>
+        </form>
+		<notempty name="record_list">
+			<table class="table table-hover table-bordered">
+				<thead>
+					<tr>
+						<th>序</th>
+						<th>调整单号</th>
+						<th>调整类型</th>
+						<th>货品编码</th>
+						<th>商品规格&nbsp;(调整前&nbsp;|&nbsp;调整后)</th>
+						<th>克重&nbsp;(调整前&nbsp;|&nbsp;调整后)</th>
+						<th>工费&nbsp;(调整前&nbsp;|&nbsp;调整后)</th>
+						<th>成本价&nbsp;(调整前&nbsp;|&nbsp;调整后)</th>
+						<th>销售价&nbsp;(调整前&nbsp;|&nbsp;调整后)</th>
+						<th>销售工费&nbsp;(调整前&nbsp;|&nbsp;调整后)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<foreach name="record_list" item="vo">
+						<tr>
+							<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+							<td class="text-center"><a href="{:U('BAdjust/detail', array('adjust_id' => $vo['id']))}">{$vo.adjust_batch}</a></td>
+							<td class="text-center">{$adjust_type[$vo['adjust_type']]}</td>
+							<td class="text-center">{$vo.adjust_before.product_code}</td>
+							<td class="text-center">
+								<if condition="$vo.adjust_type == '3'">
+									{$vo.adjust_before.goods_code}&nbsp;|&nbsp;{$vo.adjust_before.goods_code}
+									<else />
+									- | -
+								</if>
+							</td>
+							<td class="text-center">
+								<if condition="$vo.adjust_type == '1'">
+									<if condition="$vo['adjust_before']['price_mode'] == 1">
+										{$vo.adjust_before.weight}&nbsp;|&nbsp;{$vo.adjust_after.weight}
+									<else />
+										- | -
+									</if>
+								<else />
+									- | -
+								</if>
+							</td>
+							<td class="text-center">
+								<if condition="$vo.adjust_type == '1'">
+									<if condition="$vo['adjust_before']['price_mode'] == 1">
+										{$vo.adjust_before.buy_m_fee}&nbsp;|&nbsp;{$vo.adjust_after.buy_m_fee}
+									<else />
+										- | -
+									</if>
+								<else />
+									- | -
+								</if>
+							</td>
+							<td class="text-center">
+								<if condition="$vo.adjust_type == '1'">
+									<if condition="$vo['adjust_before']['price_mode'] == 1">
+										- | -
+									<else />
+										{$vo.adjust_before.cost_price}&nbsp;|&nbsp;{$vo.adjust_after.cost_price}
+									</if>
+								<else />
+									- | -
+								</if>
+							</td>
+							<td class="text-center">
+								<if condition="$vo.adjust_type == '2'">
+									<if condition="$vo['adjust_before']['sell_pricemode'] == 1">
+										- | -
+									<else />
+										{$vo.adjust_before.sell_price}&nbsp;|&nbsp;{$vo.adjust_after.sell_price}
+									</if>
+									<else />
+									- | -
+								</if>
+							</td>
+							<td class="text-center">
+								<if condition="$vo.adjust_type == '2'">
+									<if condition="$vo['adjust_before']['sell_pricemode'] == 1">
+										{$vo.adjust_before.sell_fee}&nbsp;|&nbsp;{$vo.adjust_after.sell_fee}
+									<else />
+										- | -
+									</if>
+									<else />
+									- | -
+								</if>
+							</td>
+						</tr>
+					</foreach>
+				</tbody>
+			</table>
+			<div class="pagination">{$page}</div>
+		<else />
+			<include file="./public/common/default_empty.html" />
+		</notempty>
+	</div>
+</body>
+</html>

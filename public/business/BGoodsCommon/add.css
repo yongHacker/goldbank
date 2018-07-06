@@ -1,0 +1,324 @@
+.black_overlay{  display: none;  position: fixed;  top: 0%;  left: 0%;  width: 100%;  height: 100%;  background-color: black;  z-index:1001;  -moz-opacity: 0.8;  opacity:.80;  filter: alpha(opacity=80);  }
+.white_content {  display: none;  position: fixed;  top: 25%;  left: 25%;  width: 50%;  height: 50%;  padding: 16px;  border: 16px solid orange;  background-color: white;  z-index:1002;  overflow: auto;  }
+#light{z-index: 1049}
+/**/
+.spec-table-info{
+    overflow-x: auto;
+}
+/* .spec-table-info{
+     overflow-x: auto;
+     width: calc(100% - (25px));
+ }
+ @media (max-width: 768px) {
+     .spec-table-info{
+         width: 628px;
+     }
+ }
+ @media (min-width: 768px) {
+     .spec-table-info{
+         width: 628px;
+     }
+ }
+ @media (min-width: 992px) {
+     .spec-table-info{
+         overflow-x: auto;
+         width: 869px;
+     }
+ }
+ @media (min-width: 1200px) {
+     .spec-table-info{
+         overflow-x: auto;
+         width: 1077px;
+     }
+ }
+ @media (min-width: 1400px) {
+     .spec-table-info{
+         width: calc(100% - (25px));
+     }
+ }*/
+a,a:hover,a:focus{
+    text-decoration: none;
+}
+.btn{
+    margin: 0 10px;
+}
+.alert {
+    display: none;
+    border: none;
+    background: #fff;
+    margin: 0;
+    padding:0;
+}
+.table tr th{
+    text-align:center;
+    vertical-align: middle;
+}
+.main-content>div>table{
+    margin: -1px 0 0 0;
+    border-radius:0;
+    border-collapse:collapse;
+}
+.main-content>div>table td:nth-child(odd){
+    /*text-align:right ;*/
+}
+.main-content>div>table input,
+.main-content>div>table select,
+.main-content>div>table textarea{
+    margin: 0;
+}
+.table-info>table input,.table-info>table select{
+    width: 140px;
+}
+.table-produce{
+    position: relative;
+}
+
+.fa.fa-toggle-on,
+.fa.fa-toggle-off{
+    display: inline-block;
+    font-size:24px;
+
+}
+.fa.fa-toggle-on{
+    color:#2ecc71;
+}
+.fa.fa-toggle-off{
+    color:#ccc;
+}
+.table-spec>table td:nth-child(1) input{
+    width:60%;
+    height:20px;
+    padding: 2px;
+    text-align: right;
+
+}
+.spec-set{
+    width: 100%;
+    overflow: scroll;
+}
+.spec-set tr td{
+    border-left:1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+.spec-set tr .goods_pic{
+    cursor:pointer;
+    text-align: center!important;
+    line-height: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    color:#aaa;
+}
+.edit-value{
+    width:80px!important;
+}
+#spec-detail-tbody td select,
+#spec-detail-tbody td input{
+    width:90%;
+    /* margin-left: -5%;*/
+    padding-left:0;
+}
+.batch{
+    display: none;
+    position: relative;
+    float: left;
+}
+.batch-set {
+    position: absolute;
+    top:28px;
+    left:-8px;
+    width:140px;
+    border: solid 1px #BCE8F1;
+    box-shadow: 3px 3px 0 rgba(153,153,153,0.25);
+    background-color: #FFF;
+    z-index: 1;
+}
+.batch-set>.bat-cont{
+    padding: 5px;
+
+}
+.batch-set>h6 {
+    width: 100%;
+    height:24px;
+    line-height:24px;
+    margin: 0;
+    border-bottom:1px solid #ccc;
+    font-size: 12px;
+    text-align: left;
+    text-indent: 10px;
+    color: #555;
+}
+.batch-set a.bat-close {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    line-height: 12px;
+    background: #c02b19;
+    color:#fff;
+    text-align: center;
+    border-radius: 7px;
+    top:2px;
+    right:2px;
+
+}
+.bat-cont .bat-input,.bat-cont .bat-select{
+    max-width: 60px;!important;
+    height:20px;
+    margin:0;
+    line-height: 20px;
+    padding:0;
+}
+.is_hot{
+    border:1px solid #3a4a53!important;
+
+}
+
+/*编辑器*/
+.pannel{
+    float: left;
+    width:320px;
+    min-height: 380px;
+    border: 1px solid #ccc;
+    margin:0  20px 0 0;
+}
+.control-panel{
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 0 15px;
+}
+.control-panel .module{
+    background: #fff;
+    width: 290px;
+    margin: 10px 0 0 0;
+    position: relative;
+}
+.control-panel .tools{
+    display: none;
+    position: absolute;
+    z-index: 20;
+    top: 10px;
+    right: 10px;
+}
+.control-panel .module .text-div {
+    line-height: 150%;
+    white-space:normal;
+    word-wrap: break-word;
+}
+.control-panel .cover{
+    background-color: #000;
+    display: none;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    opacity: 0.5;
+    position: absolute;
+    top: 0;
+}
+
+.size-tip{
+    line-height: 30px;
+    background-color: #F7F7F7;
+    height: 30px;
+    padding: 0 15px;
+    border-bottom: solid 1px #DDD;
+}
+.add-btn{
+    background: none repeat scroll 0 0 #ececec;
+    height: 60px;
+    margin: 10px 15px;
+    overflow: hidden;
+}
+.btn-wrap{
+    width:100%;
+    margin: 0;
+}
+.btn-wrap>li{
+    float: left;
+    width:50%;
+    height:50px;
+
+}
+.btn-wrap>li>a{
+    display: block;
+    height: 50px;
+    line-height: 30px;
+    vertical-align:center;
+    text-align: center;
+    color: #999;
+
+}
+.explain{
+    float: left;
+}
+.mobile-edit-area{
+    float:left;
+    width:100%;
+    margin: 20px 0 0  0;
+}
+.mea-text,.mea-img{
+    width: 320px;
+    border: solid 1px #FFF;
+    position: relative;
+    z-index: 1;
+}
+.mea-text .textarea {
+    width: 310px;
+    height: 80px;
+    resize: none;
+}
+.mea-text .text-close ,.mea-img .image-close,.control-panel .tools .mp_del{
+    color: #fff;
+    background: #c02b19;
+    text-align: center;
+    width: 16px;
+    height: 16px;
+    line-height: 14px;
+    position: absolute;
+    z-index: 1;
+    top: -10px;
+    right: -10px;
+    border-radius: 7px;
+}
+.mea-text .button{
+    margin:10px 100px;
+}
+
+.upload_img {
+    margin:0;
+    padding:10px;
+    overflow:hidden;
+    border-radius:3px;
+    min-height:350px;
+    background:#f6f6f6;
+    border:1px solid #e4e4e4;
+}
+.upload_img li {
+    border:1px solid #e1e1e1;
+    padding:10px;
+    width:170px;
+    margin:10px;
+    float:left;
+    line-height:45px;
+    height:200px;
+    text-align:center;
+    border-radius:3px;
+}
+
+#goods_img_add {
+    width:170px;
+    float:left;
+    text-align:center;
+    line-height:45px;
+    padding:50px;
+    border:0;
+    cursor:pointer;
+}
+/*商品编码input*/
+.spec-code-v{
+    padding: 4px 6px 4px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #555;
+}
+

@@ -1,0 +1,700 @@
+<businesstpl file="header" />
+<style>
+.form, .form>table { margin-bottom: 10px; }
+.table tr th { text-align: center;}
+input { width: 163px; margin-bottom: 0px;}
+.table { text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.ta { overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta td { position: relative;}
+/*
+.ta input { width: 177px; margin-bottom: 0px; border: none; border-bottom: 0px; padding: 8px 0; box-shadow: none; border-radius: none; width: 90%; text-align: center;}
+.ta input:focus { box-shadow: none; outline: none; -webkit-box-shadow: 0px 0px 0px; -moz-box-shadow: 0px 0px 0px; box-shadow: 0px 0px 0px;}
+*/
+.select_goods { display: inline-block; background: #fff url('public/images/icon-select.gif') no-repeat scroll 55% 55%; width: 10%; height: 36px; position: absolute; top: 0; right: 0;}
+tr td img { width: 200px; height: 60px;}
+input.left { text-align: left;}
+input.right { text-align: right;}
+td.left { text-align: left;}
+td.right { text-align: right;}
+.sel { background: #f4f4f4;}
+.myModal { display: block; position: absolute; width: 100%; height: 100%; left: 0; top: 0; line-height: 35px;}
+.click_pic img { width: 80px; height: 80px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;}
+.no_arrow::-webkit-outer-spin-button, .no_arrow::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0;}
+.no_arrow { -moz-appearance: textfield;}
+.aui_content img { width: auto; height: auto;}
+</style>
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class=" theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BProcure/add')}">添加采购单-计重</a></li>
+			<li><a href="{:U('BProcure/num_add')}">添加采购单-计件</a></li>
+		</ul>
+
+		<form id="form" class="form form-search" method="post" action="{:U('BProcure/add')}">
+			<table class="table table-bordered ">
+				<tbody>
+					<tr>
+						<td class="sel" width="20%">供应商</td>
+						<td width="30%">
+							<select id="company_name">
+								<option value="">--请选择--</option>
+								<volist name="supplier_info" id="v">
+									<option value="{$v.id}">{$v.company_name}</option>
+								</volist>
+							</select>
+							<span class="form-required">*</span>
+						</td>
+						<td class="sel" width="20%">采购日期</td>
+						<td width="30%">
+							<div class="input-prepend input-group">
+								<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+								<input id="input_date" class="form-control datepicker js-date" name="input_date" value="{:date('Y-m-d', time())}" type="text">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">采购金额</td>
+						<td><span id="price">0.00</span>元</td>
+						<td class="sel">抹零金额</td>
+						<td>
+							<div class="input-append">
+								<input class="span2 no_arrow extra_price" step="0.01" type="number" name="extra_price"><span class="add-on">元</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">应付总金额</td>
+						<td><span id="fee">0.00</span>元</td>
+						<td class="sel">应付总克重</td>
+						<td><span id="real_weight">0.00</span>g（折存总克重 <span id="real_gold_weight">0.00</span>g）</td>
+					</tr>
+					<tr>
+						<td class="sel">发票图片</td>
+						<td colspan="3" id="upload_bill_td"><input type="hidden" value="" name="bill_pic">
+							<p class="btn btn-primary upload_click" data-valueTo="bill_pic" type="text">上传发票</p></td>
+					</tr>
+					<tr>
+						<td class="sel">备注</td>
+						<td colspan="3"><textarea type="text" name="bill_info" id="bill_info" row="2" cols="57" style="width: 80%;"></textarea>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+
+		<businesstpl file="BExpence/add_expence" />
+
+		<form id="excel_into" class="form" method="post" action="{:U('BProcure/excel_input')}" enctype="multipart/form-data">
+			<p class="btn btn-primary btn-small excel_click" type="text">从excel文件中导入</p>
+			<p class="btn btn-primary btn-small" onclick="location.href='{$example_excel}'">点击此处下载模板</p>
+			<input type="file" name="excel_file" style="opacity: 0; position: absolute;">
+			<input type="hidden" name="add_num" value="0">
+		</form>
+
+		<div class="main-content">
+			<div class="ta">
+				<table class="table table-bordered table-hover table-striped">
+					<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">商品大类</th>
+							<th class="text-center">包裹编号</th>
+							<th class="text-center">采购金价</th>
+							<th class="text-center">采购克重</th>
+							<th class="text-center">折纯金重</th>
+							<th class="text-center">采购工费/克</th>
+							<th class="text-center">总金价</th>
+							<th class="text-center">总工费</th>
+							<th class="text-center">操作</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<tr id="last_tr">
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="text-center add_row" style="padding: 8px 0; position: relative; height: 19px; cursor: pointer;"><a>+</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<!--货品分类html-->
+				<div id="type_list_html" hidden="hidden">
+					<select name="type_list" class="type_list">
+						<volist name="class_list" id="v">
+							<option data-agcid="{$v.id}" value="{$v.type}">{$v.class_name}</option>
+						</volist>
+					</select>
+				</div>
+				<div>
+					<input type="hidden" name="real_weight" value="0">
+					<input type="hidden" name="real_gold_weight" value="0">
+					<input type="hidden" name="num" value="0">
+					<input type="hidden" name="price" value="0.00">
+					<input type="hidden" name="fee" value="0.00">
+				</div>
+			</div>
+
+			<div class="pagination">{$page}</div>
+		</div>
+		<div class="form-actions text-center">
+			<p type="text" class="btn btn-primary js-ajax-submit" data-type="save">{:L('SAVE')}</p>
+			<p type="text" class="btn btn-primary js-ajax-submit" data-type="submit">{:L('COMMIT')}</p>
+		</div>
+	</div>
+
+	<form id="ajax_f" action="{:U('BProcure/upload_bill')}" method="post">
+		<input type="file" name="upload_bill" id="upload_bill" style="opacity: 0; position: absolute;">
+		<input type="hidden" name="del_bill_pic" id="del_bill">
+	</form>
+
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/js/jquery-form.js"></script>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+
+	<script type="text/javascript">
+		var remove_img_arr = [];
+		var upload_img_arr = [];
+
+		window.onload = function() {
+			change_price();
+			table_order();
+		};
+
+		var is_loading = false;
+
+		$('.add_row').click(function() {
+			if (is_loading)
+				return;
+			is_loading = true;
+
+			var url = "{:U('BProcure/getBatchNo')}";
+			var add_num = $('[name="num"]').val();
+			var post_data = {
+				add_num : add_num
+			};
+			var type_list = $("#type_list_html").html();
+			$.ajax({
+				async : false,
+				url : url,
+				type : 'post',
+				data : post_data,
+				dataType : 'json',
+				success : function(data) {
+					is_loading = false;
+					var htm = '<tr>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
+							+ '<td class="text-center" style="vertical-align: inherit;">'
+							+ type_list
+							+ '</td>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><input type="text" autocomplete="off" class="batch" name="batch" value="'+ data.batch +'" disabled="true"></td>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><input type="text" autocomplete="off" class="gold_price buy_price right input_init" name="gold_price" value="0.00"></td>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><input type="text" autocomplete="off" class="weight right input_init" name="weight" value="0.00"></td>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><input type="text" autocomplete="off" class="gold_weight right input_init" name="gold_weight" value="0.00"></td>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><input type="text" autocomplete="off" class="buy_m_fee right input_init" name="buy_m_fee" value="0.00"></td>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><input type="text" autocomplete="off" class="gold_price_count right input_init" name="gold_price_count" disabled="true" value="0.00"></td>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><input type="text" autocomplete="off" class="all_price right input_init" name="all_price" disabled="true" value="0.00"></td>'
+							+ '<td class="text-center" style="vertical-align: inherit;"><a class="del fa fa-trash" title="删除""></a></td>'
+							+ '</tr>';
+	
+					$('#last_tr').before(htm);
+	
+					del_input();
+	
+					table_order();
+	
+					count_num();
+	
+					count_weight();
+	
+					count_gold_weight();
+	
+					count_price();
+	
+					change_price();
+				},
+				error : function() {
+					is_loading = false;
+					artdialog_alert("网络错误！");
+				}
+			});
+		});
+
+		$('.upload_click').click(function() {
+			$('input[name=upload_bill]').click();
+			upload($(this));
+		});
+
+		function upload($trigger) {
+			var $form = $('#ajax_f');
+			var $file = $('input[name=upload_bill]');
+			var img = $trigger.parent('td').find('img');
+
+			$file.unbind('change').change(function() {
+				if ($file.val()) {
+					$form.ajaxSubmit({
+						success : function(result) {
+							result = JSON.parse(result);
+							if (result.status == 1) {
+								$trigger.html('上传成功！');
+
+								var value_to = $trigger.attr('data-valueTo');
+
+								$('input[name=' + value_to + ']').val(result.bill_pic);
+
+								upload_img_arr.push(result.bill_pic);
+
+								setTimeout(function() {
+
+									$trigger.after('<p class="click_pic"><img src="'+ result.bill_pic +'"> <a class="remove_pic">删除</a></p>');
+
+									$file.val('');
+									$trigger.html('继续上传');
+
+									initPicReview();
+									initRemoveUpload();
+
+								}, 2000);
+
+							} else if (result.status == 0) {
+								$trigger.html('上传失败！');
+								$trigger.css('color', 'red');
+							}
+						}
+					});
+				}
+			});
+		}
+
+		function initPicReview() {
+			$('.click_pic').unbind('click').click(function() {
+				var img_url = $(this).find('img').attr('src');
+				image_preview_dialog(img_url);
+			})
+		}
+
+		function initRemoveUpload() {
+			$('#upload_bill_td').find('.remove_pic').unbind('click').click(function() {
+				var _p = $(this).closest('p');
+				var _img = _p.find('img');
+				var _src = _img.attr('src');
+
+				remove_img_arr.push(_src);
+
+				_p.remove();
+			});
+		}
+
+		$('.excel_click').click(function() {
+			$('input[name=excel_file]').click();
+		});
+		var $form = $('#excel_into');
+		var $file = $('input[name=excel_file]');
+
+		$file.unbind('change').change(function() {
+			if ($file.val()) {
+
+				var add_num = $('.ta tbody tr').not('.old_batch').length;
+				$form.find('[name=add_num]').val(add_num - 1);
+
+				$('.excel_click').html('导入中...');
+				$form.ajaxSubmit({
+					success : function(result) {
+
+						result = JSON.parse(result);
+						if (result.status == 1) {
+							$('#excel_into .msg').remove();
+							$('#last_tr').before(result.data);
+
+							del_input();
+
+							table_order();
+
+							count_num();
+
+							count_weight();
+
+							count_gold_weight();
+
+							count_price();
+
+							change_price();
+
+							$('.excel_click').html('导入成功');
+
+							setTimeout(function() {
+								$('.excel_click').html('从excel文件中导入');
+							}, 800);
+
+						} else if (result.status == 0) {
+							$('#excel_into .msg').remove();
+							$('#excel_into').append('<p style="color:red;" class="msg">' + result.msg + '<p>');
+						}
+					}
+				});
+			}
+		});
+
+		$('.js-ajax-submit').click(function() {
+			var ret = true;
+
+			var type = $(this).data('type');
+			var supplier_id = $('#company_name').val();
+			var time = $('#input_date').val();
+			var real_weight = $('input[name=real_weight]').val();
+			var real_gold_weight = $('input[name=real_gold_weight]').val();
+			var price = $('input[name=price]').val();
+			var fee = $('input[name=fee]').val();
+			var pay_price = $('input[name=pay_price]').val();
+			var is_bill = $('input[name=is_bill]').val();
+			var bill_info = $('#bill_info').val();
+			var bill_pic = $('input[name=bill_pic]').val();
+			var extra_price = isNaN(parseFloat($('.extra_price').val())) ? 0 : parseFloat($('.extra_price').val());
+			var datas = get_product_data();
+			var sub_datas = get_expence_data();
+			
+			if (sub_datas === false) {
+				ret = false;
+				return false;
+			}
+			
+			if (is_empty(supplier_id)) {
+				artdialog_alert("请选择供应商！");
+				ret = false;
+				return false;
+			}
+
+			if ($(".ta").find('tbody tr').length <= 1 && $(".ta").find('sub_tbody tr').length <= 1) {
+				artdialog_alert("请添加采购包裹或其它费用！");
+				ret = false;
+				return false;
+			}
+			
+			if (ret) {
+				$('#tbody tr').each(function(i, e) {
+					var _tr = $(this);
+					if (_tr.attr('id') !== 'last_tr') {
+						var numObj = _tr.find('.gold_price');
+						var all_price = _tr.find('.all_price');
+						var weightObj = _tr.find('.weight');
+
+						if (numObj.val() * 1 <= 0) {
+							artdialog_alert("请填写包裹" + (i + 1) + "的金价！");
+							ret = false;
+							return false;
+						}
+
+						if (weightObj.val() * 1 <= 0) {
+							artdialog_alert("请填写包裹" + (i + 1) + "的克重！");
+							ret = false;
+							return false;
+						}
+
+						if (!check_price(all_price)) {
+							artdialog_alert("请将包裹" + (i + 1) + "数据填写完整！");
+							ret = false;
+							return false;
+						}
+					}
+				});
+			}
+			
+			if (!((real_weight > 0 && real_gold_weight > 0) || price > 0)) {
+				artdialog_alert("采购包裹数据填写有误！");
+				ret = false;
+				return false;
+			}
+
+			if (ret) {
+				is_loading = true;
+				$.ajax({
+					async : false,
+					url : $('#form').attr('action'),
+					type : 'post',
+					data : {
+						supplier_id : supplier_id,
+						extra_price : extra_price,
+						procure_time : time,
+						submit_type : type,
+						real_weight : real_weight,
+						real_gold_weight : real_gold_weight,
+						fee : fee,
+						price : price,
+						memo : bill_info,
+						upload_img_arr : upload_img_arr.join('|'),
+						remove_img_arr : remove_img_arr.join('|'),
+						data : datas,
+						sub_datas : sub_datas
+					},
+					dataType : 'json',
+					success : function(result) {
+						if (result.status == "success") {
+							artdialog_alert('操作成功！', 'succeed');
+							
+							if (result.referer) {
+								setTimeout(function() {
+									window.location.href = result.referer;
+								}, 800);
+							}
+							
+						} else if (result.status == "fail") {
+							artdialog_alert('操作失败！' + result.msg);
+							is_loading = false;
+						}
+					},
+					error : function() {
+						is_loading = false;
+						artdialog_alert("网络错误！");
+					}
+				});
+			}
+		});
+		function get_product_data() {
+			var datas = new Array();
+			$('.ta #tbody tr').each(function() {
+				var tr_ = $(this);
+				if (tr_.attr('id') != 'last_tr') {
+					if (!tr_.hasClass('excel')) {
+						var data = new Object();
+						data.type = tr_.find('.type_list').val();
+						data.agc_id = tr_.find('.type_list').find('option:selected').data('agcid');
+						data.batch = tr_.find('.batch').val();
+						data.weight = tr_.find('.weight').val();
+						data.gold_weight = tr_.find('.gold_weight').val();
+						data.gold_price = tr_.find('.gold_price').val();
+						data.buy_m_fee = parseFloat(tr_.find('.buy_m_fee').val()) > 0 ? parseFloat(tr_.find('.buy_m_fee').val()) : 0;
+						datas.push(data);
+					}
+				}
+			});
+			return datas;
+		}
+		
+		//验证数量
+		function check_num(tag) {
+			var num = $(tag).val() ? $(tag).val() : $(tag).html();
+			if (!/^[0-9]+$/.test(num) || num <= 0) {
+				return false;
+			} else {
+				$(tag).css('color', 'black');
+			}
+			return true;
+		}
+
+		function table_order() {
+			var len = $(".ta").find('table tr').length;
+			for (var i = 1; i < len; i++) {
+				$(".ta").find('table tr:eq(' + i + ') td:first').text(i);
+			}
+		}
+
+		del_input();
+		function del_input() {
+			$('.del').each(function() {
+				$(this).click(function() {
+					var tr = $(this).parent('td').parent('tr');
+
+					tr.remove();
+
+					table_order();
+
+					count_num();
+
+					count_weight();
+
+					count_gold_weight();
+
+					count_price();
+				});
+			});
+		}
+		function check_weight(tag) {
+			var weight = $(tag).val();
+			if (!/^[0-9\.]+$/.test(weight) || parseFloat(weight) <= 0) {
+				return false;
+			} else {
+				$(tag).css('color', 'black');
+				return true;
+			}
+		}
+
+		// 计算应付总克重
+		function count_weight() {
+			var total_weight = 0;
+
+			$('.ta tbody tr').each(function() {
+				var w = parseFloat($(this).find('.weight').val()) > 0 ? parseFloat($(this).find('.weight').val()) : parseFloat($(this).find('.weight').html());
+				if (w > 0) {
+					total_weight += w;
+				}
+			});
+
+			total_weight = total_weight.toFixed(2);
+
+			setInputValue('real_weight', total_weight);
+
+			setShowText($('#real_weight'), total_weight);
+
+			return total_weight;
+		}
+
+		// 计算折存总克重
+		function count_gold_weight() {
+			var gold_weight = 0;
+
+			$('.ta tbody tr').each(function() {
+				var w = parseFloat($(this).find('.gold_weight').val()) > 0 ? parseFloat($(this).find('.gold_weight').val()) : parseFloat($(this).find('.gold_weight').html());
+				if (w > 0) {
+					gold_weight += w;
+				}
+			});
+
+			gold_weight = gold_weight.toFixed(2);
+
+			setInputValue('real_gold_weight', gold_weight);
+
+			setShowText($('#real_gold_weight'), gold_weight);
+
+			return gold_weight;
+		}
+		function setShowText(obj, value) {
+			$(obj).text(value);
+		}
+		function setInputValue(inputName, inputValue) {
+			if ($('input[name="' + inputName + '"]')[0] != undefined) {
+				$('input[name="' + inputName + '"]').val(inputValue);
+			}
+		}
+
+		// 计算总件数
+		function count_num() {
+			var total_num = parseInt($('.ta tbody tr').size() - 1);
+			$('input[name=num]').val(total_num);
+		}
+
+		// 计算应付总共费、计算采购金额
+		function count_price() {
+			// 其它费用
+			var expence = 0;
+			// 应付总金额：列表总工费之和 + 其它费用之和 - 抹零金额
+			var fee = 0;
+			// 采购金额: 列表总金价之和  + 列表总工费之和  + 其它费用之和 - 抹零金额
+			var price = 0;
+
+			$('.ta tbody tr').each(function() {
+				if ($(this).attr('id') != 'last_tr' && $(this).attr('id') != 'sub_last') {
+					var all_price = parseFloat($(this).find('.all_price').val());
+					var gold_price_count = parseFloat($(this).find('.gold_price_count').val());
+
+					fee += isNaN(all_price) ? 0 : all_price;
+					price += isNaN(all_price) ? 0 : all_price;
+					price += isNaN(gold_price_count) ? 0 : gold_price_count;
+				}
+			});
+			var extra_price = isNaN(parseFloat($('.extra_price').val())) ? 0 : parseFloat($('.extra_price').val());
+
+			// 其它费用
+			expence = count_expence_price();
+			// 采购金额
+			price += expence;
+			price -= extra_price;
+			// 应付总金额
+			fee += expence;
+			fee -= extra_price;
+
+			setInputValue('price', price.toFixed(2));
+			setShowText($('#price'), price.toFixed(2));
+
+			setInputValue('fee', fee.toFixed(2));
+			setShowText($('#fee'), fee.toFixed(2));
+			
+			return true;
+		}
+
+		// 行内价格计算
+		function change_price() {
+			$('.gold_price, .buy_m_fee, .extra_price').unbind('keyup').keyup(function() {
+				_change_price($(this));
+			});
+
+			$('.sub_cost').unbind('keyup').keyup(function() {
+				count_price();
+			});
+
+			$('.weight').unbind('keyup').keyup(function() {
+				$(this).closest('tr').find(".gold_weight").val($(this).val());
+				_change_price($(this));
+				count_gold_weight();
+			});
+
+			$('.gold_weight').unbind('keyup').keyup(function() {
+				var gold_weight = $(this).val();
+				var weight = $(this).closest('tr').find('.weight').val();
+				if (gold_weight > weight) {
+					$(this).val(weight);
+				}
+				_change_price($(this));
+				count_gold_weight();
+			});
+		}
+		function _change_price(obj) {
+			if (typeof (obj) == 'undefined') {
+				return false;
+			}
+			if (isNaN(obj.val())) {
+				obj.val('0');
+			}
+			// 采购金价
+			var gold_price = parseFloat(obj.closest('tr').find('.gold_price').val());
+			gold_price = gold_price ? gold_price : 0;
+			// 采购克重
+			var weight = parseFloat(obj.closest('tr').find('.weight').val());
+			weight = weight ? weight : 0;
+			// 采购工费
+			var buy_m_fee = parseFloat(obj.closest('tr').find(".buy_m_fee").val());
+			buy_m_fee = buy_m_fee ? buy_m_fee : 0;
+
+			var all_price = buy_m_fee * weight;
+			var gold_price_count = gold_price * weight;
+
+			obj.closest('tr').find(".all_price").val(all_price.toFixed(2));
+			obj.closest('tr').find(".gold_price_count").val(gold_price_count.toFixed(2));
+
+			count_weight();
+
+			count_gold_weight();
+
+			count_price();
+		}
+
+		//验证价格
+		function check_price(tag) {
+			var price = $(tag).val() ? $(tag).val() : $(tag).html();
+			if (!/^[0-9\.]+$/.test(price) || price < 0) {
+				return false;
+			} else {
+				$(tag).css('color', 'black');
+				return true;
+			}
+		}
+
+		function is_empty(str) {
+			if (str != null && str != "" && typeof (str) != "undefined" && str != 'NAN') {
+				return false;
+			}
+			return true;
+		}
+
+		expence_postfix_function = ['count_price'];
+	</script>
+
+	<include file="./Application/Home/View/Public/footer.html" />

@@ -1,0 +1,76 @@
+<shoptpl file="header" />
+<body>
+<div class="wrap js-check-wrap">
+    <input type="hidden" name="detail_list" value="{$detail_list}">
+    <form class="well form-search" method="post" action="{:U('BSellReturn/product', array('user_id' => I('request.user_id/d', 0), 'shop_id' => I('request.shop_id/d', 0)))}">
+        综合搜索:
+        <input id="search" name="search" value="{:I('request.search')}" placeholder="品目/商品编号/货品编号" type="text">
+        <input class="btn btn-primary" value="搜索" type="submit">
+    </form>
+    <if condition="$detail_list">
+        <div class="main-content">
+            <div class="ta">
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th class="text-center"><input type="checkbox" id="check_all"></th>
+                        <th class="text-center">序</th>
+                        <th class="text-center">品目</th>
+                        <th class="text-center">商品编号</th>
+                        <th class="text-center">货品编号</th>
+                        <th class="text-center">重量</th>
+                        <th class="text-center">含金量</th>
+                        <th class="text-center">金重</th>
+                        <th class="text-center">销售工费方式</th>
+                        <th class="text-center">工费</th>
+                        <th class="text-center">克单价</th>
+                        <th class="text-center">建议售价</th>
+                        <th class="text-center">优惠金额</th>
+                        <th class="text-center">实际售价</th>
+                        <th class="text-center">计价方式</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="detail_list" id="v">
+                        <tr class="check_tr">
+                            <td class="text-center" data-detailid="{$v.id}" data-productid="{$v.product_id}">
+                                <input type="checkbox" class="check_box" style="z-index:100;" id="{$v.id}">
+                            </td>
+                            <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                            <td class="product_pic" hidden>
+                                <if condition="empty($v['product_pic'])">
+                                    __TMPL__Public/assets/images/default-thumbnail.png
+                                <else />
+                                    {$v.product_pic}
+                                </if>
+                            </td>
+                            <td class="text-left goods_name">{$v.goods_name}</td>
+                            <td class="text-center goods_code">{$v.goods_code}</td>
+                            <td class="text-center product_code">{$v.product_code}</td>
+                            <td class="text-right p_total_weight">{$v.p_total_weight}</td>
+                            <td class="text-center purity"><if condition ="$v['sell_pricemode'] eq 1">{$v['purity']}‰<else/>--</if></td>
+                            <td class="text-right p_gold_weight">{$v.p_gold_weight}</td>
+                            <td class="text-center sell_feemode"><if condition="$v.sell_feemode eq 0">件工费销售<else/>克工费销售</if></td>
+                            <td class="text-right detail_sell_fee">{$v.detail_sell_fee}</td>
+                            <td class="text-right gold_price"><if condition="$v['sell_pricemode'] eq 0">0<else/>{$v.gold_price}</if></td>
+                            <td class="text-right sell_price">{:numberformat($v['sell_price'],2,'.',',')}</td>
+                            <td class="text-right discount_price">{:numberformat($v['discount_price'],2,'.',',')}</td>
+                            <td class="text-right actual_price">{:numberformat($v['actual_price'],2,'.',',')}</td>
+                            <td class="text-center sell_pricemode"><if condition='$v.sell_pricemode eq 0'>计件<else/>计重</if></td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">{$page}</div>
+        </div>
+    <else/>
+    <include file="./public/common/default_empty.html" />
+    </if>
+
+    <include file="./public/common/footer.html" />
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/shop/BSellReturn/js/product.js"></script>
+</body>

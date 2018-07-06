@@ -1,0 +1,593 @@
+<businesstpl file="header" />
+<style type="text/css">
+.table .search_input { margin: 0; padding: 0; position: relative;}
+#mobile { margin: 8px 5px; text-indent: 20px;}
+#product_code { margin: 8px 5px; text-indent: 20px;}
+.myModal3.leave { position: absolute; top: 12px; left: 15px; font-size: 14px;}
+.ta select, .ta input { width: 90%;}
+input[type="number"] { text-align: right;}
+.no_arrow::-webkit-outer-spin-button, .no_arrow::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0;}
+.no_arrow { -moz-appearance: textfield;}
+</style>
+</head>
+<body class=" theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BRecovery/add')}">{:L('BUSINESS_BRECOVERY_ADD')}</a></li>
+		</ul>
+		<table class="table table-bordered" id="order_base">
+			<tr>
+				<td class="sel" width="20%">日期</td>
+				<td width="25%">{$today}</td>
+				<td class="sel" width="20%">会员姓名</td>
+				<td class="search_input" width="25%">
+                    <input type="text" id="mobile" class="form-control" onclick="$('#myModal3').modal('show');">
+                    <input type="hidden" id="uid" class="form-control" value="">
+                    <input type="hidden" id="employee_id" class="form-control" value="">
+					<a href="#myModal3" class="myModal3 leave" data-toggle="modal" name="{$v.id}" role="button">
+                        <span><i class="fa fa-search normal"></i></span>
+                    </a>
+                </td>
+			</tr>
+			<tr>
+				<td class="sel">真实姓名</td>
+				<td width="25%"><input id="real_name" type="text" style="margin-bottom: 0px;" value=""></td>
+				<td class="sel">身份证号</td>
+				<td width="25%"><input id="id_no" type="text" style="margin-bottom: 0px;" value=""></td>
+			</tr>
+			<tr>
+				<td class="sel">回购员</td>
+				<td width="25%">{$user_nicename}</td>
+				<td class="sel">回购数量</td>
+				<td width="25%" id="total_num">0</td>
+			</tr>
+			<tr>
+				<td class="sel">门店</td>
+				<td width="25%">
+                    <select id="shop" name="shop_id" data-live-search="true">
+						<if condition="$shop_id gt 0">
+						<else />
+						<option value="0" checked default_rate="{$currency[0]['exchange_rate']}" unit="{$currency[0]['unit']}">总部</option>
+						</if>
+						<volist name="shop" id="v">
+						<option value="{$v.id}" in_user="{$v.user_nicename}" unit="{$v.unit}" default_rate="{$v.exchange_rate}" checked>{$v.shop_name}</option>
+						</volist>
+    				</select>
+                </td>
+				<td class="sel" style="border-bottom: 1px solid #ddd;" class="gold">回购总价</td>
+				<td width="25%" style="border-bottom: 1px solid #ddd;">
+                    <input class="input_init" id="count" type="text" style="margin-bottom: 0px;" value="0.00">
+                </td>
+			</tr>
+			<tr>
+				<td class="sel">金料仓库</td>
+				<td>
+					<select id="mystore" name="wh_id" data-live-search="true">
+						<option value="0" checked>选择仓库</option>
+					</select>
+				</td>
+				<td class="sel">备注</td>
+				<td width="25%"><textarea type="text" id="remark"></textarea></td>
+			</tr>
+		</table>
+		<div class="main-content">
+			<div class="ta" id="order_product" style="overflow-x: auto;">
+				<table class="table table-bordered  table-hover table-responsive">
+					<thead>
+						<tr>
+							<th>序</th>
+							<th style="width: 160px;">金料名称</th>
+							<th style="width: 160px;">金料编号</th>
+							<th style="width: 160px;">总重</th>
+							<th>纯度(‰)</th>
+							<th>金重</th>
+							<th>回购金价</th>
+							<th>当前金价</th>
+							<th>服务克工费</th>
+							<th>损耗率</th>
+							<th style="width: 80px;">成本价</th>
+							<th>材质</th>
+							<th>颜色</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<tr id="last">
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center" id="add_product" style="cursor: pointer;">
+                                <a href="javascript:void(0);">+</a>
+                            </td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="form-actions">
+				<div class="center-block" style="width: 260px; margin: 0 auto;">
+					<button type="button" class="btn btn-primary baocun" id="baocun" data-type="-1">{:L('SAVE')}</button>
+					<button type="button" class="btn btn-primary submit" id="submit" data-type="0">提交</button>
+					<div class="tishi" style="color: red;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--<div class="modal small fade" style="width:80%;left:400px;top:2%;bottom: 2%;display:none" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">货品列表</b>
+                </div>
+                <div class="modal-body" style="max-height: 500px;padding: 0px;margin:0px">
+                    <iframe  frameborder="0" class="appiframe" src="{:U('BRecovery/product_list')}" id="goods_index" name="goods_index">
+
+                    </iframe>
+                </div>
+                <div class="modal-footer">
+                    <button id="check" class="btn btn-primary pull-left" >选中</button>
+                    <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                    <button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+	<div class="modal small fade" style="width: 80%; left: 400px; top: 2%; bottom: 2%; display: none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<b id="clientModalLabel" style="margin: 0; font-family: 'Microsoft Yahei', verdana; color: #157ab5;">选择会员</b>
+				</div>
+				<div class="modal-body" style="max-height: 500px; padding: 0px;">
+					<iframe frameborder="0" class="appiframe" src="{:U('BRecovery/client_list')}" id="goods_index2" name="goods_index2" onload="loadFrame(this)">
+                        
+                    </iframe>
+				</div>
+				<div class="modal-footer">
+					<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+					<button id="add-2" class="btn btn-primary" data-dismiss="modal">选中</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<form></form>
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<!--选择客户，完善客户信息-->
+	<script>
+		heightAuto($("#myModal2"));
+		heightAuto($("#myModal3"));
+
+		$("#myModal3").on("shown.bs.modal", function() {
+			$("#goods_index2").contents().find("#mobile").focus();
+		});
+
+		$('#add-2').click(function() {
+			var ckbox = $("#goods_index2").contents().find('.check_box:checked');
+
+			if (ckbox != undefined) {
+				var realname = ckbox.attr("realname");
+				var user_nicename = ckbox.attr("user_nicename");
+				var mobile = ckbox.attr("mobile");
+				var uid = ckbox.attr("uid");
+				var id_no = ckbox.attr("id_no");
+				var employee_id = ckbox.attr("employee_id");
+
+				if (!realname) {
+					realname = "";
+					$('#real_name').removeAttr("readonly");
+				} else {
+					$('#real_name').attr("readonly", "readonly");
+				}
+				if (id_no < 1) {
+					id_no = "";
+					$('#id_no').removeAttr("readonly");
+				} else {
+					$('#id_no').attr("readonly", "readonly");
+				}
+				$('#mobile').val(user_nicename + '(' + mobile + ')');
+				$('#uid').val(uid);
+				$('#real_name').val(realname);
+				$('#id_no').val(id_no);
+				$('#employee_id').val(employee_id);
+			}
+		})
+	</script>
+	<!--添加、删除回购货品-->
+	<script>
+		var product_td = "";
+
+		function myModal2(object) {
+			$('#myModal2').modal('show');
+			product_td = $(object).parent();
+		}
+
+		var product_html = '<td class="search_input" width="25%" style="border: none">'
+				+ '<input type="text" autocomplete="off" id="product_code" name="product_code" class="form-control" onclick="myModal2(this)">'
+				+ '<input hidden="hidden" id="product_id" name="product_id"  class="form-control" value="">'
+				+ '<a href="#myModal2" class="myModal3 leave" data-toggle="modal" name="" role="button"><span><i class="fa fa-search normal"></i></span></a>'
+				+ '</td>';
+
+		var gold_price = "{$price['gold_price']}";
+		var recovery_price = "{$price['recovery_price']}";
+		var rproduct_code_num="{:get_rproduct_code_num()}";
+		var day="{:date('ymd')}";
+		$("#add_product").unbind("click").click(function() {
+			rproduct_code_num=parseInt(rproduct_code_num)+1;
+			var str='000'+rproduct_code_num;
+			var rproduct_code=day+str.substr(str.length-4);
+			var html = '';
+    			html += '<tr id="zz">';
+    			html += '<td class="text-center"></td>';//序
+    			html += ' <td class="text-center td_recovery_name"><input type="text" autocomplete="off" name="recovery_name" class="recovery_name" value=""></td>';
+    			html += ' <td class="text-center td_rproduct_code"><input  type="text" readonly="readonly" autocomplete="off" name="rproduct_code" class="rproduct_code" value="'+rproduct_code+'"></td>';
+    			html += ' <td class="text-center td_total_weight"><input type="number" step="0.001" autocomplete="off" name="total_weight" class="total_weight input_init no_arrow" value="0.00"></td>';//总重
+				html += ' <td class="text-center td_purity"><input type="number" step="0.001" autocomplete="off" name="purity" class="purity no_arrow" placeholder="999.9"></td>';//纯度
+				html += ' <td class="text-center td_gold_weight"><input type="number" step="0.001"autocomplete="off" name="gold_weight" class="gold_weight input_init no_arrow" value="0.00"></td>';//金重
+    			html += ' <td class="text-center td_recovery_price"><input type="number" step="0.01" autocomplete="off" name="recovery_price" class="recovery_price no_arrow" value="'+recovery_price+'"></td>';//回购金价
+    			html += ' <td class="text-center td_gold_price"><input type="number" step="0.01" autocomplete="off" name="gold_price" class="gold_price no_arrow" value="'+gold_price+'"></td>';//当前金价
+    			html += ' <td class="text-center td_service_fee"><input type="number" step="0.01" autocomplete="off" name="service_fee" class="service_fee input_init no_arrow" value=""></td>';//服务克工费
+    			html += ' <td class="text-center td_attrition"><input type="number" step="0.001" autocomplete="off" name="attrition" class="attrition input_init no_arrow" value="0.00"></td>';//损耗率
+    			html += ' <td class="text-center td_cost_price"><input type="number" step="0.01" autocomplete="off" name="cost_price" class="cost_price input_init no_arrow" value="0.00"></td>';//成本价
+				html += ' <td class="text-center td_material"><input type="text" step="0.01" autocomplete="off" name="material" class="material input_init no_arrow" value=""></td>';//材质
+				html += ' <td class="text-center td_color"><input type="text" step="0.01" autocomplete="off" name="color" class="color input_init no_arrow" value=""></td>';//颜色
+    			html += '<td class="text-center">'
+    			html += '<a href="javascript:void(0);" name="{$v.id}"  class="del" role="button" data-toggle="modal">删除</i></a>';
+    			html += '</td>';
+    			html += '</tr>';
+			$("#last").before(html);
+			table_order();
+			change_type();
+			change_price();
+			change_td();
+			del();
+		});
+		//给删除按钮添加删除事件
+		function del() {
+			$(".del").unbind("click").click(function() {
+				var tr = $(this).parent().parent();
+				tr.remove();
+				table_order();
+				//rproduct_code_num=parseInt(rproduct_code_num)-1;
+			});
+		}
+		//类型绑定change事件，类型更改，改变货品框
+		function change_type() {
+			$("select[name='type']").unbind("change").change(function() {
+				var tr = $(this).parent().parent();
+				if ($(this).val() == 1) {
+					tr.find(".td_sn_id").html(product_html);
+				} else {
+					tr.find(".td_sn_id").html("--");
+				}
+			})
+		}
+		//成本价绑定keyup事件，成本价更改，改变总价
+		function change_price() {
+			$("input[name='cost_price']").unbind('keyup').keyup(function() {
+				count_price();
+			})
+		}
+
+		//总重，纯度，损耗率 ，回购金价，克工费 改变 则改变金重和成本价
+		function change_td() {
+			$("input[name='total_weight'],input[name='recovery_price'],input[name='attrition'],input[name='purity'],input[name='service_fee']").unbind('keyup').keyup(function() {
+    			var tr = $(this).parent().parent();
+    			count_cost_price(tr);
+    		})
+		}
+		//选取货品
+		$('#goods_index').load(function() {
+			$("#check").unbind('click').click(function() {
+				var html = $('#goods_index').contents();
+				var product = html.find("input[name='product_id']:checked");
+				var product_code = product.attr("pcode");
+				var product_id = product.attr("pid");
+				product_td.find("#product_code").val(product_code);
+				product_td.find("#product_id").val(product_id);
+			})
+			$("#add").unbind('click').click(function() {
+				$("#check").trigger("click");
+			})
+		})
+	</script>
+	<!--排序统计-->
+	<script>
+		function table_order() {
+			var len = $(".ta").find('table tr').length;
+			for (var i = 1; i < len; i++) {
+				$(".ta").find('table tr:eq(' + i + ') td:first').text(i);
+			}
+			count_num();
+		}
+		//统计货品条数
+		function count_num() {
+			var num = 0;
+			$(".ta").find('table tr').each(function() {
+				if ($(this).attr('id') == 'zz') {
+					num++;
+				}
+			});
+			$('#total_num').html(num);
+		}
+		//统计成本价
+		function count_price() {
+			var price = 0;
+			$('tr td .cost_price').each(function(key, val) {
+				if ($(this).val()) {
+					price = parseFloat(price) + parseFloat($(this).val());
+				}
+			})
+			$('#count').val(price.toFixed(2));
+		}
+		// 计算金重 [change by alam 2018/5/15 this function]
+		function count_gold_weight(tr) {
+			var total_weight = parseFloat(tr.find('input[name="total_weight"]').val());
+			var gold_weight = tr.find('input[name="gold_weight"]');
+			var purity = parseFloat(tr.find('input[name="purity"]').val());
+			purity = purity / 1000;
+			var attrition = tr.find('input[name="attrition"]').val();
+			var weight = total_weight * purity * ((1000000 - attrition * 1000000) / 1000000);
+			gold_weight.val(weight.toFixed(2));
+			return weight.toFixed(2);
+		}
+		//计算成本价
+		function count_cost_price(tr) {
+			var cost_price = tr.find('input[name="cost_price"]');
+			var gold_weight = count_gold_weight(tr);
+			var recovery_price = tr.find('input[name="recovery_price"]').val();
+			var service_fee = tr.find('input[name="service_fee"]').val();
+			var cost_price = tr.find('input[name="cost_price"]');
+			var price = gold_weight * (recovery_price * 10000 - service_fee * 10000) / 10000;
+			cost_price.val(price.toFixed(2));
+			count_price();
+		}
+	</script>
+	<script>
+		//点击保存
+		save();
+		//保存时，检测数据是否正确,并返回数据
+		function check_data() {
+			is_true = true;
+			var mobile = $.trim($("#mobile").val());
+			if (empty(mobile)) {
+				artdialog_alert("请选择会员");
+				return;
+			}
+			var real_name = $.trim($("#real_name").val());
+			if (empty(real_name)) {
+				artdialog_alert("请填写真实姓名");
+				return;
+			}
+			var id_no = $.trim($("#id_no").val());
+			if (empty(id_no)) {
+				artdialog_alert("请填写身份证号");
+				return;
+			}
+			var wh_id = $.trim($("select[name='wh_id']").val());
+			if (wh_id==0) {
+				artdialog_alert("请选择金料仓库");
+				return;
+			}
+			var order = new Object();
+			order.recovery_time = $('#create_time').val();//开单时间
+			order.num = $('#total_num').text();//开单时间
+			order.remark = $.trim($("#remark").val());//备注
+			order.buyer_id = $("#uid").val();//客户id
+			order.employee_id = $("#employee_id").val();//员工id
+			order.name = real_name;//真实姓名
+			order.id_no = id_no;//身份证号
+			order.shop_id = $("#shop").val();//门店id
+			order.wh_id = wh_id;//金料仓库
+			order.price = $('#count').val();//总价
+			var product_list = [];
+			var tr = $(".ta").find('table tbody tr[id="zz"]');
+			if (tr.length < 1) {
+				artdialog_alert("请添加回购货品数据");
+				return false;
+			}
+			var i = 0;
+			tr.each(function() {
+				i++;
+				var recovery_name = $(this).find('input[name="recovery_name"]').val();
+				var rproduct_code = $(this).find('input[name="rproduct_code"]').val();
+
+				var total_weight = $(this).find('input[name="total_weight"]').val();
+				var gold_weight = $(this).find('input[name="gold_weight"]').val();
+				var recovery_price = $(this).find('input[name="recovery_price"]').val();
+				var gold_price = $(this).find('input[name="gold_price"]').val();
+				var service_fee = $(this).find('input[name="service_fee"]').val();
+				var purity = $(this).find('input[name="purity"]').val();
+				var attrition = $(this).find('input[name="attrition"]').val();
+				var cost_price = $(this).find('input[name="cost_price"]').val();
+				var type = $(this).find('select[name="type"]').val();
+				var sn_id = $(this).find('#product_id').val();
+				var material = $(this).find('input[name="material"]').val();
+				var color = $(this).find('input[name="color"]').val();
+				/*change by alam 2018/5/15 start*/
+				if (purity > 1000) {
+					is_true = false;
+					artdialog_alert("纯度必须小于1000");
+					return false;
+				}
+				purity = parseFloat(purity / 1000).toFixed(6);
+				/*change by alam 2018/5/15 end*/
+				if (attrition > 1) {
+					is_true = false;
+					artdialog_alert("损耗率必须小于1");
+					return false;
+				}
+				if (empty(sn_id)) {
+					sn_id = ""
+				}
+				//截金回购为选择货品关联
+
+				if (type == 1 && empty(sn_id)) {
+					is_true = false;
+					artdialog_alert("第" + i + "行请选择货品关联");
+					return false;
+				}
+
+				if (empty(recovery_name)) {
+					is_true = false;
+					artdialog_alert("第" + i + "行金料名称");
+					return false;
+				}
+/*
+				if (empty(rproduct_code)) {
+					is_true = false;
+					artdialog_alert("第" + i + "行金料编号");
+					return false;
+				}*/
+
+				product_list.push({
+					'recovery_name' : recovery_name,
+					'rproduct_code' : rproduct_code,
+					'total_weight' : total_weight,
+					'gold_weight' : gold_weight,
+					'recovery_price' : recovery_price,
+					'gold_price' : gold_price,
+					'service_fee' : service_fee,
+					'purity' : purity,
+					'attrition' : attrition,
+					'cost_price' : cost_price,
+					'type' : type,
+					'product_id' : sn_id,
+					'material' : material,
+					'color' : color
+				});
+			})
+			if (is_true) {
+				var post_data = {
+					'order' : order,
+					'product_list' : eval(product_list)
+				};
+			} else {
+				var post_data = false;
+			}
+			return post_data;
+		}
+		function save() {
+			$("#baocun,#submit").click(function() {
+				var post_data = check_data();//检测数据是否正确,并返回数据
+				var url = "{:U('BRecovery/add')}";
+				if (post_data) {
+					var status = $(this).data("type");
+					post_data['order']['status'] = status;
+					ajax_post(url, post_data);
+				}
+			})
+		}
+		function update_rproduct_code(rproduct_code_tr){
+			if(rproduct_code_tr){
+				var rproducts_codes=[];
+				rproduct_code_tr=rproduct_code_tr.split(',');
+				$.each(rproduct_code_tr,function(i,item){
+					console.log(i+"--"+item);
+					if(item){
+						rproduct_code_num=parseInt(rproduct_code_num)+1;
+						var str='000'+rproduct_code_num;
+						var rproduct_code=day+str.substr(str.length-4);
+						$('.td_rproduct_code').eq(item-1).find('input[name=rproduct_code]').val(rproduct_code);
+						rproducts_codes.push(rproduct_code);
+					}
+				});
+				return rproducts_codes.join(',');
+			}
+		}
+		function ajax_post(url, post_data) {
+			$.ajax({
+				url : url,
+				type : 'post',
+				async : false,
+				data : post_data,
+				beforeSend : function() {
+					$(this).attr("disabled", true);
+				},
+				success : function(data) {
+					if (data.status == 1) {
+						$('.tishi').html('操作成功');
+						location.href = data.url;
+					} else if (data.status == 0) {
+						if(data.exist_rproduct_code){
+							var rproduct_codes=update_rproduct_code(data.rproduct_code_tr);
+							$('.tishi').html(data.msg+'已自动变更为'+rproduct_codes);
+						}else {
+							$('.tishi').html(data.msg);
+						}
+						$(this).attr("disabled", false);
+						return false;
+					}
+				},
+				error : function(data, status) {
+					$(this).attr("disabled", false);
+				}
+			})
+		}
+	</script>
+	<!--改变门店则改变客户列表-->
+	<script>
+		var client_list_src = $("#goods_index2").attr("src");
+		$('#shop').change(function() {
+			var src = client_list_src + "&shop_id=" + $("#shop").val();
+			$("#goods_index2").attr("src", src);
+			init_payment();
+		})
+	</script>
+	<!-- 会员操作弹窗联动js -->
+	<script type="text/javascript">
+		function loadFrame(obj) {
+			var url = obj.contentWindow.location.href;
+			console.log(url);
+			if (url.indexOf("{:U('BRecovery/client_list')}") != -1) {
+				$('#clientModalLabel').text('选择会员');
+			} else if (url.indexOf("{:U('BRecovery/add_client')}") != -1) {
+				$('#clientModalLabel').text('添加会员');
+			}
+		}
+	</script>
+	<!--门店改变，改变金料仓库 -->
+	<script>
+		//初始化收款方式
+		init_payment();
+		//更改门店更改收款方式
+		function init_payment(){
+			var datas='{$warehouse}';
+			var job_html='<option value="0" >选择仓库</option>';
+			var change_select=$('select[name=wh_id]');
+			var sector_obj= $('select[name=shop_id]');
+			get_payment(datas,sector_obj,change_select,job_html);
+		}
+		/**
+		 *
+		 * @param datas 所有的数据
+		 * @param sector_id  选择的门店的id
+		 * @param change_select 需要联动改变的select对象
+		 * @param job_html     select对象的html内容
+		 */
+		function get_payment(datas,sector_obj,change_select,job_html){
+			var datas_json=eval(datas);
+			console.log(datas_json);
+			var sector_id=sector_obj.val();
+			$.each(datas_json, function (n, v) {
+				if(sector_id== v.shop_id){
+					job_html+='<option value="'+ v.id+'" >'+ v.wh_name+'</option>';
+				}
+			});
+			change_select.html(job_html);
+		}
+	</script>
+	<!--门店改变，改变金料仓库  end-->

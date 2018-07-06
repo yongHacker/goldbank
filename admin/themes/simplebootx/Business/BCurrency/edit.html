@@ -1,0 +1,85 @@
+<businesstpl file="header" />
+<style>
+	a .fa{
+		text-decoration:none !important;
+		display: inline-block !important;
+		font-size: 16px !important;
+	}
+	.fa.fa-toggle-on,
+	.fa.fa-toggle-off{
+		text-decoration:none;
+		display: inline-block;
+		font-size:24px;
+
+	}
+	.fa.fa-toggle-on{
+		color:#2ecc71 !important;
+	}
+	.fa.fa-toggle-off{
+		color:#ccc !important;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BCurrency/index')}">{:L('BUSINESS_BCURRENCY_INDEX')}</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BCURRENCY_EDIT')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BCurrency/edit')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">币种名称</label>
+					<div class="controls">
+						<input type="text" autocomplete="off"  name="currency_name" value="{$data.currency_name}"
+						<if condition="$data['is_user'] gt 0">readonly="readonly" </if>
+						>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">汇率</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="exchange_rate" value="{$data.exchange_rate}"> ％
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">计算单位</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="unit" value="{$data.unit}">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">系统默认币种</label>
+					<div class="controls">
+						<if condition="$data['is_main'] eq 1">
+							<label class="radio inline" for="active_true"><input type="radio" name="is_main" value="1" checked="" id="active_true">是</label>
+							<label class="radio inline" for="active_false"><input type="radio" name="is_main" value="0" id="active_false">否</label>
+							<else/>
+							<label class="radio inline" for="active_true"><input type="radio" name="is_main" value="1">是</label>
+							<label class="radio inline" for="active_false"><input type="radio" name="is_main" value="0" checked="checked">否</label>
+						</if>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">是否启用</label>
+					<div class="controls">
+						<if condition="$data['status'] eq 1">
+							<label class="radio inline" for="active_true"><input type="radio" name="status" value="1" checked="" id="active_true">是</label>
+							<label class="radio inline" for="active_false"><input type="radio" name="status" value="0" id="active_false">否</label>
+							<else/>
+							<label class="radio inline" for="active_true"><input type="radio" name="status" value="1" id="active_true">是</label>
+							<label class="radio inline" for="active_false"><input type="radio" name="status" value="0"  checked="checked" id="active_false">否</label>
+						</if>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<input type="hidden" value="{$data['id']}" name="id">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('EDIT')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

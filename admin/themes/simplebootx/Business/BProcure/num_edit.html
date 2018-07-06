@@ -1,0 +1,1561 @@
+<businesstpl file="header" />
+<style>
+.js-check-wrap>form, .js-check-wrap>form>table { margin-bottom: 10px;}
+.my_page { text-align: left;}
+.my_page a { position: relative; padding: 6px 12px; margin-left: -1px; line-height: 1.42857143; color: #428bca; text-decoration: none; background-color: #fff; border: 1px solid #ddd;}
+.my_page span { position: relative; padding: 6px 12px; margin-left: -1px; line-height: 1.42857143; color: #fff; text-decoration: none; background-color: #6f80a1; border: 1px solid #ddd;}
+.my_page li { margin-top: 10px; display: none;}
+.table tr th { text-align: center;}
+input { width: 163px; margin-bottom: 0px;}
+.table { text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.ta { overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta td { position: relative;}
+/*
+.ta input { width: 177px; margin-bottom: 0px; border: none; border-bottom: 0px; padding: 8px 0; box-shadow: none; border-radius: none; width: 90%; text-align: center;}
+.ta input:focus { box-shadow: none; outline: none;}
+.ta td { padding: 0px; vertical-align: middle;}
+.td_border { border: solid 1px #157ab5;}
+*/
+.select_goods { display: inline-block; background: #fff url('public/images/icon-select.gif') no-repeat scroll 55% 55%; width: 10%; height: 36px; position: absolute; top: 0; right: 0;}
+tr td img { width: 200px; height: 60px;}
+/*tr td input { padding: 5px 3px !important;}*/
+tr td input[type="number"] { text-align: right;}
+input.left { text-align: left !important;}
+input.right { text-align: right !important;}
+input.center { text-align: center !important;}
+td.left { text-align: left !important;}
+td.right { text-align: right !important;}
+.myModal { display: block; position: absolute; width: 100%; height: 100%; left: 0; top: 0; line-height: 35px;}
+.sel { background: #f4f4f4;}
+.click_pic img { width: 80px; height: 80px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;}
+.no_arrow::-webkit-outer-spin-button, .no_arrow::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0;}
+.no_arrow { -moz-appearance: textfield;}
+.aui_content img { width: auto; height: auto;}
+</style>
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class="theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BProcure/index')}">采购列表</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BPROCURE_NUM_EDIT')}</a></li>
+			<span style="float: right;">
+				<p type="text" class="btn btn-primary js-ajax-submit" data-status="save">{:L('SAVE')}</p>
+				<p type="text" class="btn btn-primary js-ajax-submit" data-status="submit">提交</p>
+				<button type="submit" class="btn js-ajax-back-btn" onclick="javascript:history.go(-1);">{:L('BACK')}</button>
+			</span>
+		</ul>
+		<form id="form" class="form-search" method="post" action="{:U('BProcure/num_edit')}">
+			<table class="table table-bordered  table-hover">
+				<tbody>
+					<tr>
+						<td class="sel" width="20%">供应商</td>
+						<td width="30%">
+                            <select id="company_name">
+								<option value="">--请选择--</option>
+								<volist name="supplier_info" id="v">
+								<option value="{$v.id}">{$v.company_name}</option>
+								</volist>
+    						  </select>
+                              <span class="form-required">*</span>
+                          </td>
+						<td class="sel" width="20%">采购日期</td>
+						<td width="30%">
+							<div class="input-prepend input-group">
+								<span class="add-on input-group-addon"> <i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                <input id="input_date" class="form-control datepicker js-date" name="input_date" value="{:date('Y-m-d', $info['procure_time'])}" type="text">
+							</div>
+                            <span class="form-required">*</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">应付总金额</td>
+						<td><span id="total_price">{$info['price']}</span>元</td>
+						<td class="sel">抹零金额</td>
+						<td>
+							<div class="input-append">
+								<input class="span2 no_arrow extra_price left" step="0.01" type="number" name="extra_price" value="{$info['extra_price']}">
+								<span class="add-on">元</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">选择大类</td>
+						<td>
+                            <select name="type" id="type">
+								<volist name="class_list" id="v">
+								<option data-agcid="{$v.id}" value="{$v.type}"<if condition="$v[id] eq $storage_info['agc_id']">selected="selected"</if>>{$v.class_name}
+								</option>
+								</volist>
+    						</select>
+                        </td>
+						<td class="sel">件数</td>
+						<td><span id="num">0</span>件</td>
+					</tr>
+					<tr>
+						<td class="sel">发票图片</td>
+						<td colspan="3" id="upload_bill_td"><input type="hidden" value="{$info.bill_pic}" name="bill_pic">
+							<p class="btn btn-primary upload_click" data-valueTo="bill_pic" type="text">上传发票</p>
+                            <if condition="$info[bill_pic] neq ''">
+    							<volist name="info.bill_pic_list" id="v">
+    							<p class="click_pic">
+    								<img src="{$v}"> <a class="remove_pic">删除</a>
+    							</p>
+    							</volist>
+                            </if>
+                        </td>
+					</tr>
+					<tr id="tr_bill">
+						<td class="sel">备注</td>
+						<td colspan="3"><textarea type="text" name="bill_info" id="bill_info" row="2" cols="57" style="width: 80%;">{$info.memo}</textarea></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+
+		<businesstpl file="BExpence/add_expence" />
+
+		<form id="excel_into" method="post" enctype="multipart/form-data">
+			<p class="btn btn-primary btn-small excel_click" type="text">从excel文件中导入</p>
+			<p class="btn btn-primary btn-small" onclick="down()">点击此处下载模板</p>
+			<input type="file" name="excel_file" style="opacity: 0; position: absolute;">
+			<input type="hidden" name="rproduct_code_num" value="{:get_rproduct_code_num()}">
+		</form>
+
+		<div class="main-content">
+			<div class="ta">
+				<table class="table table-bordered  table-hover table-striped">
+					<thead>
+						<tr <if condition="$storage_info['type'] eq 1">class="type p_num" <else /> class="type" style="display:none;"</if> data-type="type1">
+							<th class="text-center">序</th>
+							<th class="text-center">规格编码</th>
+							<th class="text-center">货品编码</th>
+							<th class="text-center">附属货品编码</th>
+							<th class="text-center">货品名称</th>
+							<th class="text-center">规格</th>
+                            <th class="text-center">库龄/月</th>
+							<th class="text-center">含金量</th>
+							<th class="text-center">质检编号</th>
+							<th class="text-center">款号</th>
+							<th class="text-center">金重</th>
+							<th class="text-center">金价</th>
+							<th class="text-center">尺寸</th>
+							<th class="text-center">证书类型</th>
+							<th class="text-center">证书号</th>
+							<th class="text-center">证书费</th>
+							<th class="text-center">附加费用</th>
+							<th class="text-center">成本价</th>
+							<th class="text-center">标签价</th>
+							<th class="text-center" width="100">操作</th>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 2">class="type p_num" <else /> class="type" style="display:none;"</if> data-type="type2">
+							<th class="text-center">序</th>
+							<th class="text-center">金料名称</th>
+							<th class="text-center">金料编号</th>
+							<th class="text-center">金价</th>
+							<th class="text-center">金重</th>
+							<th class="text-center">总重</th>
+							<th class="text-center">纯度(‰)</th>
+							<th class="text-center">成本价</th>
+							<th class="text-center">材质</th>
+							<th class="text-center">颜色</th>
+							<th class="text-center" width="100">操作</th>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 3">class="type p_num" <else /> class="type" style="display:none;"</if> data-type="type3">
+							<th class="text-center">序</th>
+							<th class="text-center">规格编码</th>
+							<th class="text-center">货品编码</th>
+							<th class="text-center">附属货品编码</th>
+							<th class="text-center">货品名称</th>
+							<th class="text-center">规格</th>
+                            <th class="text-center">库龄/月</th>
+							<th class="text-center">检测号</th>
+							<th class="text-center">形状</th>
+							<th class="text-center">石重</th>
+							<th class="text-center">颜色</th>
+							<th class="text-center">净度</th>
+							<th class="text-center">切工</th>
+							<th class="text-center">抛光</th>
+							<th class="text-center">对称</th>
+							<th class="text-center">荧光</th>
+							<th class="text-center">成本价</th>
+							<th class="text-center">标签价</th>
+							<th class="text-center">证书类型</th>
+							<th class="text-center">证书号</th>
+							<th class="text-center">证书费</th>
+							<th class="text-center">附加费用</th>
+							<th class="text-center" width="100">操作</th>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 4">class="type p_num" <else /> class="type" style="display:none;"</if> data-type="type4">
+							<th class="text-center">序</th>
+							<th class="text-center">规格编码</th>
+							<th class="text-center">货品编码</th>
+							<th class="text-center">附属货品编码</th>
+							<th class="text-center">货品名称</th>
+							<th class="text-center">规格</th>
+                            <th class="text-center">库龄/月</th>
+							<th class="text-center">检测号</th>
+							<th class="text-center">款式</th>
+							<th class="text-center">材质</th>
+							<th class="text-center">材质颜色</th>
+							<th class="text-center">尺寸</th>
+							<th class="text-center">货重</th>
+							<th class="text-center">金重</th>
+							<th class="text-center">主石数</th>
+							<th class="text-center">主石重</th>
+							<th class="text-center">主石价</th>
+							<th class="text-center">主石颜色</th>
+							<th class="text-center">主石净度</th>
+							<th class="text-center">主石切工</th>
+							<th class="text-center">附石数</th>
+							<th class="text-center">附石重</th>
+							<th class="text-center">附石价</th>
+							<th class="text-center">加工费</th>
+							<th class="text-center">成本价</th>
+							<th class="text-center">标签价</th>
+							<th class="text-center">证书类型</th>
+							<th class="text-center">证书号</th>
+							<th class="text-center">证书费</th>
+							<th class="text-center">附加费用</th>
+							<th class="text-center" width="100">操作</th>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 5">class="type p_num" <else /> class="type" style="display:none;"</if> data-type="type5">
+							<th class="text-center">序</th>
+							<th class="text-center">规格编码</th>
+							<th class="text-center">货品编码</th>
+							<th class="text-center">附属货品编码</th>
+							<th class="text-center">货品名称</th>
+							<th class="text-center">规格</th>
+                            <th class="text-center">库龄/月</th>
+							<th class="text-center">检测号</th>
+							<th class="text-center">尺寸</th>
+							<th class="text-center">货重</th>
+							<th class="text-center">主石数</th>
+							<th class="text-center">主石重</th>
+							<th class="text-center">主石价</th>
+							<th class="text-center">成本价</th>
+							<th class="text-center">标签价</th>
+							<th class="text-center">证书类型</th>
+							<th class="text-center">证书号</th>
+							<th class="text-center">证书费</th>
+							<th class="text-center">附加费用</th>
+							<th class="text-center" width="100">操作</th>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 6">class="type p_num" <else /> class="type" style="display:none;"</if> data-type="type6">
+							<th class="text-center">序</th>
+							<th class="text-center">规格编码</th>
+							<th class="text-center">货品编码</th>
+							<th class="text-center">附属货品编码</th>
+							<th class="text-center">货品名称</th>
+							<th class="text-center">规格</th>
+                            <th class="text-center">库龄/月</th>
+							<th class="text-center">成本价</th>
+							<th class="text-center">标签价</th>
+							<th class="text-center">附加费用</th>
+							<th class="text-center" width="100">操作</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<if condition="$storage_info['type'] eq 1">
+                            <volist name="product_list" id="v">
+						<tr id="{$v.goods_id}" class="p_num add_product" goods_code="{$v.goods_code}" data-pid="{$v.pid}"">
+							<td class="text-center" style="padding: 8px 3px">{$key+1}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_code}</td>
+							<td><input class="product_code" type="text" value="{$v.product_code}"></td>
+							<td><input class="sub_product_code" type="text" value="{$v.sub_product_code}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_name}</td>
+                            <td class="text-center" style="padding: 8px 3px">{$v.goods_spec}</td>
+                            <td><input class="product_age no_arrow" type="number" value="{$v.product_age}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.purity}</td>
+							<td><input class="qc_code" type="text" value="{$v.qc_code}"></td>
+							<td><input class="design" type="text" value="{$v.design}"></td>
+							<td><input class="weight no_arrow" type="number" step="0.001" value="{$v.weight}"></td>
+							<td><input class="gold_price no_arrow" type="number" step="0.01" value="{$v.buy_price}"></td>
+							<td><input class="ring_size" type="text" value="{$v.ring_size}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.certify_type}</td>
+							<td><input class="certify_code" type="text" value="{$v.certify_code}"></td>
+							<td><input class="certify_price no_arrow" type="number" step="0.01" value="{$v.certify_price}"></td>
+							<td><input class="extras no_arrow" type="number" step="0.01" value="{$v.extras}"></td>
+							<td><input class="cost_price no_arrow" type="number" step="0.01" value="{$v.cost_price}"></td>
+							<td><input class="sell_price no_arrow" type="number" step="0.01" value="{$v.sell_price}"></td>
+							<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)" title="{$v.memo}">备注<span class="memo" hidden>{$v.memo}</span></a>&nbsp;&nbsp;<a class="del" href="javascript:;">删除</a></td>
+						</tr>
+        					</volist>
+                        </if>
+						<if condition="$storage_info['type'] eq 2">
+                            <volist name="product_list" id="v"> <!-- b_recovery_product 与其他 type 的数据表不同 -->
+						<tr id="{$v.id}" class="p_num add_product is_jl" rproduct_code="{$v.rproduct_code}" data-pid="{$v.id}">
+							<td class="text-center" style="padding: 8px 3px">{$key+1}</td>
+							<td><input class="recovery_name" type="text" value="{$v.recovery_name}"></td>
+							<td><input class="rproduct_code" type="text" value="{$v.rproduct_code}"></td>
+							<td><input class="gold_price no_arrow" type="number" step="0.01" value="{$v.gold_price}"></td>
+							<td><input class="gold_weight no_arrow" type="number" step="0.001" value="{$v.gold_weight}"></td>
+							<td><input class="total_weight no_arrow" type="number" step="0.001" value="{$v.total_weight}"></td>
+							<td><input class="purity no_arrow" type="number" step="0.001" value="{$v.purity}"></td>
+							<td><input class="cost_price no_arrow" type="number" step="0.01" value="{$v.cost_price}"></td>
+							<td><input class="material" type="text" value="{$v.material}"></td>
+							<td><input class="color" type="text" value="{$v.color}"></td>
+							<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)" title="{$v.memo}">备注<span class="memo" hidden>{$v.memo}</span></a>&nbsp;&nbsp;<a class="del" href="javascript:;">删除</a></td>
+						</tr>
+    						</volist>
+                        </if>
+						<if condition="$storage_info['type'] eq 3">
+                            <volist name="product_list" id="v">
+						<tr id="{$v.goods_id}" class="p_num add_product" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+							<td class="text-center" style="padding: 8px 3px">{$key+1}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_code}</td>
+							<td><input class="product_code" type="text" value="{$v.product_code}"></td>
+							<td><input class="sub_product_code" type="text" value="{$v.sub_product_code}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_name}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_spec}</td>
+                            <td><input class="product_age no_arrow" type="number" value="{$v.product_age}"></td>
+							<td><input class="qc_code" type="text" value="{$v.qc_code}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.shape}</td>
+							<td><input class="caratage no_arrow" type="number" step="0.001" value="{$v.caratage}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.color}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.clarity}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.cut}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.fluorescent}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.polish}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.symmetric}</td>
+							<td><input class="cost_price no_arrow" type="number" step="0.01" value="{$v.cost_price}"></td>
+							<td><input class="sell_price no_arrow" type="number" step="0.01" value="{$v.sell_price}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.certify_type}</td>
+							<td><input class="certify_code" type="text" value="{$v.certify_code}"></td>
+							<td><input class="certify_price no_arrow" type="number" step="0.01" value="{$v.certify_price}"></td>
+							<td><input class="extras no_arrow" type="number" step="0.01"  value="{$v.extras}"></td>
+							<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)" title="{$v.memo}">备注<span class="memo" hidden>{$v.memo}</span></a>&nbsp;&nbsp;<a class="del" href="javascript:;">删除</a></td>
+						</tr>
+    						</volist>
+                        </if>
+						<if condition="$storage_info['type'] eq 4">
+                            <volist name="product_list" id="v">
+						<tr id="{$v.goods_id}" class="p_num add_product" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+							<td class="text-center" style="padding: 8px 3px">{$key+1}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_code}</td>
+							<td><input class="product_code" type="text" value="{$v.product_code}"></td>
+							<td><input class="sub_product_code" type="text" value="{$v.sub_product_code}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_name}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_spec}</td>
+                            <td><input class="product_age no_arrow" type="number" value="{$v.product_age}"></td>
+							<td><input class="qc_code" type="text" value="{$v.qc_code}"></td>
+							<td><input class="design" type="text" value="{$v.design}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.material}</td>
+							<td><input class="material_color" type="text" value="{$v.material_color}"></td>
+							<td><input class="ring_size" type="text" value="{$v.ring_size}"></td>
+							<td><input class="total_weight no_arrow" type="number" step="0.001" value="{$v.total_weight}"></td>
+							<td><input class="weight no_arrow" type="number" step="0.001" value="{$v.gold_weight}"></td>
+							<td><input class="main_stone_num no_arrow" step="0.01" type="number" value="{$v.main_stone_num}"></td>
+							<td><input class="main_stone_caratage no_arrow" type="number" step="0.001" value="{$v.main_stone_caratage}"></td>
+							<td><input class="main_stone_price no_arrow" type="number" step="0.01" value="{$v.main_stone_price}"></td>
+							<td><input class="color" type="text" value="{$v.color}"></td>
+							<td><input class="clarity" type="text" value="{$v.clarity}"></td>
+							<td><input class="cut" type="text" value="{$v.cut}"></td>
+							<td><input class="side_stone_num no_arrow" step="0.01" type="number" value="{$v.side_stone_num}"></td>
+							<td><input class="side_stone_caratage no_arrow" type="number" step="0.001" value="{$v.side_stone_caratage}"></td>
+							<td><input class="side_stone_price no_arrow" type="number" step="0.01" value="{$v.side_stone_price}"></td>
+							<td><input class="process_cost no_arrow" type="number" step="0.01" value="{$v.process_cost}"></td>
+							<td><input class="cost_price no_arrow" type="number" step="0.01" value="{$v.cost_price}"></td>
+							<td><input class="sell_price no_arrow" type="number" step="0.01" value="{$v.sell_price}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.certify_type}</td>
+							<td><input class="certify_code no_arrow" type="number" step="0.01" value="{$v.certify_code}"></td>
+							<td><input class="certify_price no_arrow" type="number" step="0.01" value="{$v.certify_price}"></td>
+							<td><input class="extras no_arrow" type="number" step="0.01" value="{$v.extras}"></td>
+							<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)" title="{$v.memo}">备注<span class="memo" hidden>{$v.memo}</span></a>&nbsp;&nbsp;<a class="del" href="javascript:;">删除</a></td>
+						</tr>
+    						</volist>
+                        </if>
+						<if condition="$storage_info['type'] eq 5">
+                            <volist name="product_list" id="v">
+						<tr id="{$v.goods_id}" class="p_num add_product" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+							<td class="text-center" style="padding: 8px 3px">{$key+1}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_code}</td>
+							<td><input class="product_code" type="text" value="{$v.product_code}"></td>
+							<td><input class="sub_product_code" type="text" value="{$v.sub_product_code}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_name}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_spec}</td>
+                            <td><input class="product_age no_arrow" type="number" value="{$v.product_age}"></td>
+							<td><input class="qc_code" type="text" value="{$v.qc_code}"></td>
+							<td><input class="ring_size" type="text" value="{$v.ring_size}"></td>
+							<td><input class="p_weight no_arrow" type="number" step="0.001" value="{$v.p_weight}"></td>
+							<td><input class="stone_num no_arrow" step="0.01" type="number" value="{$v.stone_num}"></td>
+							<td><input class="stone_weight no_arrow" type="number" step="0.001" value="{$v.stone_weight}"></td>
+							<td><input class="stone_price no_arrow" type="number" step="0.01" value="{$v.stone_price}"></td>
+							<td><input class="cost_price no_arrow" type="number" step="0.01" value="{$v.cost_price}"></td>
+							<td><input class="sell_price no_arrow" type="number" step="0.01" value="{$v.sell_price}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.certify_type}</td>
+							<td><input class="certify_code" type="text" value="{$v.certify_code}"></td>
+							<td><input class="certify_price no_arrow" type="number" step="0.01" value="{$v.certify_price}"></td>
+							<td><input class="extras no_arrow" type="number" step="0.01" value="{$v.extras}"></td>
+							<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)" title="{$v.memo}">备注<span class="memo" hidden>{$v.memo}</span></a>&nbsp;&nbsp;<a class="del" href="javascript:;">删除</a></td>
+						</tr>
+    						</volist>
+                        </if>
+						<if condition="$storage_info['type'] eq 6">
+                            <volist name="product_list" id="v">
+						<tr id="{$v.goods_id}" class="p_num add_product" goods_code="{$v.goods_code}" data-pid="{$v.pid}">
+							<td class="text-center" style="padding: 8px 3px">{$key+1}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_code}</td>
+							<td><input class="product_code" type="text" value="{$v.product_code}"></td>
+							<td><input class="sub_product_code" type="text" value="{$v.sub_product_code}"></td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_name}</td>
+							<td class="text-center" style="padding: 8px 3px">{$v.goods_spec}</td>
+                            <td><input class="product_age no_arrow" type="number" value="{$v.product_age}"></td>
+							<td><input class="cost_price no_arrow" type="number" step="0.01" value="{$v.cost_price}"></td>
+							<td><input class="sell_price no_arrow" type="number" step="0.01" value="{$v.sell_price}"></td>
+							<td><input class="extras no_arrow" type="number" step="0.01" value="{$v.extras}"></td>
+							<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)" title="{$v.memo}">备注<span class="memo" hidden>{$v.memo}</span></a>&nbsp;&nbsp;<a class="del" href="javascript:;">删除</a></td>
+						</tr>
+    						</volist>
+                        </if>
+						<tr <if condition="$storage_info['type'] eq 1">class="type p_num" <else />class="type" style="display:none;"</if> data-type="type1" id="last_tr">
+							<td class="text-center"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+                            <td></td>
+                            <td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="text-center" style="padding: 8px 0; position: relative; height: 19px;">
+                                <a href="#myModal" class="myModal" role="button" data-toggle="modal" class="leave" role="button">+</a>
+                            </td>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 2">class="type p_num" <else />class="type" style="display:none;"</if>
+							data-type="type2" id="last_tr">
+							<td class="text-center"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="text-center" style="padding: 8px 0; position: relative; height: 19px;"><a href="#" class="add_jl leave">+</a></td>
+						</tr>
+
+						<tr <if condition="$storage_info['type'] eq 3">class="type p_num" <else />class="type" style="display:none;"</if> data-type="type3" id="last_tr">
+							<td class="text-center"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="text-center" style="padding: 8px 0; position: relative; height: 19px;">
+                                <a href="#myModal" class="myModal" role="button" data-toggle="modal" class="leave" role="button">+</a>
+                            </td>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 4">class="type p_num" <else />class="type" style="display:none;"</if> data-type="type4" id="last_tr">
+							<td class="text-center"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="text-center" style="padding: 8px 0; position: relative; height: 19px;">
+                                <a href="#myModal" class="myModal" role="button" data-toggle="modal" class="leave" role="button">+</a>
+                            </td>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 5">class="type p_num" <else />class="type" style="display:none;"</if> data-type="type5" id="last_tr">
+							<td class="text-center"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="text-center" style="padding: 8px 0; position: relative; height: 19px;">
+                                <a href="#myModal" class="myModal" role="button" data-toggle="modal" class="leave" role="button">+</a>
+                            </td>
+						</tr>
+						<tr <if condition="$storage_info['type'] eq 6">class="type p_num" <else />class="type" style="display:none;"</if> data-type="type6" id="last_tr">
+							<td class="text-center"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="text-center" style="padding: 8px 0; position: relative; height: 19px;">
+                                <a href="#myModal" class="myModal" role="button" data-toggle="modal" class="leave" role="button">+</a>
+                            </td>
+						</tr>
+					</tbody>
+				</table>
+				<div>
+					<input type="hidden" name="id" value="{$info.id}">
+					<input type="hidden" name="num" value="0">
+                    <input type="hidden" name="price" value="0.00">
+                    <input type="hidden" name="weight" value="0.00">
+				</div>
+			</div>
+			<div class="modal small fade auto-adapt" style="width: 80%; left: 400px; top: 2%; bottom: 2%;" id="myModal" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							<h3 id="myModalLabel">商品选择</h3>
+						</div>
+						<div class="modal-body" style="max-height: 800px; padding: 0px;">
+							<iframe frameborder="0" class="appiframe" src="{:U('BStorage/goods_list', array('type'=>3, 'price_mode'=>-1))}" id="goods_list" name="goods_list"></iframe>
+						</div>
+						<div class="modal-footer">
+							<button id="check" class="btn btn-primary pull-left">选中</button>
+							<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+							<button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="pagination">{$page}</div>
+		</div>
+		<div class="form-actions text-center">
+			<p type="text" class="btn btn-primary js-ajax-submit" data-status="save">{:L('SAVE')}</p>
+			<p type="text" class="btn btn-primary js-ajax-submit" data-status="submit">{:L('COMMIT')}</p>
+			<button type="submit" class="btn js-ajax-back-btn" onclick="javascript:history.go(-1);">{:L('BACK')}</button>
+		</div>
+	</div>
+
+	<form id="ajax_f" action="{:U('BProcure/upload_bill')}" method="post">
+		<input type="file" name="upload_bill" id="upload_bill" style="opacity: 0; position: absolute;">
+        <input type="hidden" name="del_bill_pic" id="del_bill">
+	</form>
+
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/js/jquery-form.js"></script>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+
+	<script>
+		
+		var down_url = "";
+
+		var upload_img_arr = '{$info.bill_pic}';
+		upload_img_arr = upload_img_arr.split(',');
+		var remove_img_arr = [];
+
+		// 清空表单
+		var clean_table = function() {
+			var now_type = $($('.type.p_num')[0]).data('type');
+			var type = $("#type").val();
+			// 商品大类不变，商品表单不清空
+			if (now_type != ("type" + type)) {
+				$(".add_product").remove();
+			}
+			$(".type").each(function() {
+				if ($(this).attr("data-type") == ("type" + type)) {
+					$(this).addClass("p_num");
+					$(this).show();
+				} else {
+					$(this).removeClass("p_num");
+					$(this).hide();
+				}
+			})
+			table_order();
+		}
+
+		$(document).ready(function() {
+			clean_table(); // 清空表单
+
+			count_num();
+
+			jl_count_price_weight();
+
+			var id = "{$info['supplier_id']}";
+			$("#company_name").find("option[value='" + id + "']").attr( "selected", true);
+
+			var type = $("#type").val();
+
+			$("#goods_list").attr("src", "/index.php?g=Business&m=BStorage&a=goods_list&price_mode=-1&type=" + type);
+			if (type == 1) {
+				type = 'su';/*计件素金类型 add by lzy 20180503*/
+			}
+			$("#excel_into").attr("action", "/index.php?g=Business&m=BStorage&a=excel_input&type=" + type);
+			down_url = ROOT_URL + "/Uploads/excel/example_storage" + type + ".xlsx";
+		})
+
+		$("#type").change(function() {
+			clean_table(); // 清空表单
+
+			init_add_jl();
+
+			var type = $(this).val();
+
+			$("#goods_list").attr("src", "/index.php?g=Business&m=BStorage&a=goods_list&price_mode=-1&type=" + type);
+			if (type == 1) {
+				type = 'su';/*计件素金类型 add by lzy 20180503*/
+			}
+			$("#excel_into").attr("action", "/index.php?g=Business&m=BStorage&a=excel_input&type=" + type);
+			
+			down_url = ROOT_URL + "/Uploads/excel/example_storage" + type + ".xlsx";
+		})
+
+		function down() {
+			location.href = down_url;
+		}
+
+		var is_loading = false;
+
+		table_order();
+
+		localStorage.setItem('price_mode', 'num');
+
+		init_add_jl();
+		function init_add_jl() {
+			$('.add_jl').unbind('click').click(function() {
+				htm = add_line();
+				$('#last_tr').before(htm);
+
+				del_input();
+
+				table_order();
+
+				jl_count_price_weight();
+
+				count_num();
+
+				count_price();
+			});
+		}
+
+		$('.upload_click').click(function() {
+			$('input[name=upload_bill]').click();
+			upload($(this));
+		});
+
+		function upload($trigger) {
+			var $form = $('#ajax_f');
+			var $file = $('input[name=upload_bill]');
+			var img = $trigger.parent('td').find('img');
+
+			$file .unbind('change') .change(function() {
+				if ($file.val()) {
+
+					$form.ajaxSubmit({
+						success : function(result) {
+							result = JSON.parse(result);
+							if (result.status == 1) {
+								$trigger.html('上传成功！');
+
+								var value_to = $trigger.attr('data-valueTo');
+
+								$('input[name=' + value_to + ']').val( result.bill_pic);
+
+								upload_img_arr.push(result.bill_pic);
+
+								setTimeout(function() {
+									$trigger.after('<p class="click_pic"><img src="'+ result.bill_pic +'"> <a class="remove_pic">删除</a></p>');
+
+									$file.val('');
+									$trigger.html('继续上传');
+
+									initPicReview();
+									initRemoveUpload();
+
+								}, 2000);
+							} else if (result.status == 0) {
+								$trigger.html('上传失败！');
+								$trigger.css('color', 'red');
+							}
+						}
+					});
+				}
+			});
+		}
+		initPicReview();
+
+		function initPicReview() {
+			$('.click_pic').unbind('click').click(function() {
+				var img_url = $(this).find('img').attr('src');
+				image_preview_dialog(img_url);
+			})
+		}
+		initRemoveUpload();
+
+		function initRemoveUpload() {
+			$('#upload_bill_td').find('.remove_pic').unbind('click').click(function() {
+				var _p = $(this).closest('p');
+				var _img = _p.find('img');
+				var _src = _img.attr('src');
+
+				remove_img_arr.push(_src);
+
+				_p.remove();
+			});
+		}
+
+		$('.excel_click').click(function() {
+			$('input[name=excel_file]').click();
+		});
+
+		var $form = $('#excel_into');
+		var $file = $('input[name=excel_file]');
+		$file.unbind('change').change(function() {
+			$('input[name=rproduct_code_num]').val(rproduct_code_num);
+			if ($file.val()) {
+				$('.excel_click').html('导入中...');
+				$form.ajaxSubmit({
+					success : function(result) {
+						result = JSON.parse(result);
+						if (result.status == 1) {
+
+							$('#excel_into .msg').remove();
+							$('#last_tr').before(result.data);
+							console.log(result.rproduct_code_num);
+							rproduct_code_num=result.rproduct_code_num;
+							del_input();
+
+							table_order();
+
+							count_num();
+
+							count_price();
+
+							$('.cost_price, .buy_m_fee, .extras, .extra_price, .certify_price').keyup(function() {
+								count_price();
+							});
+
+							$('.excel_click').html('导入成功');
+
+							setTimeout(function() {
+								$('.excel_click').html('从excel文件中导入');
+							}, 800);
+
+						} else if (result.status == 0) {
+							$file.val('');
+
+							$('.excel_click').html('从excel文件中导入');
+							$('#excel_into .msg').remove();
+							$('#excel_into').append('<p style="color:red;" class="msg">' + result.msg + '<p>');
+						}
+					}
+				});
+			}
+		});
+
+		$('.js-ajax-submit').click(function() {
+			// 避免重复加载...
+			if (is_loading)
+				return;
+
+			var ret = true;
+			var procurement_id = parseInt($('input[name="id"]').val());
+			var supplier_id = $('#company_name').val();
+			var time = $('#input_date').val();
+			var num = $('input[name=num]').val();
+			var weight = $('input[name=weight]').val();
+			var price = $('input[name=price]').val();
+			var bill_info = $('#bill_info').val();
+			var bill_pic = $('input[name=bill_pic]').val();
+			var extra_price = isNaN(parseFloat($('.extra_price').val())) ? 0 : parseFloat($('.extra_price').val());
+			var datas = get_product_data()
+			var type = $("#type").val();
+			var agc_id = $("#type").find('option:selected').data('agcid');
+			var status = $(this).data("status");
+			var sub_datas = get_expence_data();
+
+			if (sub_datas === false) {
+				ret = false;
+				return false;
+			}
+
+			if (is_empty(supplier_id)) {
+				artdialog_alert("请选择供应商！");
+				ret = false;
+				return false;
+			}
+
+			if ($(".ta").find('tbody tr').length <= 1
+					&& $(".ta").find('sub_tbody tr').length <= 1) {
+				artdialog_alert("请添加采购包裹或其它费用！");
+				ret = false;
+				return;
+			}
+
+			if (!(weight > 0 || price > 0)) {
+				artdialog_alert("采购包裹数据填写有误！");
+				ret = false;
+				return;
+			}
+
+			if (ret) {
+				$('.ta #tbody tr').each(function(i, e) {
+					if ($(this).attr('id') > 0 || $(this) .hasClass( 'is_jl')) {
+						var cost_price = $(this).find('.cost_price');
+						if (type == 2) {
+							var recovery_name = $(this).find('.recovery_name').val();
+							var rproduct_code = $(this).find('.rproduct_code').val();
+							var gold_price = parseFloat($(this).find('.gold_price').val());
+							var gold_weight = parseFloat($(this).find('.gold_weight').val());
+							var total_weight = parseFloat($(this).find('.total_weight').val());
+							var purity = parseFloat($(this).find('.purity').val());
+
+							if (is_empty(recovery_name)) {
+								artdialog_alert("请填写第" + (i + 1) + "个金料的金料名称！");
+								ret = false;
+								return false;
+							}
+
+							if (is_empty(gold_price)) {
+								artdialog_alert("请填写第" + (i + 1) + "个金料的金价！");
+								ret = false;
+								return false;
+							}
+
+							if (is_empty(gold_weight)) {
+								artdialog_alert("请填写第" + (i + 1) + "个金料的金重！");
+								ret = false;
+								return false;
+							}
+
+							if (is_empty(total_weight)) {
+								artdialog_alert("请填写第" + (i + 1) + "个金料的总重！");
+								ret = false;
+								return false;
+							}
+
+							if (total_weight < gold_weight) {
+								artdialog_alert("第" + (i + 1) + "个金料的总重有误！");
+								ret = false;
+								return false;
+							}
+
+							if (purity > 1000) {
+								artdialog_alert("第" + (i + 1) + "个金料的纯度有误！");
+								ret = false;
+								return false;
+							}
+
+						} else {
+							var product_code = $(this).find('.product_code').val() ? $(this).find('.product_code').val() : $(this).find('.product_code').html();
+							var qc_code = $(this).find('.qc_code').val() ? $(this).find('.qc_code').val() : $(this).find('.qc_code').html();
+							var sell_price = $(this).find('.sell_price');
+
+							if (is_empty(product_code)) {
+								artdialog_alert("请填写第" + (i + 1) + "个货品编码！");
+								ret = false;
+								return false;
+							}
+
+							if (!check_price(cost_price) && cost_price.length > 0) {
+								artdialog_alert("请填写第" + (i + 1) + "个货品的成本价！");
+								ret = false;
+								return false;
+							}
+
+							if (!check_price(sell_price) && sell_price.length > 0) {
+								artdialog_alert("请填写第" + (i + 1) + "个货品的标签价！");
+								ret = false;
+								return false;
+							}
+						}
+					}
+				});
+			}
+
+			if (ret) {
+				$('#sub_tbody tr').each(function(i, e) {
+					var _tr = $(this);
+					if (_tr.attr('id') !== 'sub_last') {
+						var expence_id = _tr.find('select[name="expence_id"]');
+						var sub_cost = _tr.find('.sub_cost');
+						if (expence_id.val() == 0) {
+							artdialog_alert("请选择其它费用第" + (i + 1) + "行类目！");
+							ret = false;
+							return false;
+						}
+						if (sub_cost.val() == '') {
+							artdialog_alert("请填写其它费用第" + (i + 1) + "行金额！");
+							ret = false;
+							return false;
+						}
+					}
+				});
+			}
+
+			if (ret) {
+				var post_data = {
+					procurement_id : procurement_id,
+					extra_price : extra_price,
+					supplier_id : supplier_id,
+					procure_time : time,
+					num : num,
+					weight : weight,
+					price : price,
+					memo : bill_info,
+					upload_img_arr : upload_img_arr.join('|'),
+					remove_img_arr : remove_img_arr.join('|'),
+					data : datas,
+					type : type,
+					agc_id : agc_id,
+					submit_type : status,
+					sub_datas : sub_datas
+				};
+
+				is_loading = true;
+
+				$.ajax({
+					async : false,
+					url : $('#form').attr('action'),
+					type : 'post',
+					data : post_data,
+					dataType : 'json',
+					success : function(result) {
+
+						is_loading = false;
+
+						if (result.status == "success") {
+							artdialog_alert('操作成功！', 'succeed');
+
+							if (status == "submit") {
+							    if(result.referer){
+									setTimeout(function() {
+										window.location.href = result.referer;
+									}, 800);
+								} else {
+									setTimeout(function() {
+										window.location.reload;
+									}, 800);
+								}
+							}
+						} else if (result.status == "fail") {
+							if(result.exist_rproduct_code){
+								var rproduct_codes=update_rproduct_code(result.rproduct_code_tr);
+								artdialog_alert(result.msg+'已自动变更为'+rproduct_codes);
+							}else {
+								artdialog_alert('操作失败！'+ result.msg);
+							}
+						}
+					},
+					error : function() {
+						is_loading = false;
+						artdialog_alert('操作失败，网络错误！');
+					}
+				});
+			}
+		});
+
+		function get_product_data() {
+			var datas = new Array();
+			$('.ta tbody tr').each(function() {
+				var tr_ = $(this);
+				if (tr_.attr('id') > 0 || $(this).hasClass('is_jl')) {
+					if (!tr_.hasClass('excel')) {
+						var type = $("#type").val();
+						var data = new Object();
+						data.is_old = tr_.attr('data-pid') == undefined ? 0 : tr_.attr('data-pid');
+						if (type == '1') {
+							data.goods_id = tr_.attr('id');
+							data.product_code = tr_.find('.product_code').val();
+                            data.sub_product_code = tr_.find('.sub_product_code').val();
+                            data.product_age = tr_.find('.product_age').val();
+							data.qc_code = tr_.find('.qc_code').val();
+							data.design = tr_.find('.design').val();
+							data.weight = tr_.find('.weight').val();
+							data.gold_price = tr_.find('.gold_price').val();
+							data.ring_size = tr_.find(".ring_size").val();
+							data.certify_type = tr_.find("select[name=certify_type]").val();
+							data.certify_code = tr_.find('.certify_code').val();
+							data.certify_price = tr_.find('.certify_price').val();
+							data.extras = tr_.find('.extras').val();
+							data.cost_price = tr_.find('.cost_price').val();
+							data.sell_price = tr_.find('.sell_price').val();
+							data.memo = tr_.find('.memo').text();
+						}
+						if (type == '2') {
+							data.recovery_name = tr_.find('.recovery_name').val();
+							data.rproduct_code = tr_.find('.rproduct_code').val();
+							data.gold_price = tr_.find('.gold_price').val();
+							data.gold_weight = tr_.find('.gold_weight').val();
+							data.total_weight = tr_.find('.total_weight').val();
+							data.purity = parseFloat(tr_.find('.purity').val() / 1000).toFixed(6);
+							data.cost_price = tr_.find('.cost_price').val();
+							data.id = tr_.attr('id') == undefined ? 0 : tr_.attr('id');
+							data.material = tr_.find('.material').val();
+							data.color = tr_.find('.color').val();
+							data.memo = tr_.find('.memo').text();
+						}
+						if (type == '3') {
+							data.product_code = tr_.find('.product_code').val();
+                            data.sub_product_code = tr_.find('.sub_product_code').val();
+                            data.product_age = tr_.find('.product_age').val();
+							data.qc_code = tr_.find('.qc_code').val();
+							data.shape = tr_.find('select[name=shape]').val();
+							data.caratage = tr_.find('.caratage').val();
+							data.color = tr_.find('select[name=color]').val();
+							data.clarity = tr_.find('select[name=clarity]').val();
+							data.cut = tr_.find('select[name=cut]').val();
+							data.fluorescent = tr_.find('select[name=fluorescent]').val();
+							data.polish = tr_.find("select[name=polish]").val();
+							data.symmetric = tr_.find('select[name=symmetric]').val();
+							data.cost_price = tr_.find('.cost_price').val();
+							data.sell_price = tr_.find('.sell_price').val();
+							data.certify_type = tr_.find("select[name=certify_type]").val();
+							data.certify_code = tr_.find('.certify_code').val();
+							data.certify_price = tr_.find('.certify_price').val();
+							data.goods_id = tr_.attr('id');
+							data.goods_code = tr_.attr('goods_code');
+							data.extras = tr_.find('.extras').val();
+							data.memo = tr_.find('.memo').text();
+						}
+						if (type == '4') {
+							data.product_code = tr_.find('.product_code').val();
+                            data.sub_product_code = tr_.find('.sub_product_code').val();
+                            data.product_age = tr_.find('.product_age').val();
+							data.qc_code = tr_.find('.qc_code').val();
+							data.design = tr_.find('.design').val();
+							data.material = tr_.find('select[name=material]').val();
+							data.material_color = tr_.find('.material_color').val();
+							data.ring_size = tr_.find('.ring_size').val();
+							data.total_weight = tr_.find('.total_weight').val();
+							data.weight = tr_.find('.weight').val();
+							data.main_stone_num = tr_.find('.main_stone_num').val();
+							data.main_stone_caratage = tr_.find('.main_stone_caratage').val();
+							data.main_stone_price = tr_.find('.main_stone_price').val();
+							data.color = tr_.find('.color').val();
+							data.cut = tr_.find('.cut').val();
+							data.clarity = tr_.find(".clarity").val();
+							data.side_stone_num = tr_.find('.side_stone_num').val();
+							data.side_stone_caratage = tr_.find('.side_stone_caratage').val();
+							data.side_stone_price = tr_.find('.side_stone_price').val();
+							data.process_cost = tr_.find('.process_cost').val();
+							data.cost_price = tr_.find('.cost_price').val();
+							data.sell_price = tr_.find('.sell_price').val();
+							data.certify_type = tr_.find("select[name=certify_type]").val();
+							data.certify_code = tr_.find('.certify_code').val();
+							data.certify_price = tr_.find('.certify_price').val();
+							data.goods_id = tr_.attr('id');
+							data.goods_code = tr_.attr('goods_code');
+							data.extras = tr_.find('.extras').val();
+							data.memo = tr_.find('.memo').text();
+						}
+						if (type == '5') {
+							data.product_code = tr_.find('.product_code').val();
+                            data.sub_product_code = tr_.find('.sub_product_code').val();
+                            data.product_age = tr_.find('.product_age').val();
+							data.qc_code = tr_.find('.qc_code').val();
+							data.ring_size = tr_.find('.ring_size').val();
+							data.p_weight = tr_.find('.p_weight').val();
+							data.stone_num = tr_.find(".stone_num").val();
+							data.stone_weight = tr_.find(".stone_weight").val();
+							data.stone_weight = tr_.find(".stone_weight").val();
+							data.stone_price = tr_.find(".stone_price").val();
+							data.cost_price = tr_.find('.cost_price').val();
+							data.sell_price = tr_.find(".sell_price").val();
+							data.certify_type = tr_.find("select[name=certify_type]").val();
+							data.certify_code = tr_.find('.certify_code').val();
+							data.certify_price = tr_.find('.certify_price').val();
+							data.goods_id = tr_.attr('id');
+							data.goods_code = tr_.attr('goods_code');
+							data.extras = tr_.find('.extras').val();
+							data.memo = tr_.find('.memo').text();
+						}
+						if (type == '6') {
+							data.product_code = tr_.find('.product_code').val();
+                            data.sub_product_code = tr_.find('.sub_product_code').val();
+                            data.product_age = tr_.find('.product_age').val();
+							data.cost_price = tr_.find('.cost_price').val();
+							data.sell_price = tr_.find('.sell_price').val();
+							data.goods_id = tr_.attr('id');
+							data.goods_code = tr_.attr('goods_code');
+							data.extras = tr_.find('.extras').val();
+							data.memo = tr_.find('.memo').text();
+						}
+						datas.push(data);
+					}
+				}
+			});
+			return datas;
+		}
+
+		//验证数量
+		function check_num(tag) {
+			var num = $(tag).val() ? $(tag).val() : $(tag).html();
+			if (!/^[0-9]+$/.test(num) || num <= 0) {
+				return false;
+			} else {
+				$(tag).css('color', 'black');
+			}
+			return true;
+		}
+
+		$('#goods_list').load(function() {
+			count_price();
+
+			$('#check').unbind("click").click(function() {
+
+				var htm = $('#goods_list').contents();
+				var tr = htm.find('.ta tbody tr');
+				var datas = new Array();
+
+				var checked_num = htm.find('input[type="checkbox"]:checked').length;
+
+				// 没勾选任何
+				if (checked_num == 0)
+					return;
+
+				tr.each(function() {
+					var tr_ = $(this);
+					var id = tr_.find('.check_box').attr('id');
+					var goods_name = tr_.find('.goods_name').html();
+					var goods_spec = tr_.find('.goods_spec').html();
+					var goods_num = tr_.find('#goods_num').val();
+					var goods_code = tr_.find('.goods_code').html();
+					var sell_price = tr_.find('.sell_price').html();
+					var procure_price = tr_.find('.procure_price').html();
+					var buy_m_fee = tr_.find('.buy_fee').html(); // 采购工费 - 暂时不用
+					var weight = tr_.find('.goods_weight').html();
+					var purity = tr_.find('.purity').html();
+					var htm = "";
+					if (tr_.find('.check_box').attr('checked')) {
+						for (var i = 0; i < goods_num; i++) {
+							htm += add_line(
+								id,
+								goods_name,
+								goods_spec,
+								goods_code,
+								sell_price,
+								procure_price,
+								buy_m_fee,
+								purity,
+								weight
+                            );
+						}
+						$('#last_tr').before(htm);
+
+						del_input();
+
+						table_order();
+
+						jl_count_price_weight();
+					}
+				});
+
+				count_num();
+
+				count_price();
+
+				price_param_keyup();
+			});
+
+			$('#add').unbind("click").click(function() {
+				$('#check').click();
+			});
+		});
+
+		var certify_types = "{$certify_types}";
+		var shape = "{$shapes}";
+		var color = "{$colors}";
+		var clarity = "{$claritys}";
+		var cut = "{$cuts}";
+		var fluorescent = "{$fluorescents}";
+		var polish = "{$polishs}";
+		var symmetric = "{$symmetrics}";
+		var materials = "{$materials}";
+
+		function jl_count_price_weight() {
+			$('.gold_price, .gold_weight, .total_weight').unbind('keyup').keyup(function() {
+				if ($('[name="type"]').val() != 2) {
+					return;
+				}
+
+				if (isNaN($(this).val())) {
+					var input_val = $(this).val().substr(-1);
+
+					var new_c = $(this).val().substr(0,
+							$(this).val().length - 1)
+
+					$(this).val(new_c);
+				}
+
+				var _tr = $(this).closest('tr');
+				var gold_price = _tr.find('.gold_price').val();
+				gold_price = isNaN(gold_price) ? 0 : gold_price;
+				gold_price = gold_price == '' ? 0 : gold_price;
+				gold_price = parseFloat(gold_price).toFixed(2);
+
+				var gold_weight = _tr.find('.gold_weight').val();
+				gold_weight = isNaN(gold_weight) ? 0 : gold_weight;
+				gold_weight = gold_weight == '' ? 0 : gold_weight;
+				gold_weight = parseFloat(gold_weight) .toFixed(2);
+
+				var total_weight = _tr.find('.total_weight').val();
+				total_weight = isNaN(total_weight) ? 0 : total_weight;
+				total_weight = total_weight == '' ? 0 : total_weight;
+				total_weight = parseFloat(total_weight) .toFixed(2);
+
+				var cost_price = parseFloat(gold_price * gold_weight).toFixed(2);
+				_tr.find('.cost_price').val(cost_price);
+
+				/*change by alam 2018/5/15 start*/
+				var purity = total_weight == 0 ? 0 : parseFloat(gold_weight / total_weight * 1000).toFixed(3);
+				purity = purity > 1000 ? 1000 : purity;
+				_tr.find('.purity').val(purity);
+				/*change by alam 2018/5/15 end*/
+
+				count_price();
+			})
+		}
+		function update_rproduct_code(rproduct_code_tr){
+			if(rproduct_code_tr){
+				var rproducts_codes=[];
+				rproduct_code_tr=rproduct_code_tr.split(',');
+				$.each(rproduct_code_tr,function(i,item){
+					if(item){
+						rproduct_code_num=parseInt(rproduct_code_num)+1;
+						var str='000'+rproduct_code_num;
+						var rproduct_code=day+str.substr(str.length-4);
+						$('.rproduct_code').eq(item-1).val(rproduct_code);
+						rproducts_codes.push(rproduct_code);
+					}
+				});
+				return rproducts_codes.join(',');
+			}
+		}
+		var rproduct_code_num="{:get_rproduct_code_num()}";
+		var day="{:date('ymd')}";
+		function add_line(id, goods_name, goods_spec, goods_code, sell_price, procure_price, buy_m_fee, purity, weight) {
+			var type = $("#type").val();
+			if (type == 1) {
+				var htm = '<tr class="p_num add_product" id="'+id+'" goods_code="'+ goods_code +'">'
+						+ '<td class="text-center" style="padding: 8px 3px"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_code + '</td>'
+						+ '<td><input class="product_code" type="text"></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_name + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_spec + '</td>'
+                        + '<td><input class="product_age no_arrow" type="number" value="0"></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + purity + '</td>'
+						+ '<td><input class="qc_code" type="text"></td>'
+						+ '<td><input class="design" type="text"></td>'
+						+ '<td><input class="weight no_arrow" type="number" step="0.01" value="'+ weight +'"></td>'
+						+ '<td><input class="gold_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="ring_size" type="text" value=""></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + certify_types + '</td>'
+						+ '<td><input class="certify_code" type="text" value=""></td>'
+						+ '<td><input class="certify_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="extras no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="cost_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="sell_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)">备注<span class="memo" hidden></span></a>&nbsp;&nbsp;<a class="del"href="javascript:;">删除</a></td>'
+						+ '</tr>';
+
+			}
+			if (type == 2) {
+				var recovery_price = "{$price['recovery_price']}";
+				rproduct_code_num=parseInt(rproduct_code_num)+1;
+				var str='000'+rproduct_code_num;
+				var rproduct_code=day+str.substr(str.length-4);
+				var htm = '<tr class="p_num add_product is_jl">'
+						+ '<td class="text-center" style="padding: 8px 3px"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
+						+ '<td><input class="recovery_name" type="text" value=""></td>'
+						+ '<td><input class="rproduct_code" type="text" value="'+rproduct_code+'"></td>'
+						+ '<td><input class="gold_price no_arrow" type="number" step="0.01" value="'+ recovery_price +'"></td>'
+						+ '<td><input class="gold_weight no_arrow" type="number" step="0.001" value=""></td> '
+						+ '<td><input class="total_weight no_arrow" type="number" step="0.001" value=""></td> '
+						+ '<td><input class="purity no_arrow" type="number" step="0.01" value=""></td> '
+						+ '<td><input class="cost_price no_arrow" type="number" step="0.01" value=""></td> '
+						+ '<td><input class="material no_arrow" type="text" step="0.01" value=""></td> '
+						+ '<td><input class="color no_arrow" type="text" step="0.01" value=""></td> '
+						+ '<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)">备注<span class="memo" hidden></span></a>&nbsp;&nbsp;<a class="del"href="javascript:;">删除</a></td>'
+						+ '</tr>';
+			}
+			if (type == 3) {
+				var htm = '<tr class="p_num add_product" id="'+id+'" goods_code="'+ goods_code +'">'
+						+ '<td class="text-center" style="padding: 8px 3px"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_code + '</td>'
+						+ '<td><input class="product_code" type="text" value=""></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_name + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_spec + '</td>'
+                        + '<td><input class="product_age no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="qc_code" type="text" value=""></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + shape + '</td>'
+						+ '<td><input class="caratage no_arrow" type="number" step="0.001" value=""></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + color + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + clarity + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + cut + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + polish + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + symmetric + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + fluorescent + '</td>'
+						+ '<td><input class="cost_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="sell_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + certify_types + '</td>'
+						+ '<td><input class="certify_code" type="text" value=""></td>'
+						+ '<td><input class="certify_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="extras no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)">备注<span class="memo" hidden></span></a>&nbsp;&nbsp;<a class="del"href="javascript:;">删除</a></td>'
+						+ '</tr>';
+			}
+			if (type == 4) {
+				var htm = '<tr class="p_num add_product" id="'+id+'" goods_code="'+ goods_code +'">'
+						+ '<td class="text-center" style="padding: 8px 3px"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_code + '</td>'
+						+ '<td><input class="product_code" type="text"></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_name + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_spec + '</td>'
+                        + '<td><input class="product_age no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="qc_code" type="text" value=""></td>'
+						+ '<td><input class="design" type="text" value=""></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + materials + '</td>'
+						+ '<td><input class="material_color" type="text" value=""></td>'
+						+ '<td><input class="ring_size" type="text" value=""></td>'
+						+ '<td><input class="total_weight no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="weight no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="main_stone_num no_arrow" step="0.01" type="number" value=""></td>'
+						+ '<td><input class="main_stone_caratage no_arrow" type="number" step="0.001" value=""></td>'
+						+ '<td><input class="main_stone_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="color" type="text" value=""></td>'
+						+ '<td><input class="clarity" type="text" value=""></td>'
+						+ '<td><input class="cut" type="text" value=""></td>'
+						+ '<td><input class="side_stone_num no_arrow" step="0.01" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="side_stone_caratage no_arrow" type="number" step="0.001" value=""></td>'
+						+ '<td><input class="side_stone_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="process_cost no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="cost_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="sell_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + certify_types + '</td>'
+						+ '<td><input class="certify_code no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="certify_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="extras no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)">备注<span class="memo" hidden></span></a>&nbsp;&nbsp;<a class="del"href="javascript:;">删除</a></td>'
+						+ '</tr>';
+			}
+			if (type == 5) {
+				var htm = '<tr class="p_num add_product" id="'+id+'" goods_code="'+ goods_code +'">'
+						+ '<td class="text-center" style="padding: 8px 3px"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_code + '</td>'
+						+ '<td><input class="product_code" type="text"></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_name + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_spec + '</td>'
+                        + '<td><input class="product_age no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="qc_code" type="text" value=""></td>'
+						+ '<td><input class="ring_size" type="text" value=""></td>'
+						+ '<td><input class="p_weight no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class=" no_arrow" step="0.01" type="number" value=""></td>'
+						+ '<td><input class="stone_weight no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="stone_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="cost_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="sell_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + certify_types + '</td>'
+						+ '<td><input class="certify_code" type="text" value=""></td>'
+						+ '<td><input class="certify_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="extras no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)">备注<span class="memo" hidden></span></a>&nbsp;&nbsp;<a class="del"href="javascript:;">删除</a></td>'
+						+ '</tr>';
+			}
+			if (type == 6) {
+				var htm = '<tr class="p_num add_product" id="'+id+'" goods_code="'+ goods_code +'">'
+						+ '<td class="text-center" style="padding: 8px 3px"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_code + '</td>'
+						+ '<td><input class="product_code" type="text"></td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_name + '</td>'
+						+ '<td class="text-center" style="padding: 8px 3px">' + goods_spec + '</td>'
+                        + '<td><input class="product_age no_arrow" type="number" value=""></td>'
+						+ '<td><input class="cost_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="sell_price no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td><input class="extras no_arrow" type="number" step="0.01" value=""></td>'
+						+ '<td class="text-center"><a href="javascript:;" onclick="init_memo_iframe(this)">备注<span class="memo" hidden></span></a>&nbsp;&nbsp;<a class="del"href="javascript:;">删除</a></td>'
+						+ '</tr>';
+			}
+			return htm;
+		}
+
+		function table_order() {
+			var len = $(".ta").find('table .p_num').length + 1;
+			for (var i = 1; i < len; i++) {
+				$(".ta").find('table .p_num:eq(' + i + ') td:first').text(i);
+			}
+		}
+
+		del_input();
+
+		function del_input() {
+			$('.del').each(function() {
+				$(this).click(function() {
+					var tr = $(this).parent('td').parent('tr');
+
+					tr.remove();
+
+					table_order();
+
+					count_num();
+
+					var total_price = count_price();
+				});
+			});
+		}
+		function check_weight(tag) {
+			var weight = $(tag).val();
+			if (!/^[0-9\.]+$/.test(weight) || parseFloat(weight) <= 0) {
+				return false;
+			} else {
+				$(tag).css('color', 'black');
+				return true;
+			}
+		}
+		function count_num() {
+			var total_num = parseInt($('.ta tbody .p_num').size() - 1);
+			$('#num').text(total_num);
+			$('input[name=num]').val(total_num);
+		}
+
+		function product_price(tag) {
+			var cost_price = parseFloat(tag.find('.cost_price').val()) > 0 ? parseFloat(tag.find('.cost_price').val()) : parseFloat(tag.find('.cost_price').text());
+
+			var extras = parseFloat(tag.find('.extras').val()) > 0 ? parseFloat(tag.find('.extras').val()) : parseFloat(tag.find('.extras').text());
+
+			var certify_price = parseFloat(tag.find('.certify_price').val()) > 0 ? parseFloat(tag.find('.certify_price').val()) : parseFloat(tag.find('.certify_price').text());
+
+			if (!extras > 0) {
+				extras = 0;
+			}
+			if (!cost_price > 0) {
+				cost_price = 0;
+			}
+			if (!certify_price > 0) {
+				certify_price = 0;
+			}
+			var total = 0;
+
+			total += cost_price;
+			total += extras;
+			total += certify_price;
+
+			return total > 0 ? total : 0;
+		}
+		$('.cost_price, .buy_m_fee, .extras, .extra_price, .certify_price').keyup(function() {
+			count_price();
+		});
+		function count_price() {
+			var total_price = 0, total_weight = 0;
+			$('.ta tbody tr').each(function() {
+				var price = product_price($(this));
+				total_price += price;
+				/*总克重计算 add by lzy 2018-5-4 start*/
+				var weight = parseFloat($(this).find('.weight').val()) > 0 ? parseFloat($(this).find('.weight').val()) : parseFloat($(this).find('.weight').text());
+				weight = weight > 0 ? weight : 0;
+				total_weight += weight;
+				/*总克重计算 add by lzy 2018-5-4 end*/
+			});
+
+			$('input[name="weight"]').val(total_weight);
+			// 其它费用
+			var sub_cost = count_expence_price();
+			total_price += isNaN(sub_cost) ? 0 : parseFloat(sub_cost);
+			var extra_price = isNaN(parseFloat($('.extra_price').val())) ? 0 : parseFloat($('.extra_price').val());
+			total_price = total_price - extra_price;
+			total_price = total_price.toFixed(2);
+
+			show_price(total_price);
+
+			return total_price;
+		}
+
+		function show_price(total_price) {
+			$('input[name="price"]').val(total_price);
+			$('#total_price').text(total_price);
+		}
+
+		// 验证价格
+		function check_price(tag) {
+			var price = $(tag).val() ? $(tag).val() : $(tag).html();
+			if (!/^[0-9\.]+$/.test(price) || price < 0) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		function is_empty(str) {
+			if (str != null && str != "" && typeof (str) != "undefined"
+					&& str != 'NAN') {
+				return false;
+			}
+			return true;
+		}
+
+		/*change by alam 2018/5/11 start*/
+		
+		expence_postfix_function = ['count_price'];
+		
+		// 改变总金额的控件
+		price_param_keyup();
+		function price_param_keyup() {
+			$('.cost_price, .buy_m_fee, .extras, .extra_price, .certify_price, .sub_cost').unbind('keyup').keyup(function() {
+				count_price();
+			});
+		}
+		/*change by alam 2018/5/11 end*/
+	</script>
+
+	<!-- 添加货品备注 -->
+	<businesstpl file="BProduct/common_memo" />
+
+	<include file="./Application/Home/View/Public/footer.html" />

@@ -1,0 +1,196 @@
+<businesstpl file="header" />
+<style>
+	a .fa{
+		text-decoration:none !important;
+		display: inline-block !important;
+		font-size: 16px !important;
+	}
+	.fa.fa-toggle-on,
+	.fa.fa-toggle-off{
+		text-decoration:none;
+		display: inline-block;
+		font-size:24px;
+
+	}
+	.fa.fa-toggle-on{
+		color:#2ecc71 !important;
+	}
+	.fa.fa-toggle-off{
+		color:#ccc !important;
+	}
+	.myModal3.leave {
+		position: absolute;
+		top: 12px;
+		left: 15px;
+		font-size: 14px;
+	}
+	input[name=user] {
+		margin: 8px 5px;
+		text-indent: 20px;
+	}
+	.table .search_input {
+		margin: 0;
+		padding: 0;
+		position: relative;
+	}
+	#thumb-cancel{
+		display: inline-block;
+		width: 80px;
+		height: 30px;
+		line-height: 30px;
+		margin-left: 20px;
+		padding: 0;
+		border: 1px solid #ccc;
+		background: #f2f2f2;
+		border-radius: 6px;
+		color: #555;
+		text-align: center;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BShop/index')}">{:L('BUSINESS_BSHOP_INDEX')}</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BSHOP_EDIT')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BShop/edit')}">
+			<fieldset>
+				<table class="table table-bordered">
+					<tbody>
+					<tr>
+						<td class="sel">编号</td>
+						<td width="25%"><input type="text" autocomplete="off" id="code" disabled="true" name="code" value="{$data['code']}">*</td>
+						<td class="sel">门店名称</td>
+						<td width="25%"><input type="text" autocomplete="off" id="shop_name" name="shop_name" value="{$data['shop_name']}">*</td>
+					</tr>
+					<tr>
+						<td class="sel">店长</td>
+						<td class="search_input" >
+							<input type="text" autocomplete="off" name="user" id="user3" class="form-control" onclick="$('#myModal3').modal('show');" value="{$data['employee_name']}">
+							<input type="hidden" name="user_id" class="form-control" value="{$data['manger_id']}">
+							<a href="#myModal3" class="myModal3 leave" data-toggle="modal" name="" role="button"><span><i class="fa fa-search normal"></i></span></a>*
+						</td>
+						<td class="sel">联系电话</td>
+						<td width="25%"><input name="mobile" type="text" value="{$data['mobile']}">*</td>
+
+					</tr>
+					<tr>
+
+						<td class="sel">默认币种</td>
+						<td width="25%" >
+							<select name="currency_id">
+								<option value="0">选择币种</option>
+								<volist name="currency" id="vo">
+									<option value="{$vo.id}" <if condition="$vo['id'] eq $data['currency_id']">selected="selected"</if>>{$vo.currency_name}</option>
+								</volist>
+							</select>*
+						</td>
+						<td class="sel">是否营业</td>
+						<td width="25%">
+							<if condition="$data['enable']">
+								<a class="open fa fa-toggle-on" href="javascript:void(0)">
+									<else/>
+									<a class="open fa fa-toggle-off" href="javascript:void(0)">
+							</if>
+							<input type="hidden" class="val" name="enable" value="{$data['enable']}">
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">总部收款方式</td>
+						<td width="25%" colspan="3">
+							<if condition="$data['show_common_payment']">
+								<a class="open2 fa fa-toggle-on" href="javascript:void(0)">
+									<else/>
+									<a class="open2 fa fa-toggle-off" href="javascript:void(0)">
+							</if>
+							<input type="hidden" class="val" name="show_common_payment" value="{$data['show_common_payment']}">
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">地址</td>
+						<td colspan="3" ><textarea name="address" type="text" style="width:90%;    height: 20px;">{$data['address']}</textarea></td>
+					</tr>
+					<tr>
+						<td class="sel">备注</td>
+						<td colspan="3"><textarea name="memo" type="text" style="width:90%;    height: 20px;">{$data['memo']}</textarea></td>
+					</tr>
+					<tr>
+						<td class="sel">图片</td>
+						<td width="25%" colspan="3">
+							<div style="text-align: left;">
+								<input type="hidden" name="shop_pic" id="thumb" value="{$data['shop_pic']}">
+								<a href="javascript:upload_one_image('图片上传','#thumb');">
+									<if condition="empty($data['shop_pic'])">
+										<img src="__TMPL__Public/assets/images/default-thumbnail.png" id="thumb-preview" width="135" style="cursor: hand"/>
+										<else />
+										<img src="{:sp_get_image_preview_url($data['shop_pic'])}" id="thumb-preview" width="135" style="cursor: hand"/>
+									</if>
+								</a>
+								<input id="thumb-cancel" type="button"	class="btn btn-small"
+									   onclick="$('#thumb-preview').attr('src','/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png');$('#thumb').val('');
+									   $(this).css('display','none');return false;" value="取消图片">
+							</div>
+						</td>
+					</tr>
+					</tbody></table>
+			</fieldset>
+			<div class="form-actions">
+				<input type="hidden" value="{$data['id']}" name="id">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">选择员工</b>
+				</div>
+				<div class="modal-body" style="max-height: 500px;padding: 0px;">
+					<iframe  frameborder="0" class="appiframe" src="{:U('BShop/bemployee_list')}" id="user_list" name="user_list">
+
+					</iframe>
+				</div>
+				<div class="modal-footer">
+					<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+					<button id="add" class="btn btn-primary" data-dismiss="modal">选中</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script>
+	heightAuto($("#myModal3"));
+	$('#user_list').load(function(){
+		var htm=$('#user_list').contents();
+		$('#add').click(function(){
+			var check_boxs=htm.find('.check_box');
+			check_boxs.each(function(){
+				if($(this).is(':checked')){
+					$('input[id=user3]').val($(this).parent('td').parent('tr').find('.user_nicename').html());
+					$('input[name=user_id]').val($(this).attr('uid'));
+				}
+			});
+		});
+	});
+	$(".open,.open2").click(function (e) {
+		e.preventDefault();
+		if ($(this).hasClass("fa-toggle-off")) {
+			$(this).removeClass("fa-toggle-off");
+			$(this).addClass("fa-toggle-on");
+			$(this).parent("td").find("input.val").val("1");
+		}
+		else {
+			$(this).removeClass("fa-toggle-on");
+			$(this).addClass("fa-toggle-off");
+			$(this).parent("td").find("input.val").val("0")
+		}
+	});
+</script>

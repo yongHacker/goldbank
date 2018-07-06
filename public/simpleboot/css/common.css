@@ -1,0 +1,33 @@
+.wrap{
+    background: #F0F2F5;
+    padding: 0;
+}
+.nav{
+    padding: 20px 20px 0 20px;
+    background: #fff;
+}
+.well{
+    padding: 20px;
+    margin:0 20px;
+    background: #fff;
+    border: none;
+
+}
+.table{
+    width: calc(100% - 40px);
+    padding: 0 20px;
+    margin:0 20px;
+    background: #fff;
+   border:none;
+    border-collapse: collapse;
+}
+.table th,.table td{
+    border:none;
+}
+.table tr{
+    border-bottom:1px solid #e8e8e8;
+}
+.table tr img{
+    width: 40px;
+    height:40px;
+}

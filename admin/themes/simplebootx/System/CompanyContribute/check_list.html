@@ -1,0 +1,206 @@
+<systemtpl file="header" />
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+            <li class="active"><a href="{:U('CompanyContribute/index')}">{:L('SYSTEM_COMPANYCONTRIBUTE_CHECK_LIST')}</a></li>
+		</ul>
+
+        <form class="well form-search" method="post" action="{:U('CompanyContribute/check_list')}">
+            搜索:
+            <input id="search_name" name="search_name" value="{$search_name}" placeholder="商户名称/授权单号/合同编号" type="text">
+
+            时间：
+            <input id="search_date" class="form-control datepicker js-date span2" name="search_date" value="{$search_date}" type="text">
+            <input class="btn btn-primary" value="搜索" type="submit">
+            <a href="{:U('CompanyContribute/check_list')}">清空</a>
+        </form>
+
+    <if condition="$company_list">
+    <div class="main-content">
+        <div class="ta">
+            <table class="table table-bordered  table-hover table-striped">
+                <thead  >
+                <tr>
+                	<th class="text-center">序</th>
+                    <th class="text-center">授权单号/合同编号</th>
+                    <th class="text-center">商户名称</th>
+                    <th class="text-center">缴纳金额</th>
+                    <th class="text-center">增加年限</th>
+                    <th class="text-center">增加加盟商</th>
+                    <th class="text-center">增加店铺数</th>
+                    <th class="text-center">制单人</th>
+                    <th class="text-center">申请时间</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="company_list" id="v">
+                    <tr>
+                        <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                        <td class="text-center">{$v.contribute_no}<br>{$v.contract_sn}</td>
+                        <td class="coded text-left">{$v.company_name}</td>
+                        <td class="jhmc text-right">{$v.price}</a></td>
+                        <td class="jhmc text-right">{$v.service_year}年</a></td>
+                        <td class="jhmc text-right">{$v.company_num}个</a></td>
+                        <td class="jhmc text-right">{$v.shop_num}个</a></td>
+                        <td class="jhmc text-left">{$v.user_nicename}</a></td>
+                        <td class="clrq text-center">{$v.create_time|date="Y-m-d H:i:s",###}</td>
+                        <td class="text-center">
+                            <a href="{:U('CompanyContribute/check',array('id'=>$v['id'],'type'=>'show'))}">{$status[$v['status']]}</a>
+		                </td>
+                    </tr>
+                </volist>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">{$page}</div>
+        <else/>
+        <include file="./public/common/default_empty.html" />
+    </if>
+      <include file="./public/common/footer.html" />
+	</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script>
+//锁定操作，锁定数据后刷新页面
+if ($('a.js-ajax-lock').length) {
+    Wind.use('artDialog', function () {
+        $('.js-ajax-lock').on('click', function (e) {
+            e.preventDefault();
+            var $_this = this,
+                $this = $($_this),
+                href = $this.data('href'),
+                msg = $this.data('msg');
+            href = href?href:$this.attr('href');
+            art.dialog({
+                title: false,
+                icon: 'question',
+                content:msg?msg: '确定要锁定吗？',
+                follow: $_this,
+                close: function () {
+                    $_this.focus();; //关闭时让触发弹窗的元素获取焦点
+                    return true;
+                },
+                okVal:"确定",
+                ok: function () {
+                	
+                    $.getJSON(href).done(function (data) {
+                        if (data.code==200) {
+                            reloadPage(window);
+                        } else if (data.code==400) {
+                        	reloadPage(window);
+			art.dialog({   
+				content: data.info,
+				icon: 'warning',  
+				ok: function () {   
+					this.title('操作失败！');   
+					return true;   
+				}
+			}); 
+                        }
+                    });
+                },
+                cancelVal: '关闭',
+                cancel: true
+            });
+        });
+
+    });
+}
+//锁定操作，锁定数据后刷新页面
+if ($('a.js-ajax-unlock').length) {
+    Wind.use('artDialog', function () {
+        $('.js-ajax-unlock').on('click', function (e) {
+            e.preventDefault();
+            var $_this = this,
+                $this = $($_this),
+                href = $this.data('href'),
+                msg = $this.data('msg');
+            href = href?href:$this.attr('href');
+            art.dialog({
+                title: false,
+                icon: 'question',
+                content:msg?msg: '确定要解锁吗？',
+                follow: $_this,
+                close: function () {
+                    $_this.focus();; //关闭时让触发弹窗的元素获取焦点
+                    return true;
+                },
+                okVal:"确定",
+                ok: function () {
+                	
+                    $.getJSON(href).done(function (data) {
+                        if (data.code==200) {
+                            reloadPage(window);
+                        } else if (data.code==400) {
+                            //art.dialog.alert(data.info);
+                        	//alert(data.info);//暂时处理方案
+			art.dialog({   
+				content: data.info,
+				icon: 'warning',  
+				ok: function () {   
+					this.title('操作失败！');   
+					return true;   
+				}
+			}); 
+                        }
+                    });
+                },
+                cancelVal: '关闭',
+                cancel: true
+            });
+        });
+
+    });
+}
+//删除操作，删除数据后刷新页面
+if ($('a.js-ajax-delete').length) {
+    Wind.use('artDialog', function () {
+        $('.js-ajax-delete').on('click', function (e) {
+            e.preventDefault();
+            var $_this = this,
+                $this = $($_this),
+                href = $this.data('href'),
+                msg = $this.data('msg');
+            href = href?href:$this.attr('href');
+            art.dialog({
+                title: false,
+                icon: 'question',
+                content:msg?msg: '确定要删除吗？',
+                follow: $_this,
+                close: function () {
+                    $_this.focus();; //关闭时让触发弹窗的元素获取焦点
+                    return true;
+                },
+                okVal:"确定",
+                ok: function () {
+                	
+                    $.getJSON(href).done(function (data) {
+                        if (data.code==200) {
+                            reloadPage(window);
+                        } else if (data.code==400) {
+                        	reloadPage(window);
+			art.dialog({   
+				content: data.info,
+				icon: 'warning',  
+				ok: function () {   
+					this.title('操作失败！');   
+					return true;   
+				}
+			}); 
+                        }
+                    });
+                },
+                cancelVal: '关闭',
+                cancel: true
+            });
+        });
+
+    });
+}
+</script>
+</body>
+</html>

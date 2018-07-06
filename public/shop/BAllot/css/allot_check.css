@@ -1,0 +1,11 @@
+.table tr th{
+            text-align:center;
+        }
+.ta {
+    overflow-x: auto;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.table-bordered th, .table-bordered td {
+    border-left: 1px solid #ddd;
+}

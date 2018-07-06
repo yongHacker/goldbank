@@ -1,0 +1,90 @@
+<businesstpl file="header" />
+<style>
+	a .fa{
+		text-decoration:none !important;
+		display: inline-block !important;
+		font-size: 16px !important;
+	}
+	.fa.fa-toggle-on,
+	.fa.fa-toggle-off{
+		text-decoration:none;
+		display: inline-block;
+		font-size:24px;
+
+	}
+	.fa.fa-toggle-on{
+		color:#2ecc71 !important;
+	}
+	.fa.fa-toggle-off{
+		color:#ccc !important;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BPayment/index')}">{:L('BUSINESS_BPAYMENT_INDEX')}</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BPAYMENT_EDIT')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BPayment/edit')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">门店：</label>
+					<div class="controls">
+						<select name="shop_id" disabled="disabled">
+							<!--<option value="-2" checked>全部</option>-->
+							<option value="0" <if condition="$data['shop_id'] eq '0' || $data['shop_id'] eq '0'"> selected="selected" </if>>总部</option>
+							<volist name="shop_list" id="v">
+								<option <if condition="$data['shop_id'] eq $v['id'] || $data['shop_id'] eq $v['id']"> selected="selected" </if> value="{$v.id}" >{$v.shop_name}
+								</option>
+							</volist>
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">收款方式名称</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="pay_name" value="{$data.pay_name}">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">收款费率</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="pay_fee" value="{$data.pay_fee}"> ‰
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">支付类型</label>
+					<div class="controls">
+						<if condition="$data['pay_type'] eq 1">
+							<label class="radio inline" for="active_false"><input type="radio" name="pay_type" value="0" id="active_false">门店收银</label>
+							<label class="radio inline" for="active_true"><input type="radio" name="pay_type" value="1" checked="" id="active_true">系统内支付</label>
+						<else/>
+							<label class="radio inline" for="active_false"><input type="radio" name="pay_type" value="0" checked="checked" id="active_false">门店收银</label>
+							<label class="radio inline" for="active_true"><input type="radio" name="pay_type" value="1"  id="active_true">系统内支付</label>
+						</if>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">是否启用</label>
+					<div class="controls">
+						<if condition="$data['status'] eq 1">
+							<label class="radio inline" for="active_true"><input type="radio" name="status" value="1" checked="" id="active_true">是</label>
+							<label class="radio inline" for="active_false"><input type="radio" name="status" value="0" id="active_false">否</label>
+							<else/>
+							<label class="radio inline" for="active_true"><input type="radio" name="status" value="1" id="active_true">是</label>
+							<label class="radio inline" for="active_false"><input type="radio" name="status" value="0"  checked="checked" id="active_false">否</label>
+						</if>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<input type="hidden" value="{$data['id']}" name="id">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('EDIT')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

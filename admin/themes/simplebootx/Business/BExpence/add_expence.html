@@ -1,0 +1,59 @@
+<style>
+    #expence_table input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    #expence_table input[type="number"] { -moz-appearance: textfield; text-align: right; }
+    #expence_table th { width: calc(50% - 30px); }
+    #expence_table th:last-child, #expence_table th:first-child { width: 60px; }
+    select[name="expence_id"] { width: 220px; }
+    input[name="expence_price"] { width: 220px; }
+</style>
+
+<div class="ta" id="expence_table">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="javascript:void(0);">其它费用</a></li>
+    </ul>
+    <table class="table table-bordered table-hover table-striped" >
+        <thead>
+            <tr>
+                <th class="text-center">序</th>
+                <th class="text-center">费用类目</th>
+                <th class="text-center">费用金额</th>
+                <th class="text-center">操作</th>
+            </tr>
+        </thead>
+        <tbody id="expence_tbody">
+            <notempty name="sub_list">
+                <volist name="sub_list" id="vo">
+		            <tr data-subid="{$vo.id}">
+		                <td class="text-center">{$key+1}</td>
+		                <td class="text-center">
+		            		<select name="expence_id">
+		                		<option value="0" checked>选择类目</option>
+		           				<volist name="expence_list" id="v">
+		                			<option value="{$v.id}" <if condition="$vo['expence_id'] == $v['id']">selected</if>>{$v.name}</option>
+					            </volist >
+				            </select>
+		                </td>
+		                <td class="text-center"><input type="number" name="expence_price" autocomplete="off" step="0.001" value="{$vo.cost}" placeholder="类目金额"></td>
+		                <td class="text-center" role="button"><a class="del fa fa-trash" title="删除"></a></td>
+		            </tr>
+                </volist>
+            </notempty>
+            <tr id="expence_last">
+                <td class="text-center">{:count($sub_list) + 1}</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center" id="expence_add" role="button"><a href="javascript:void(0);">+</a></td>
+            </tr>
+        </tbody>
+    </table>
+    <!--其它费用类目html-->
+    <div id="expence_html" hidden="hidden">
+        <select name="expence_id">
+            <option value="0" checked>选择类目</option>
+	        <volist name="expence_list" id="v">
+	            <option value="{$v.id}">{$v.name}</option>
+	        </volist >
+        </select>
+    </div>
+</div>
+<script src="__PUBLIC__/appertain/business/js/tool/add_expence.js"></script>

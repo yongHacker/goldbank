@@ -1,0 +1,361 @@
+<businesstpl file="header" />
+<style>
+.table {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.ta {
+	overflow-x: auto;
+	width: 100%;
+	margin-bottom: 20px;
+}
+.procure_info td{
+	border:none;
+}
+</style>
+
+<body class=" theme-blue">
+	<div class="wrap js-check-wrap">
+		<form class="well form-search" method="post" action="{:U('BProduct/product_detail')}">
+			货品编号: 
+			<input id="search_name" name="search_name" style="width: 100px;" value="{$_POST['search_name']}" placeholder="关键字查询" type="text">
+			<input class="btn btn-primary" value="搜索" type="submit">
+		</form>
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('Goods/goods_detail')}">基本信息</a></li>
+			<button type="button" onclick="history.go( -1 )" class="btn btn-primary" style="float: right">返回</button>
+		</ul>
+		<div class="main-content">
+			<if condition="$data neq ''">
+				<table class="table table-hover">
+					<tbody>
+					<volist name="product_detail" id="v" key="k">
+						<if condition="$k%3 eq 1"><tr></if>
+						<td style="border: none;" class="text-left">{$v.name}:{$v.value}</td>
+
+						<if condition="$k%3 eq 0"></tr></if>
+					</volist>
+					</tbody>
+				</table>
+			<!--<div class="ta">
+				<table class="table table-bordered  table-hover">
+					<thead>
+						<tr>
+							<th>序</th>
+							<th>仓库名</th>
+							<th>货品编号</th>
+							<th>重量(克)</th>
+							<th>含金量</th>
+							<th>商品名称</th>
+							&lt;!&ndash;<th>采购id</th>&ndash;&gt;
+							<th>质检编号</th>
+							<th>检索号</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="text-center">
+								<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+							</td>
+							<td>{$data.wh_name}</td>
+							<td class="text-center">{$data.product_code}</td>
+							<td class="text-right">{$data.weight}</td>
+							<td class="text-center">{$data['price_mode'] == '1'? $data['purity'] : '-'}</td>
+							<td>{$data.goods_name}</td>
+							&lt;!&ndash; <td>{$data.zcmc}</td> &ndash;&gt;
+							&lt;!&ndash; <td class="text-center">{$v.procurement_id}</td>&ndash;&gt;
+							<td class="text-center">{$data.qc_code}</td>
+							<td class="text-center">{$data.isd_num}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>-->
+			</if>
+			<if condition="$buydata">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="javascript:void(0);">采购信息</a></li>
+			</ul>
+			<div class="ta">
+				<table class="table procure_info table-hover">
+					<tbody>
+					<volist name="buydata" id="v">
+						<if condition="$v['type'] eq 1 && $v['pricemode'] eq 1">
+							<tr>
+								<td >供应商:{$v.company_name}</td>
+								<td >采购编号:{$v.procure_batch}</td>
+								<td >包裹编号:{$v.batch}</td>
+							</tr>
+							<tr>
+								<td >采购金价:{$v.gold_price}</td>
+								<td >采购工费:{$data.buy_m_fee}</td>
+								<td >总工费:{$v.batch}</td>
+							</tr>
+							<tr>
+								<td >证书费:{$data.p_certify_price}</td>
+								<td >附加费用:{$v.procure_batch}</td>
+								<td >采购人员:{$v.creator_name}</td>
+							</tr>
+							<tr>
+								<td >分称人员:{$v.storager_name}</td>
+								<td >状态:{$v.show_status}</td>
+								<td >采购日期: {$v['show_procure_time']}</td>
+							</tr>
+							<tr>
+								<td >创建日期:{$v['show_create_time']}</td>
+							</tr>
+							<tr>
+								<td colspan="3">备注:{$data['memo']}</td>
+							</tr>
+							<else/>
+							<tr>
+								<td >供应商:{$v.company_name}</td>
+								<td >采购编号:{$v.procure_batch}</td>
+								<td >包裹编号:{$v.batch}</td>
+							</tr>
+							<tr>
+								<td >采购金价:{$v.gold_price}</td>
+								<td >证书费:{$data.p_certify_price}</td>
+								<td >附加费用:{$data.extras}</td>
+							</tr>
+							<tr>
+								<td >成本价:{$data.cost_price}</td>
+								<td >标签价:{$data.sell_price}</td>
+								<td >采购人员:{$v.creator_name}</td>
+							</tr>
+							<tr>
+								<td >状态:{$v.show_status}</td>
+								<td >采购日期:{$v['show_procure_time']}</td>
+								<td >创建日期:{$v['show_create_time']}</td>
+							</tr>
+							<tr>
+								<td colspan="3">备注:{$data['memo']}</td>
+							</tr>
+						</if>
+					</volist>
+					</tbody>
+				</table>
+				<!--<table class="table table-bordered  table-hover">
+					<thead>
+					<tr>
+						<th class="text-center">序号</th>
+						<th class="text-center">货品分类</th>
+						<th class="text-center">包裹编号</th>
+						<th class="text-center">采购编号/供应商</th>
+						<th class="text-center">采购克重/实际克重</th>
+						<th class="text-center">秤差</th>
+						<th class="text-center">总工费</th>
+						<th class="text-center">采购人员</th>
+						<th class="text-center">分称人员</th>
+						<th class="text-center">包裹状态</th>
+						<th class="text-center">创建日期</th>
+						&lt;!&ndash;<th class="text-center">操作</th>&ndash;&gt;
+					</tr>
+					</thead>
+					<tbody>
+					<volist name="buydata" id="v">
+						<tr>
+							<td class="text-center">
+								<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1); ?>
+							</td>
+							<td class="text-center">{$v.show_type}</td>
+							<td class="text-center"><a href="{:U('BStorage/detail', array('id'=> $v['id']))}">{$v.batch}</a></td>
+							<td class="coded">
+								{$v.procure_batch} <br>
+								{$v.company_name}
+							</td>
+							<td class="coded text-right <?php if($v['diff_weight'] != 0){?>text-error<?php }?>">
+								{:numberformat($v[weight], 2, '.', ',')}g <br>
+								{:numberformat($v[real_weight], 2, '.', ',')}g
+							</td>
+							<td class="jhmc text-right <?php if($v['diff_weight'] != 0){?>text-error<?php }?>">{:numberformat($v['diff_weight'], 2, '.', ',')}g</td>
+							&lt;!&ndash; <td class="text-center">{$v.all_price}</td> &ndash;&gt;
+							<td class="text-right">{$v.price}</td>
+							<td class="jhmc">{$v.creator_name}</td>
+							<td class="clrq">{$v.storager_name}</td>
+							<td class="text-center">
+
+								<in name="v.p_status" value="2,3">
+									采购单{$p_status[$v['p_status']]}
+									<else />
+									{$v.show_status}
+								</in>
+							</td>
+							<td class="clrq text-center">{:date('Y-m-d H:i:s', $v['create_time'])}</td>
+						</tr>
+					</volist>
+					</tbody>
+				</table>-->
+			</div>
+			</if>
+			<if condition="$allotdata">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="javascript:void(0);">调拨信息</a></li>
+			</ul>
+			<div class="ta">
+				<table class="table table-bordered  table-hover">
+					<thead >
+					<tr>
+						<th class="text-center">序</th>
+						<th class="text-center">调拨单号</th>
+						<th class="text-center">入库仓库</th>
+						<th class="text-center">出库仓库</th>
+						<th class="text-center">调拨人</th>
+						<th class="text-center">调拨时间</th>
+						<th class="text-center">审核人</th>
+						<th class="text-center">审核时间</th>
+						<th class="text-center">出库人</th>
+						<th class="text-center">出库时间</th>
+						<th class="text-center">入库人</th>
+						<th class="text-center">入库时间</th>
+						<th class="text-center" style="width:140px;">状态</th>
+					</tr>
+					</thead>
+					<tbody>
+					<volist name="allotdata" id="v">
+						<tr>
+							<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+							<td class="text-center"><a href="{:U('BAllot/allot_index_detail',array('id'=>$v['id']))}">{$v.batch}</a></td>
+							<td>{$v.to_whname}</td>
+							<td>{$v.from_whname}</td>
+							<td>{$v.user_nicename}</td>
+							<td class="text-center">{:date('Y-m-d H:i:s',$v['create_time'])}</td>
+							<td>{$v.check_name}</td>
+							<td class="text-center"><if condition="$v['check_time']">{:date('Y-m-d H:i:s',$v['check_time'])}<else/></if></td>
+							<td>{$v.outbound_name}</td>
+							<td class="text-center"><if condition="$v['outbound_time']">{:date('Y-m-d H:i:s',$v['outbound_time'])}<else/></if></td>
+							<td>{$v.receipt_name}</td>
+							<td class="text-center"><if condition="$v['receipt_time']">{:date('Y-m-d H:i:s',$v['receipt_time'])}<else/></if></td>
+							<td class="text-center">
+								{$allot_status[$v['status']]}
+							</td>
+						</tr>
+					</volist>
+					</tbody>
+				</table>
+			</div>
+			</if>
+			<if condition="$selldata">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="javascript:void(0);">销售信息</a></li>
+			</ul>
+			<div class="ta">
+				<table class="table table-bordered  table-hover">
+					<thead>
+					<tr >
+						<th>序</th>
+						<th>销售单号</th>
+						<th>销售员</th>
+						<th>会员姓名</th>
+
+						<th>销售总价</th>
+						<th>销售时间</th>
+						<th>制单时间</th>
+						<th>状态</th>
+					</tr>
+					</thead>
+					<volist name="selldata" id="v">
+						<tr id="del_{$v.order_id}">
+							<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+							<td class="text-center"><a href="{:U('BSell/index_detail',array('id'=>$v['id']))}">{$v.order_id}</a></td>
+							<td class="text-left"><if condition="$v['realname']">{$v['realname']}<else/>{$v['user_nicename']}</if></td>
+							<if condition='$v.buy_name eq "贵宾"'>
+								<td class="text-left">{$v.shop_name}<if condition="$v['buy_realname']">{$v['buy_realname']}<else/>{$v['buy_name']}</if></td>
+								<else />
+								<td class="text-left"><if condition="$v['buy_realname']">{$v['buy_realname']}<else/>{$v['buy_name']}</if></td>
+							</if>
+							<td class="text-right">{$v['real_sell_price']}</td>
+							<td class="text-center">{$v.sell_time|date="Y-m-d H:i:s",###}</td>
+							<td class="text-center">
+								{$v.create_time|date="Y-m-d H:i:s",###}
+							</td>
+							<td class="text-center">
+								{$sell_status[$v['status']]}
+							</td>
+						</tr>
+					</volist>
+				</table>
+			</div>
+			</if>
+			<if condition="$cutdata">
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="javascript:void(0);">截金信息</a></li>
+				</ul>
+				<div class="ta">
+					<table class="table table-bordered  table-hover">
+						<thead>
+						<tr >
+							<th>序</th>
+							<th>金料编号</th>
+							<th>截金总重</th>
+							<th>截金金价</th>
+							<th>服务克工费</th>
+							<th>纯度(‰)</th>
+							<th>抵扣费用</th>
+						</tr>
+						</thead>
+							<tr >
+								<td class="text-center">1</td>
+								<td class="text-left">{$cutdata['rproduct_code']}</td>
+								<td class="text-right">{$cutdata['gold_weight']}</td>
+								<td class="text-right">{$cutdata['recovery_price']}</td>
+								<td class="text-right">{$cutdata['service_fee']}</td>
+								<td class="text-right">{$cutdata['purity']*1000}</td>
+								<td class="text-right">{$cutdata['cost_price']}</td>
+							</tr>
+					</table>
+				</div>
+			</if>
+			<if condition="$outbounddata">
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="javascript:void(0);">出库信息</a></li>
+				</ul>
+				<div class="ta">
+					<table class="table table-bordered  table-hover">
+						<thead >
+						<tr>
+							<th>序</th>
+							<th>单号</th>
+							<th>类型</th>
+							<th>制单人</th>
+							<th>制单时间</th>
+							<th>审核人</th>
+							<th>审核时间</th>
+							<th style="width:140px;">状态</th>
+						</tr>
+						</thead>
+						<tbody>
+						<volist name="outbounddata" id="v">
+							<tr>
+								<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+								<td class="text-center"><a href="{:U('BOutboundOrder/index_detail',array('id'=>$v['id']))}">{$v.batch}</a></td>
+								<td>{$v['type']==1?'销售':'异常'}</td>
+								<td>{$v.user_nicename}</td>
+								<td class="text-center">{:date('Y-m-d H:i:s',$v['create_time'])}</td>
+								<td>{$v.check_name}</td>
+								<td class="text-center"><if condition="$v['check_time']">{:date('Y-m-d H:i:s',$v['check_time'])}<else/></if></td>
+								<td class="text-center">
+									 {$outbound_status[$v['status']]}
+								</td>
+							</tr>
+						</volist>
+						</tbody>
+					</table>
+				</div>
+			</if>
+		</div>
+		<include file="./Application/Home/View/Public/footer.html" />
+	</div>
+	<!--
+		<iframe style="width:100%;height:100%" frameborder="0" class="appiframe" src="{:U('Goods/allot_detail',array('search_name'=>$_POST['search_name']))}" id="allot_detail" name="allot_detail">
+		</iframe>
+	-->
+	<script type="text/javascript">
+		//注意：下面的代码是放在和iframe同一个页面中调用
+		$("#allot_detail").load(function() {
+			var mainheight = $(this).contents().find("body").height() + 30;
+			$(this).height(mainheight);
+		});
+	</script>
+</body>

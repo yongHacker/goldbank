@@ -1,0 +1,56 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BRecovery/css/setting.css">
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<!--<li><a href="{:U('BBankGold/index')}">{:L('BUSINESS_BBANKGOLD_INDEX')}</a></li>-->
+			<li class="active"><a href="{:U('BRecovery/setting')}">{:L('SHOP_BRECOVERY_SETTING')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BRecovery/setting')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">截金金价</label>
+					<div class="controls">
+						<select name="cut_bg_id"  >
+							<option value="0">选择截金金价</option>
+							<volist name="gold_type" id="v">
+								<option value="{$v.bg_id}" <if condition="$data['cut_bg_id'] eq $v['bg_id']">selected=selected</if>>{$v.name}</option>
+							</volist>
+						</select>*
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">回购金价</label>
+					<div class="controls">
+						<select name="recovery_bg_id"  >
+							<option value="0">选择回购金价</option>
+							<volist name="gold_type" id="v">
+								<option value="{$v.bg_id}" <if condition="$data['recovery_bg_id'] eq $v['bg_id']">selected=selected</if>>{$v.name}</option>
+							</volist>
+						</select>*
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">当前金价</label>
+					<div class="controls">
+						<select name="bg_id"  >
+							<option value="0">选择当前金价</option>
+							<volist name="gold_type" id="v">
+								<option value="{$v.bg_id}" <if condition="$data['bg_id'] eq $v['bg_id']">selected=selected</if>>{$v.name}</option>
+							</volist>
+						</select>*
+					</div>
+				</div>
+
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script src="__PUBLIC__/shop/BRecovery/js/setting.js"></script>

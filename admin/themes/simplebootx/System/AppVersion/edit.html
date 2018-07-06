@@ -1,0 +1,108 @@
+<systemtpl file="header" />
+</head>
+<body>
+<div class="wrap">
+	<ul class="nav nav-tabs">
+		<li <if condition="$setting_url eq 'appversion_index'"> class="active"</if>><a href="{:U('AppVersion/index')}">{:L('SYSTEM_APPVERSION_INDEX')}</a></li>
+		<if condition="$setting_url eq 'appversion_edit'">
+			<li <if condition="$setting_url eq 'appversion_edit'"> class="active"</if>><a href="javascript:void(0)">{:L('SYSTEM_APPVERSION_EDIT')}</a></li>
+			<else/>
+			<li <if condition="$setting_url eq 'appversion_add'"> class="active"</if>><a href="{:U('AppVersion/add')}">{:L('SYSTEM_APPVERSION_ADD')}</a></li>
+		</if>
+		<!--<li <if condition="$setting_url eq 'setting_procure_setting'"> class="active"</if>><a href="{:U('Setting/procure_setting')}">{:L('SYSTEM_SETTING_PROCURE_SETTING')}</a></li>-->
+	</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('AppVersion/edit')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">类型</label>
+					<div class="controls">
+						<select name="app_type">
+							<option value="1" <if condition="$data['app_type'] eq 1">selected=selected</if>>IOS</option>
+							<option value="2" <if condition="$data['app_type'] eq 2">selected=selected</if>>Android</option>
+						</select>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">版本:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="app_version" id="app_version" value="{$data.app_version}">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">下载地址:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="address" id="address" value="{$data.app_address}">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">更新内容:</label>
+					<div class="controls">
+						<textarea type="text" name="update_content" id="update_content" value="{$data['update_content']}">{$data['update_content']}</textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">是否强制更新:</label>
+					<div class="controls">
+						<select name="update_status">
+							<option value="1" <if condition="$data['update_status'] eq 1">selected=selected</if> >是</option>
+							<option value="0" <if condition="$data['update_status'] eq 0">selected=selected</if> >否</option>
+						</select>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态:</label>
+					<div class="controls">
+						<select name="status">
+							<option value="0" <if condition="$data['status'] eq 0">selected=selected</if>  >不启用</option>
+							<option value="1" <if condition="$data['status'] eq 1">selected=selected</if>  >启用</option>
+						</select>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<input type="hidden" name="id" id="id" value="{$data.id}">
+				<p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+				<a class="btn js-ajax-back-btn">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script>
+	
+	$('.js-ajax-submit').unbind().click(function(){
+		var value=$('input[name=app_version]').val();
+		
+		if(empty(value)){
+			error_appear('请填版本号');
+			return false;
+		}
+		var update_content=$('input[name=update_content]').val();
+
+//		if(empty(update_content)){
+//			error_appear('请更新内容');
+//			return false;
+//		}
+		$.ajax({
+			url:$('form').attr('action'),
+			data:$(".js-ajax-form").serialize(),
+			type:'post',
+			dataType:'json',
+			success:function(result){
+				if(result.status==1){
+					error_appear('操作成功！');
+					setTimeout(function(){location.href=result.url},800);
+				}else if(result.status==0){
+					error_appear(result.msg);
+				}
+			}
+		});
+		
+	});
+	</script>
+</body>
+</html>

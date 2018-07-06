@@ -1,0 +1,238 @@
+<businesstpl file="header" />
+<style>
+.js-check-wrap>form, .js-check-wrap>form>table { margin-bottom: 10px;}
+.my_page { text-align: left;}
+.my_page a { position: relative; padding: 6px 12px; margin-left: -1px; line-height: 1.42857143; color: #428bca; text-decoration: none; background-color: #fff; border: 1px solid #ddd;}
+.my_page span { position: relative; padding: 6px 12px; margin-left: -1px; line-height: 1.42857143; color: #fff; text-decoration: none; background-color: #6f80a1; border: 1px solid #ddd;}
+.my_page li { margin-top: 10px; display: none;}
+.table tr th { text-align: center;}
+input { width: 163px; margin-bottom: 0px;}
+.table { text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.ta { overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta td { position: relative;}
+.ta input { width: 177px; margin-bottom: 0px; border: none; border-bottom: 0px; padding: 8px 0; box-shadow: none; border-radius: none; width: 90%; text-align: center;}
+.ta input:focus { box-shadow: none; outline: none;}
+.td_border { border: solid 1px #157ab5;}
+.select_goods { display: inline-block; background: #fff url('public/images/icon-select.gif') no-repeat scroll  55% 55%; width: 10%; height: 36px; position: absolute; top: 0; right: 0;}
+tr td img { width: 200px; height: 60px;}
+input.left { text-align: left;}
+input.right { text-align: right;}
+td.left { text-align: left;}
+td.right { text-align: right;}
+.myModal { display: block; position: absolute; width: 100%; height: 100%; left: 0; top: 0; line-height: 35px;}
+.sel { background: #f4f4f4;}
+.click_pic img { width: 80px; height: 80px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;}
+.aui_content img { width: auto; height: auto;}
+.click_pic { display: inline-block; margin-right: 4px;}
+</style>
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class=" theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BProcure/index')}">采购列表</a></li>
+			<li class="active"><a href="#">采购单详情</a></li>
+			<span style="float: right"> <if condition='$info.status eq 0 && get_user_id() eq $info["creator_id"]'>
+				<a class="btn btn-danger del" href="#myModal" name="{$info.id}" class="del" role="button" data-toggle="modal">撤销</a> </if>
+				<button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			</span>
+		</ul>
+
+		<table class="table table-bordered table-hover">
+			<tbody>
+				<tr>
+					<td class="sel" width="20%">供应商</td>
+					<td width="30%">{$info['company_name']}</td>
+					<td class="sel" width="20%">采购日期</td>
+					<td width="30%">{:date('Y-m-d', $info['procure_time'])}（创建日期：{:date('Y-m-d', $info['create_time'])}）</td>
+				</tr>
+				<tr>
+					<td class="sel">采购金额</td>
+					<td>
+						{:numberformat($info['price'], 2, '.', ',')}元
+						<if condition="$info['extra_price'] neq '0'">&nbsp;&nbsp;（抹零金额：{:numberformat($info['extra_price'], 2, '.', ',')}元）</if>
+					</td>
+					<td class="sel">采购件数</td>
+					<td>{$info['num']} 件</td>
+				</tr>
+				<tr>
+					<td class="sel">采购总金额</td>
+					<td>
+						{:numberformat($info['fee'], 2, '.', ',')}元
+						<if condition="$info['extra_price'] neq '0'">&nbsp;&nbsp;（抹零金额：{:numberformat($info['extra_price'], 2, '.', ',')}元）</if>
+					</td>
+					<td class="sel">采购总克重</td>
+					<td>{$info['weight']} 克 （折纯总重 {$info['gold_weight']}）</td>
+				</tr>
+				<tr>
+					<td class="sel">采购单号</td>
+					<td>{$info['batch']}</td>
+					<td class="sel">状态</td>
+					<td>{$info.show_status}</td>
+				</tr>
+				<tr id="tr_bill">
+					<td class="sel">备注</td>
+					<td colspan="3">{$info.memo}</td>
+				</tr>
+				<tr>
+					<td class="sel">发票图片</td>
+					<td colspan="3">
+						<if condition="$info[bill_pic] neq ''">
+						<volist name="info.bill_pic_list" id="v">
+						<p class="click_pic">
+							<img src="{$v}">
+						</p>
+						</volist>
+						</if>
+					</td>
+				</tr>
+				<tr>
+					<td class="sel">审核备注</td>
+					<td colspan="3">{$info.check_memo}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="main-content">
+			<div class="ta">
+				<if condition="$sub_list">
+				<p>其它费用</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">费用类目</th>
+							<th class="text-center">费用金额</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<volist name="sub_list" id="v">
+						<tr>
+							<td class="text-center">
+								<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+							</td>
+							<td class="text-center">{$v.name}</td>
+							<td class="text-center">{$v.cost}</td>
+						</tr>
+						</volist>
+					</tbody>
+				</table>
+				</if>
+				<businesstpl file="process" />
+				<if condition="$stroage_list">
+				<p>包裹信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">商品大类</th>
+							<th class="text-center">包裹编号</th>
+							<th class="text-center">采购金价</th>
+							<th class="text-center">采购克重</th>
+							<th class="text-center">折纯克重</th>
+							<th class="text-center">采购工费/克</th>
+							<th class="text-center">总工费</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<volist name="stroage_list" id="v">
+						<tr>
+							<td class="text-center">
+								<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+							</td>
+							<td class="text-left">{$v.class_name}<notempty name="v['show_type']">({$v.show_type})</notempty></td>
+							<td class="text-center">{$v.batch}</td>
+							<td class="text-right">{$v.gold_price}</td>
+							<td class="text-right">{$v.weight}</td>
+							<td class="text-right">{$v.gold_weight}</td>
+							<td class="text-right">{$v.fee}</td>
+							<td class="text-right">{$v.price}</td>
+						</tr>
+						</volist>
+					</tbody>
+				</table>
+				</if>
+				
+				<businesstpl file="operate" />
+
+				<div></div>
+
+				<div class="form-actions text-center">
+					<if condition='$info.status eq 0 && get_user_id() eq $info["creator_id"]'>
+					<a class="btn btn-danger del" href="#myModal" name="{$info.id}" class="del" role="button" data-toggle="modal">撤销</a> </if>
+					<button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog-div">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h3 id="myModalLabel">取消警告</h3>
+				</div>
+				<div class="modal-body">
+					<p class="error-text">
+						<i class="fa fa-warning modal-icon"></i>你确定要撤销吗?
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+					<button id="del" class="btn btn-danger" data-dismiss="modal">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/js/jquery-form.js"></script>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+
+	<script>
+		$(function() {
+			setUser();
+			initPicReview();
+		});
+
+		function initPicReview() {
+			$('.click_pic').unbind('click').click(function() {
+				var img_url = $(this).find('img').attr('src');
+				image_preview_dialog(img_url);
+			})
+		}
+
+		function setUser() {
+			$(".del").each(function(index, obj) {
+				$(this).unbind().click(function() {
+					var id = $(this).attr('name');
+					delUser(id);
+				})
+			});
+		}
+		function delUser(id) {
+			$('#myModal').find('button').each(function(index, element) {
+				$(this).unbind().click(function() {
+					if ($(this).attr('id') == 'del') {
+						$.ajax({
+							url : "{:U('BProcure/detail')}",
+							type : 'post',
+							data : {
+								id : id
+							},
+							success : function(data) {
+								if (data.status == 1) {
+									self.location = document.referrer;
+								} else {
+									alert(data.msg);
+								}
+							}
+						})
+					}
+				})
+			});
+		}
+	</script>
+
+	<include file="./Application/Home/View/Public/footer.html" />

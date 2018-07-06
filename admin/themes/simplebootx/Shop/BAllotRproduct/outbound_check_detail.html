@@ -1,0 +1,30 @@
+<shoptpl file="header" />
+<body class="theme-blue" >
+<div class="wrap js-check-wrap"  >
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('outbound_check_detail')}">{:L(MODULE_NAME.'_BALLOT_OUTBOUND_CHECK_DETAIL')}</a></li>
+        <span style="float:right">
+            <p  class="btn btn-danger js-ajax-submit" data-type="-2" >驳回</p>
+        <p  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</p>
+        <p  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</p>
+            <button type="button" onclick="history.go( -1 )" class="btn  " >返回</button>
+        </span>
+    </ul>
+    <shoptpl file="BAllotRproduct/detail_tpl" />
+    <div class="form-actions text-center">
+        <input type="hidden" value="{$allocation.id}" id="id"/>
+        <p  class="btn btn-danger js-ajax-submit" data-type="-2" >驳回</p>
+        <p  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</p>
+        <p  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</p>
+        <a class="btn" href="javascript:history.back(-1);">返回</a>
+        <span class="tips_error"></span>
+
+    </div>
+    <include file="./Application/Home/View/Public/footer.html" />
+</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script src="__PUBLIC__/js/shop_common.js"></script>
+<script src="__PUBLIC__/shop/BAllotRproduct/js/outbound_check_detail.js"></script>
+</body>
+

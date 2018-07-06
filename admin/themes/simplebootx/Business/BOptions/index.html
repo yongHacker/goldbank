@@ -1,0 +1,59 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BOptions/index')}">{:L('BUSINESS_BOPTIONS_INDEX')}</a></li>
+			<li><a href="{:U('BOptions/add')}">{:L('BUSINESS_BOPTIONS_ADD')}</a></li>
+		</ul>
+        <form class="well form-search" method="post" action="{:U('BOptions/index')}">
+            综合搜索:
+            <input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="键名/键值/备注">
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:U('BOptions/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<!--<th width="50">ID</th>-->
+					<th width="50">序</th>
+					<th>键名</th>
+					<th>键值</th>
+					<th>修改时间</th>
+					<th>备注</th>
+					<th>修改者</th>
+					<th>是否启用</th>
+					<th width="120">{:L('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<php>$user_statuses=array("0"=>L('USER_STATUS_BLOCKED'),"1"=>L('USER_STATUS_ACTIVATED'),"2"=>L('USER_STATUS_UNVERIFIED'));</php>
+				<foreach name="list" item="vo">
+				<tr>
+					<!--<td>{$vo.id}</td>-->
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td>{$vo.option_name}</td>
+					<td>{$vo.option_value}</td>
+					<td class="text-center">
+						{:date('Y-m-d H:i:s',$vo['update_time'])}
+					</td>
+					<td>{$vo.memo}</td>
+					<td>{$vo.user_id}</td>
+					<td  class="text-center">{$vo['status']==1?"是":"否"}</td>
+					<td class="text-center" id="con">
+						<a href='{:U("BOptions/edit",array("option_id"=>$vo["option_id"]))}' title="编辑" name="113" class="edit fa fa-edit"></a>
+						<a href="{:U('BOptions/deleted',array('option_id'=>$vo['option_id']))}" class="delete js-ajax-delete fa fa-trash" role="button" title="删除" data-toggle="modal"></a>
+					</td>
+					<!--<td>
+						<a href='{:U("BOptions/edit",array("option_id"=>$vo["option_id"]))}'>{:L('EDIT')}</a> |
+						<a class="js-ajax-delete" href="{:U('BOptions/deleted',array('option_id'=>$vo['option_id']))}">{:L('DELETE')}</a>
+					</td>-->
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

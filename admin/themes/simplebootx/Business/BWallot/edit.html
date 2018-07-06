@@ -1,0 +1,446 @@
+<businesstpl file="header" />
+<style type="text/css">
+    .table .search_input{
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+    #mobile{
+        margin:8px 5px;
+        text-indent: 20px;
+    }
+    .myModal3.leave{
+        position: absolute;
+        top:12px;
+        left:15px;
+        font-size: 14px;
+    }
+    .ta select,.ta input{
+        width: 90%;
+    }
+</style>
+</head>
+<body class=" theme-blue">
+<div class="wrap js-check-wrap"  >
+    <ul class="nav nav-tabs">
+        <!--<li><a href="{:U('sells/index')}">调拨列表</a></li>-->
+        <li class="active"><a href="#">{:L('BUSINESS_BWALLOT_EDIT')}</a></li>
+    </ul>
+    <table class="table table-bordered" id="order_base">
+        <tr>
+            <td style="background-color:#f5f5f5">发货仓库</td>
+            <td>{$allocation['from_whname']}</td>
+            <td style="background-color:#f5f5f5">日期</td>
+            <td>{:date('Y-m-d ',$allocation['create_time'])}</td>
+        </tr>
+        <tr>
+            <td style="background-color:#f5f5f5">收货仓库</td>
+            <td>
+                <select id="store" name="store" data-live-search="true">
+                    <option value="0" checked>选择仓库</option>
+                    <volist name="wh_data" id="v">
+                        <if condition="$v['id'] neq $allocation['from_id']">
+                            <option value="{$v.id}" in_user="{$v.user_nicename}"  <if condition="$v['id'] eq $allocation['to_id']">selected=selected</if>>{$v.wh_name}</option>
+                        </if>
+
+                    </volist >
+                </select>
+            </td>
+            <td class="sel" style="background-color:#f5f5f5">备注</td>
+            <td width="25%" ><textarea type="text" id="remark">{$allocation['memo']}</textarea></td>
+        </tr>
+    </table>
+    <div class="main-content" >
+        <div class="ta" id="order_product" style="overflow-x: auto;">
+            <table class="table table-bordered  table-hover" >
+                <thead >
+                <tr>
+                    <th>序</th>
+                    <th style="width: 160px;">品目编号</th>
+                    <th>品目</th>
+                    <th>规格</th>
+                    <!-- <th style="width: 80px;">售价单价</th>-->
+                    <th style="width: 80px;">调拨量</th>
+                    <th style="width: 80px;">计量单位</th>
+                    <!-- <th style="width: 80px;">工费</th>
+                     <th style="width: 80px;">单品优惠</th>
+                     <th style="width: 80px;">调拨价</th>-->
+                    <th>计价方式</th>
+                    <th hidden="hidden">id</th>
+                    <th >操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                <volist name="list" id="v">
+                    <tr old_data="old_data" id="zz">
+                        <td class="text-center"></td>
+                        <td class="text-left">{$v.goods_name}</td>
+                        <td class="">{$v.goods_code}</td>
+                        <td class="">{$v.goods_spec}</td>
+                        <td class="num_stock"><input class ="num_stock" num_stock="{$v.num_stock}" type="text" name="num_stock" value='{$v.goods_stock}'></td>
+                        <td>{$v.goods_unit}</td>
+                        <td class="text-center">{$v['sell_pricemode']==1?'计重':'计件'}</td>
+                        <td class="wgoods_stock_id" hidden ="hidden"><input id ="wgoods_stock_id" type="text" value='{$v.wgoods_stock_id}'></td>
+                        <td class="warehouse_id" hidden ="hidden"><input id ="warehouse_id" type="text" value='{$v.warehouse_id}'></td>
+                        <td class="goods_id" hidden ="hidden"><input id ="pid" type="text" value='{$v.goods_id}'></td>
+                        <td class="text-center">
+                            <a href="javascript:void(0);" name="{$v.id}" class="del2" role="button" data-toggle="modal">删除</i></a>
+                        </td>
+
+                    </tr>
+                </volist>
+                <tr id="last">
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <!--<td class="text-center"></td>-->
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <!--   <td class="text-center"></td>
+                       <td class="text-center"></td>
+                       <td class="text-center"></td>-->
+                    <td class="text-center myModal2 on" href="#myModal2" style="cursor:pointer;" data-toggle="modal" role="button"><a href="javascript:void(0);">+</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="form-actions">
+            <div class="center-block" style="width:260px; margin: 0 auto;">
+                <button type="button" class="btn btn-primary baocun" data-type="add">保存</button>
+                <button type="button" class="btn btn-primary baocun" data-type="submit">提交</button>
+                <div class="tishi" style="color: red;"></div>
+            </div>
+        </div>
+                <div class="modal small fade" style="width:80%;left:400px;top:2%;bottom: 2%;display:none" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">货品列表</b>
+                            </div>
+                            <div class="modal-body" style="max-height: 500px;padding: 0px;margin:0px">
+                                <iframe  frameborder="0" class="appiframe" src="{:U('BWallot/product_list',array('mystore'=>$allocation['from_id']))}" id="goods_index" name="goods_index">
+
+                                </iframe>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="check" class="btn btn-primary pull-left" >选中</button>
+                                <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                                <button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+                <script src="__PUBLIC__/js/common.js"></script>
+                <script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+                <script type="text/javascript">
+                    localStorage.removeItem('p_id');
+                    $("tr[old_data='old_data']").each(function(){
+                        var p_id=$(this).find(".wgoods_stock_id").find("input").val();
+                        var checked=localStorage.getItem('p_id');
+                        checked+=","+"ck"+p_id+"ck";
+                        localStorage.setItem('p_id',checked);
+                    });
+                    $("#myModal3").on("shown.bs.modal",function () {
+                        $("#goods_index2").contents().find("#mobile").focus();
+                    })
+                    var tr_order=1;
+                    table_order();
+                    function table_order(){
+                        var len = $(".ta").find('table tr').length;
+                        for(var i = 1;i<len;i++){
+                            $(".ta").find('table tr:eq('+i+') td:first').text(i);
+                        }
+                        count_num();
+                    }
+                    function del(){
+                        $(".del").click(function(){
+                            tr.remove();
+                        });
+                    }
+                    function del_input(){
+                        //删除tr
+                        $(".del").each(function(){
+                            $(this).click(function(){
+                                var tr=$(this).parent().parent();
+                                tr.remove();
+                                table_order();
+                                var price = tr.find('.goods_unit_price').find('input').val();
+                                var count = $('#count').val();
+                                if(price){
+                                    if(count !='' && count != NaN){
+                                        count2 =(parseFloat(count)-parseFloat(price)).toFixed(2);
+                                    }
+                                }
+                                $('#count').val(count2);
+                                $('#total_price').val(count2);
+                                var checked=localStorage.getItem('p_id');
+                                var p_id=tr.find(".wgoods_stock_id").find("input").val();
+                                checked=checked.replace("ck"+p_id+"ck","");
+                                localStorage.setItem('p_id',checked);
+                                //删除后将图片换回复选框
+                                var html=$('#goods_index').contents();
+                                var img=html.find(".ta").find("tbody img[p_id='ck"+p_id+"ck']");
+                                var checkbox=html.find(".ta").find("tbody input[p_id='ck"+p_id+"ck']");
+                                checkbox.show();
+                                checkbox.prop('checked',false);
+                                img.remove();
+                            });
+                        });
+                    }
+                    num_stock();
+                    function num_stock(){
+                        $("input[class='num_stock']").unbind('keyup').keyup(function(){
+                            if(parseFloat($(this).attr("num_stock"))<parseFloat($(this).val())){
+                                artdialog_alert("调拨量不能大于库存量！");
+                            }
+                            if(parseFloat($(this).val())<=0){
+                                artdialog_alert("调拨量不能为空！");
+                            }
+                        })
+                    }
+                    $("#myModal2").draggable();
+                    $("#myModal3").draggable();
+                    $("#tr_add").click(function(){
+                        var s=$("#last_tr").prev().find(".goods_order").text();
+                        var ss=parseInt(s)+1;
+                        var html="";
+                        html+="<tr>";
+                        html+=$("#tr_info").html();
+                        html+="</tr>";
+                        $("#last_tr").before(html);
+                        $("#last_tr").prev().find(".goods_order").text(ss);
+                        table_order();
+                        myModal2();
+                        del_input();
+                    });
+                    $('#goods_index').load(function () {
+                        $("#check").unbind('click').click(function(){
+                            var html=$('#goods_index').contents();
+                            var tr=html.find("input[class='goods_input']:checked").parent().parent();
+                            var tr2=$(this).parent().parent();
+                            tr.each(function(){
+                                if ($(this).find("td:nth-child(1)").find("img").length > 0) {
+
+                                }else{
+                                    var s=$("#last_tr").prev().find(".goods_order").text();
+                                    var ss=parseInt(s)+1;
+                                    var p_id=$(this).find(".goods_id_code").find("input").attr("p_id");
+                                    var checked=localStorage.getItem('p_id');
+                                    checked+=","+p_id;
+                                    localStorage.setItem('p_id',checked);
+                                    var goods_way=$(this).find(".goods_way").text();
+                                    var html="";
+                                    html+="<tr id='zz' class='' gold_price='"+$(this).attr('gold_price')+"' gold_type='"+$(this).attr('gold_type')+"'>";
+                                    html+='<td class="goods_order text-center" >'+$(this).find(".goods_order").text()+'</td>';
+                                    html+=' <td class="goods_code ">'+$(this).find(".goods_code").text()+'</td>';
+                                    html+=' <td class="goods_name ">'+$(this).find(".goods_name").text()+'</td>';
+                                    // html+=' <td class="goods_purity text-center">'+$(this).find(".goods_purity").text()+'</td>';
+                                    html+=' <td class="goods_spec ">'+$(this).find(".goods_spec").text()+'</td>';
+                                    html+=' <td class="num_stock"><input class ="num_stock" num_stock="'+$(this).find(".goods_stock").text()+
+                                            '" type="text" name="num_stock" value='+1.000000+'></td>';
+                                    html+=' <td class="goods_unit text-center">'+$(this).find(".goods_unit").text()+'</td>';
+
+                                    html+='<td class="jijia text-center">'+goods_way+'</td>';
+                                    html+='<td class="wgoods_stock_id" hidden ="hidden"><input id ="wgoods_stock_id" type="text" value='+$(this).find(".wgoods_stock_id").text()+'></td>';
+                                    html+='<td class="warehouse_id" hidden ="hidden"><input id ="warehouse_id" type="text" value='+$(this).find(".warehouse_id").text()+'></td>';
+                                    html+='<td class="goods_id" hidden ="hidden"><input id ="pid" type="text" value='+$(this).find(".goods_id").text()+'></td>';
+                                    html+='<td class="text-center">'
+                                    html+='<a href="javascript:void(0);" name="{$v.id}"  class="del" role="button" data-toggle="modal">删除</i></a>';
+                                    html+='</td>';
+                                    html+='</tr>';
+                                    $("#last").before(html);
+                                }
+                            });
+                            //刷新页面读取已勾选数据
+                            var check=localStorage.getItem('p_id');
+                            if(check!=""&&check!=null&&typeof(check)!="undefined"){
+                                var checked=check.split(',');
+                                for(var i in checked){
+                                    if(checked[i]!=null&&checked[i]!=""&&typeof(checked[i])!="undefined"){
+                                        var checkbox=tr.find("input[p_id='"+checked[i]+"']");
+                                        var imglength=checkbox.parent().find("img").length;
+                                        if(checkbox.length>0&&imglength==0){
+                                            var img= "<img p_id='"+checked[i]+"' src='__PUBLIC__/images/gou.png'/>";
+                                            checkbox.parent().append(img);
+                                            checkbox.prop('checked',false);
+                                            checkbox.hide();
+                                        }
+                                    }
+                                }
+                            }
+                            table_order();
+                            myModal2();
+                            del_input();
+                            del();
+                            num_stock();
+                        })
+                        $("#add").unbind('click').click(function(){
+                            $("#check").trigger("click");
+                        })
+                    });
+                    function myModal2(){
+                        $('.myModal2').each(function () {
+                            $(this).click(function(){
+                                $(".myModal2.on").removeClass("on");
+                                $(this).addClass("on");
+                                if(!this.hasClass("on")){
+
+                                }
+                            })
+
+                        })
+                    }
+                    function save(){
+                        $(".baocun").click(function(){
+                            var data_type=$(this).attr("data-type");
+                            var names = [];
+                            var tr= $(".ta").find('table tbody tr[id="zz"]');
+                            var order=new Object();
+                            order.allot_id="{$allocation['id']}";
+                            order.add_status=$(this).data('type');
+                            order.create_time=$('#create_time').val();
+                            order.remark=$("#remark").val();
+                            order.mystore=$("select[name='mystore']").val();
+                            order.store=$("select[name='store']").val();
+                            tr.each(function(){
+                                var wgoods_stock_id=$(this).find(".wgoods_stock_id").find('input').val();
+                                if(wgoods_stock_id){
+                                    var warehouse_id=$(this).find(".warehouse_id").find('input').val();
+                                    var wgoods_stock_id=$(this).find(".wgoods_stock_id").find('input').val();
+                                    var id=$(this).find(".goods_id").find('input').val();
+                                    var jjfs =$(this).find(".jijia").text();
+                                    var num_stock=$(this).find("input[name='num_stock']").val();
+                                    var gold_type=$(this).attr('gold_type');
+                                    var detail_id=$(this).find('.del2').attr("name");
+                                    if(id){
+                                        names.push({
+                                            'id': id,
+                                            'allot_detail_id': detail_id,
+                                            'warehouse_id':warehouse_id,
+                                            'wgoods_stock_id':wgoods_stock_id,
+                                            'sell_pricemode': jjfs,
+                                            'num_stock': num_stock,
+                                            gold_type: gold_type
+                                        });
+                                    }
+                                }
+                            })
+                            console.log(names);
+                            if(names.length<1){
+                                //	alert("请选择需要调拨的货品");
+                                $('.tishi').html('请选择需要调拨的货品');
+                                return false;
+                            }
+                            names=JSON.stringify(names);
+                            tr.each(function(){
+                                var id=$(this).find(".goods_id").find('input').val();
+                                if(id){
+                                    if(!$(this).find(".num_stock").find('input').val()){
+                                        $('.tishi').html('调拨量不能为空');
+                                        return false;
+                                    }
+                                }
+                            })
+                            $.ajax({
+                                url: "{:U('BWallot/edit')}",
+                                type: 'post',
+                                async: false,
+                                data: {order:order,order_detail:eval(names)},
+                                beforeSend:function(){
+                                    $(".baocun").attr("disabled",true);
+                                },
+                                success: function (data) {
+                                    if(data.status==1){
+                                        $('.tishi').html('添加成功');
+                                        if(data_type=="submit"){
+                                            location.href=data.url;
+                                        }
+                                    }else if(data.status==0){
+                                        $('.tishi').html(data.msg);
+                                        $(".baocun").attr("disabled",false);
+                                        return false;
+                                    }
+                                },error: function (data,status) {
+                                    $(".baocun").attr("disabled",false);
+                                }
+                            })
+                        });
+                    }
+                    function count_num(){
+                        var num=0;
+                        $(".ta").find('table tr').each(function(){
+                            if($(this).attr('id')=='zz'){
+                                num++;
+                            }
+                        });
+                        $('#total_num').html(num);
+                    }
+                    save();
+                </script>
+
+                <script>
+                    //选择发货仓库，自动展示该仓库商品，并清空当前调拨的商品
+                    var srcfirst=$("#goods_index").attr("src");
+                    $("select[name='mystore']").change(function(){
+                        localStorage.removeItem('p_id');
+                        var trleng=$("#tbody").find("tr").length;
+                        if(trleng>1){
+                            var html='<tr id="last">';
+                            html+=$("#last").html();
+                            html+='</tr>';
+                            $("#tbody").html(html);
+                        }
+                        var src=srcfirst+"&mystore="+$("select[name='mystore']").val();
+                        $("#goods_index").attr("src",src);
+                    })
+                </script>
+<script>
+    del2_input();
+    //table排序
+    function del2_input(){
+        //$('table tr:not(:first)').remove();
+        $(".del2").each(function(){
+
+            $(this).click(function(){
+                var tr=$(this).parent().parent();
+                //alert(tr.attr("old_data"));
+                var allocationid="{$allocation['id']}";
+                var id=$(this).attr("name");
+                var wgoods_stock_id=tr.find(".wgoods_stock_id").find("input").val();
+                $.ajax({
+                    url: "{:U('BWallot/detail_delete')}",
+                    type: 'post',
+                    async: false,
+                    data: {allocationid:allocationid,id:id,wgoods_stock_id:wgoods_stock_id},
+                    beforeSend:function(){
+                        // $(".baocun").attr("disabled",true);
+                    },
+                    success: function (data) {
+                        //var tr=$(this).parent().parent();
+
+                        if(data.status==1){
+                            var tr=$("a[name='"+data.id+"']").parent().parent();
+                            //alert(tr.attr("old_data"));
+                            tr.remove();
+                            table_order();
+                        }else{
+                            alert(data.msg);
+                        }
+
+                        //$(".baocun").attr("disabled",false);
+                    },error: function (data,status) {
+                        alert("请检查网络");
+                    }
+                })
+
+
+
+            });
+        });
+
+    }
+</script>

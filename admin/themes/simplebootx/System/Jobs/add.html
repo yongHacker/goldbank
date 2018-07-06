@@ -1,0 +1,35 @@
+<systemtpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Jobs/index',array('id'=>$id))}">{:L('SYSTEM_JOBS_INDEX')}</a></li>
+        <li class="active"><a href="{:U('Jobs/add',array('id'=>$id))}">{:L('SYSTEM_JOBS_ADD')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('Jobs/add')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">岗位名称</label>
+                <div class="controls">
+                    <input type="text" autocomplete="off" name="job_name" value="">
+                    <span class="form-required">*</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">岗位职责</label>
+                <div class="controls">
+                    <textarea name="job_duty" rows="2" cols="20"
+                              style="height: 100px; width: 500px;"></textarea>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+            <input type="hidden" name="id" value="{$id}"/>
+            <button type="submit" class="btn btn-primary  js-ajax-submit">添加</button>
+            <a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

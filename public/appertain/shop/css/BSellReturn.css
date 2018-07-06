@@ -1,0 +1,39 @@
+/**
+ * create by alam 2016/06/05
+ * 销售退货的css
+ */
+.no_arrow::-webkit-outer-spin-button, .no_arrow::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0;}
+.no_arrow { -moz-appearance: textfield;}
+
+.modal { width: 80% !important; left: 400px !important; top: 2% !important; bottom: 2% !important; display: none; }
+
+.modal-header { cursor: move; }
+
+.modal-header b { margin: 0; font-family: 'Microsoft Yahei', verdana; color: #157ab5; }
+
+.modal-body { max-height: 800px; padding: 0px; }
+
+.ta { overflow-x: auto; }
+.ta img { border: 1px solid #ddd; border-radius: 6px; width:40px; }
+.ta input { width: 120px; }
+
+.add-on ~ .js-date { width: 179px; }
+table .input-prepend { margin-bottom: 0; }
+
+.table .search_input{ position: relative; }
+.clientModel{ position: absolute; top:12px; left:15px; font-size: 14px; }
+
+input[type="number"] { text-align: right; }
+input[name="click_name"]{ text-indent: 20px; }
+input[name="excel_file"] { opacity: 0; position: absolute; }
+textarea[name="memo"] { width: 80%; }
+textarea[name="check_memo"] { width: 80%; }
+select[name="currency"] { width: 120px; }
+select[name="pay_id"] { width: 120px; }
+
+.sellProductModal { cursor: pointer; }
+
+input.right {text-align: right !important;}
+input.left {text-align: left !important;}
+
+#add_pay_type { color: #3daae9; cursor: pointer; }

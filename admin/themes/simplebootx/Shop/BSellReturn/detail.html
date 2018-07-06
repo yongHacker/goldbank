@@ -1,0 +1,144 @@
+<shoptpl file="header" />
+<link href="__PUBLIC__/appertain/shop/css/BSellReturn.css" rel="stylesheet">
+</head>
+<body class="theme-blue">
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('BSellReturn/index')}">{:L('SHOP_BSELLRETURN_INDEX')}</a></li>
+            <li class="active"><a href="{:U('BSellReturn/' . $Think.ACTION_NAME, array('return_id' => $return_id))}">{:L('SHOP_BSELLRETURN_' . $Think.ACTION_NAME)}</a></li>
+        </ul>
+        <table class="table table-bordered" id="order_base">
+            <tr>
+                <td class="sel" width="20%">销售员</td>
+                <td width="30%">{$return_info.creator_name}</td>
+                <td class="sel" width="20%">退货日期</td>
+                <td width="30%">{:date('Y-m-d', $return_info['return_time'])}</td>
+            </tr>
+            <tr>
+                <td class="sel">门店</td>
+                <td>{$return_info.shop_name}</td>
+                <td class="sel" class="gold">退货总额</td>
+                <td>{$return_info.return_price}</td>
+            </tr>
+            <tr>
+                <td class="sel">会员</td>
+                <td class="search_input">{$return_info.client_name}({$return_info.client_mobile})</td>
+                <td class="sel">抹零金额</td>
+                <td>{$return_info.extra_price}</td>
+            </tr>
+            <tr>
+                <td class="sel">身份证号</td>
+                <td>{$return_info.client_idno}</td>
+                <td class="sel">退货件数</td>
+                <td>{$return_info.count}</td>
+            </tr>
+            <tr>
+                <td class="sel">备注</td>
+                <td colspan="3">{$return_info.memo}</td>
+            </tr>
+            <notempty name="return_info['check_id']">
+                <tr>
+                    <td class="sel">审核备注</td>
+                    <td colspan="3">{$return_info.check_memo}</td>
+                </tr>
+            </notempty>
+        </table>
+
+        <shoptpl file="process" />
+
+        <notempty name="sub_list">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="javascript:void(0);">其它费用</a></li>
+            </ul>
+            <table class="table table-bordered  table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center" width="60">序</th>
+                        <th class="text-center">费用类目</th>
+                        <th class="text-center">费用金额</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    <volist name="sub_list" id="v">
+                    <tr>
+                        <td class="text-center">{$key+1}</td>
+                        <td class="text-center">{$v.name}</td>
+                        <td class="text-center">{$v.cost}</td>
+                    </tr>
+                    </volist>
+                </tbody>
+            </table>
+        </notempty>
+
+        <notempty name="return_info['return_product']">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="javascript:void(0);">货品列表</a></li>
+        </ul>
+        <div class="main-content">
+            <div class="ta" id="return_product">
+                <table class="table table-bordered table-hover" >
+                    <thead>
+                    <tr>
+                        <th width="60">序</th>
+                        <th width="60">图片</th>
+                        <th width="120">品目</th>
+                        <th width="120">商品编号</th>
+                        <th>货品编号</th>
+                        <th width="60">重量</th>
+                        <th width="60">含金量</th>
+                        <th width="60">金重</th>
+                        <th width="120">销售工费方式</th>
+                        <th width="60">工费</th>
+                        <th width="60">克单价</th>
+                        <th width="60">建议售价</th>
+                        <th width="60">优惠金额</th>
+                        <th width="60">实际售价</th>
+                        <th width="60">计价方式</th>
+                        <th width="120">退货价</th>
+                    </tr>
+                    </thead>
+                    <tbody id="detail_tbody">
+                        <volist name="return_info.return_product" id="v">
+                        <tr class="plus" data-detailid="{$v.id}" data-productid="{$v.product_id}" data-redetailid="{$v.redetail_id}">
+                            <td class="text-center">{$key+1}</td>
+                            <td class="text-center"><img src="<empty name="v['product_pic']">__TMPL__Public/assets/images/default-thumbnail.png<else />{$v.product_pic}</empty>"></td>
+                            <td class="text-left">{$v.goods_name}</td>
+                            <td class="text-center">{$v.goods_code}</td>
+                            <td class="text-center">{$v.product_code}</td>
+                            <td class="text-right">{$v.p_total_weight}</td>
+                            <td class="text-center"><if condition ="$v['sell_pricemode'] eq 1">{$v['purity']}‰<else/>--</if></td>
+                            <td class="text-right">{$v.p_gold_weight}</td>
+                            <td class="text-center"><if condition="$v.sell_feemode eq 0">件工费销售<else/>克工费销售</if></td>
+                            <td class="text-right">{$v.detail_sell_fee}</td>
+                            <td class="text-right"><if condition="$v['sell_pricemode'] eq 0">0<else/>{$v.gold_price}</if></td>
+                            <td class="text-right">{:numberformat($v['sell_price'],2,'.',',')}</td>
+                            <td class="text-right">{:numberformat($v['discount_price'],2,'.',',')}</td>
+                            <td class="text-right">{:numberformat($v['actual_price'],2,'.',',')}</td>
+                            <td class="text-center"><if condition='$v.sell_pricemode eq 0'>计件<else/>计重</if></td>
+                            <td class="text-right">{:numberformat($v['return_price'],2,'.',',')}</td>
+                        </tr>
+                        </volist>
+                    </tbody>
+                </table>
+            </div>
+            </notempty>
+
+            <shoptpl file="operate" />
+            
+            <div class="form-actions text-center">
+                <input type="hidden" class="return_id" value="{$return_info['id']}">
+                <if condition="$return_info['status'] eq 0 && get_user_id() eq $return_info['creator_id']">
+                    <input type="hidden" class="form_url" value="{:U('BSellReturn/cancel')}">
+                    <p class="btn btn-danger js-ajax-submit cancel" data-status="3">撤销</p>
+                </if>
+                <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+            </div>
+        </div>
+
+        <script src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+        <script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+        <script src="__PUBLIC__/js/common.js"></script>
+        <script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+        <script src="__PUBLIC__/appertain/shop/js/BSellReturn.js"></script>
+    </div>
+</body>

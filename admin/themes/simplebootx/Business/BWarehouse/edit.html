@@ -1,0 +1,214 @@
+<businesstpl file="header" />
+<style>
+	.myModal3.leave {
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		font-size: 14px;
+	}
+	.control-group .search_input {
+		padding: 0;
+		position: relative;
+	}
+	input[name=user] {
+		text-indent: 20px;
+	}
+</style>
+</head>
+<body class=" theme-blue">
+	 <div class="wrap js-check-wrap"  >
+       <ul class="nav nav-tabs">
+			<li ><a href="{:U('BWarehouse/index')}">{:L('BUSINESS_BWAREHOUSE_INDEX')}</a></li>
+			<li ><a href="#">{:L('BUSINESS_BWAREHOUSE_EDIT')}</a></li>
+			<button type="button" onclick="history.go( -1 )" class="btn btn-primary " style="float:right">返回</button>
+		</ul>
+        <div class="main-content">
+			<div class="row clearfix">
+					<div class="col-md-12 column">
+						<div class="col-md-6">
+							<form class="form-horizontal ware_post" action="{:U('BWarehouse/edit')}" role="form">
+							  <fieldset>
+								 <div class="control-group ">
+									  <label for="wh_code" class="col-sm-3 control-label">仓库编码</label>
+									  <div class="controls">
+										 <input type="text" autocomplete="off" class="form-control" id="wh_code"
+											placeholder="请输入仓库编码" name="wh_code" value="{$data.wh_code}"  >
+											 <input type="hidden" id="ware_id" class="form-control" name="ware_id" value="{$data['id']}" >
+											 *
+									  </div>
+									 
+								   </div>
+							   <div class="control-group ">
+								  <label for="wh_name" class="col-sm-3 control-label">仓库名称</label>
+								  <div class="controls">
+									
+									 <input type="text" autocomplete="off" class="form-control" id="wh_name"
+										placeholder="请输入仓库名称" name="wh_name" value="{$data.wh_name}" >
+										 *
+								  </div>
+							   </div>
+								  <div class="control-group ">
+									  <label for="wh_uid" class="col-sm-3 control-label">仓库管理员</label>
+									  <div class="controls search_input">
+										  <input  type="text" name="user" id="user3" value="{$data.user_nicename}"  class="form-control " onclick="$('#myModal3').modal('show');">
+										  <input type="hidden" name="user_id" id="user_id" class="form-control" value="{$data.wh_uid}">
+										  <a href="#myModal3" class="myModal3 leave" data-toggle="modal" name="{$v.id}" role="button"><span><i class="fa fa-search normal"></i></span></a>*
+									  </div>
+								  </div>
+							   <div class="control-group">
+								  <label for="address" class="col-sm-3 control-label">仓库地址</label>
+								  <div class="controls">
+									<textarea rows="3" placeholder="请输入仓库地址" MaxLength="25" class="form-control" name="address" id="address" value="{$data.address}">{$data.address}</textarea>
+									 *
+								  </div>
+								   <label id="addresswar" class="control-label" style="color:red"></label>
+							   </div>
+							  
+								<div class="control-group">
+								  <label for="status" class="col-sm-3 control-label">是否开启</label>
+								  <div class="controls">
+									 <input type="radio" name="status" value="1"  <if condition='$data["status"] eq 1'>checked</if>>是 &nbsp; &nbsp;&nbsp;
+									 <input type="radio"  name="status" value="0" <if condition='$data["status"] eq 0'>checked</if>>否
+								  </div>
+								   <label id="mobilewar" class="control-label" style="color:red"></label>
+							   </div>
+							  
+								</fieldset>
+								<div class="form-actions" >
+								  <button type="button"   class="btn btn-primary baocun" id="baocun">保存</button>
+								 <a class="btn" href="javascript:history.back(-1);">返回</a>
+								 <span class="tips_error"></span>
+								</div>
+							</form>
+						</div>
+						<div class="col-md-6">
+		
+						</div>
+					</div>
+			</div>
+		</div>
+		<include file="./Application/Home/View/Public/footer.html" />
+		 <div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			 <div class="modal-dialog">
+				 <div class="modal-content">
+					 <div class="modal-header">
+						 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						 <b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">选择员工</b>
+					 </div>
+					 <div class="modal-body" style="max-height: 500px;padding: 0px;">
+						 <iframe  frameborder="0" class="appiframe" src="{:U('BWarehouse/bemployee_list',array('shop_id'=>$_REQUEST['shop_id']))}" id="user_list" name="user_list">
+
+						 </iframe>
+					 </div>
+					 <div class="modal-footer">
+						 <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+						 <button id="add" class="btn btn-primary" data-dismiss="modal">选中</button>
+					 </div>
+				 </div>
+			 </div>
+		 </div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+	<script>
+			function ware_codewar(){
+			if(!$.trim($('#wh_code').val())){
+				$(".tips_error").text("请填写仓库编码");
+				//alert('请填写仓库编码');
+				return false;
+			}else{
+				$('#ware_codewar').text('');
+				return true;
+			}
+		}
+		function ware_namewar(){
+			if(!$.trim($('#wh_name').val())){
+				$(".tips_error").text("请填写仓库名称");
+				//alert('请填写仓库名称');
+				return false;
+			}else{
+				$('#ware_namewar').text('');
+				return true;
+			}
+		}
+		function ware_addresswar(){
+			if(!$.trim($('#address').val())){
+				
+				//alert('请填写仓库地址');
+				  $(".tips_error").text("请填写仓库地址");
+				return false;
+			}else{
+				$('#ware_addresswar').text('');
+				return true;
+			}
+		}
+		function ware_user_id() {
+			if(!$.trim($('#user_id').val())){
+				$(".tips_error").text("请选择仓库管理员");
+				return false;
+			}else{
+				$('#user_id').text('');
+				return true;
+			}
+		}
+        $(".baocun").click(function(){
+			$(".baocun").text("保存中...");
+			$(".baocun").addClass("disabled");
+		
+           if(ware_codewar()&&ware_namewar()&&ware_addresswar()&&ware_user_id()){
+                $.ajax({
+                    url: "{:U('BWarehouse/edit')}",
+                    type: 'post',
+					async: false,
+                    data: $('.ware_post').serialize(),
+                    beforeSend:function(){
+                        $(".baocun").attr("disabled",true);
+                    },
+                    success: function (data) {
+                       if(data.status==1){
+                            $(".tips_error").text("保存成功！");
+
+							self.location=data.referer;
+							
+                        }else{
+							$(".tips_error").text(data.info);
+							$(".baocun").text("保存");
+						   $(".baocun").attr("disabled",false);
+						}
+                    },error: function (data,status) {
+							alert("请检查网络");
+                    }
+                })
+            }
+        })
+
+
+			heightAuto($("#myModal3"));
+			heightAuto($("#myModal4"));
+			$('#user_list').load(function(){
+				var htm=$('#user_list').contents();
+				$('#add').click(function(){
+					var check_boxs=htm.find('.check_box');
+					check_boxs.each(function(){
+						if($(this).is(':checked')){
+							console.log($(this).parent('td').parent('tr').find('.user_nicename').html());
+							$('input[id=user3]').val($(this).parent('td').parent('tr').find('.user_nicename').html());
+							$('input[name=user_id]').val($(this).attr('uid'));
+						}
+					});
+				});
+			});
+			$('#company_list').load(function(){
+				var htm=$('#company_list').contents();
+				$('#add_company').click(function(){
+					var check_boxs=htm.find('.check_box');
+					check_boxs.each(function(){
+						if($(this).is(':checked')){
+							$('input[id=company]').val($(this).parent('td').parent('tr').find('.company_name').html());
+							$('input[name=parent_id]').val($(this).attr('company_id'));
+						}
+					});
+				});
+			});
+		
+	
+    </script>

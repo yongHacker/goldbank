@@ -1,0 +1,202 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BOutboundOrder/css/edit.css">
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+    <ul class="nav nav-tabs">
+        <li class="active" ><a href="javascript:void(0);">{:L('SHOP_BOutboundOrder_EDIT')}</a></li>
+    </ul>
+    <form class=" form-search" method="post" action="{:U('BOutboundOrder/edit')}">
+        <table class="table table-bordered ">
+
+            <tbody >
+            <tr>
+                <td style="background-color:#f5f5f5">出库类型</td>
+                <td width="25%">
+                    <if condition="$boutbound_data.type eq 2"><span><input type="radio" value="2" name="outbound_type"<if condition="$boutbound_data.type eq 2"> checked="checked"</if>>&nbsp;&nbsp;异常  </span></if>
+                    <if condition="$boutbound_data.type eq 4"><span><input type="radio" value="4" name="outbound_type" <if condition="$boutbound_data.type eq 4"> checked="checked"</if>>&nbsp;&nbsp;赠送  </span></if>
+                    <if condition="$boutbound_data.type eq 5"> <span><input type="radio" value="5" name="outbound_type" <if condition="$boutbound_data.type eq 5"> checked="checked"</if>>&nbsp;&nbsp;转料  </span></if>
+                </td>
+                <td style="background-color:#f5f5f5">日期</td>
+                <td>
+                    {:date('Y-m-d',$boutbound_data['outbound_time'])}
+                    <input id="trance_time" class="js-date" name="trance_time" value="{:date('Y-m-d',$boutbound_data['outbound_time'])}" type="hidden"  >
+                </td>
+            </tr>
+            <tr>
+                <if condition="$boutbound_data['type'] eq 4">
+                    <td style="background-color:#f5f5f5" width="20%">会员</td>
+                    <td class="search_input" width="25%" colspan="3">
+                        <input type="text" autocomplete="off" id="mobile-name" value="{$boutbound_data.client_name}({$boutbound_data.client_moblie})" class="form-control" onclick="$('#myModal3').modal('show');">
+                        <input type="hidden" autocomplete="off" id="mobile" value="{$boutbound_data.client_name}" class="form-control" onclick="$('#myModal3').modal('show');"> <!--style="display: none;"-->
+                        <input type="hidden" id="uid" class="form-control" value="{$boutbound_data.client_id}">
+                        <input type="hidden" id="employee_id" class="form-control" value="">
+                        <a href="#myModal3" class="myModal3 leave" data-toggle="modal"   role="button"><span><i class="fa fa-search normal"></i></span></a>
+                    </td>
+                    </if>
+            </tr>
+            <tr>
+                <td style="background-color:#f5f5f5">仓库</td>
+                <td>
+                    <select id="mystore" name="wh_id" data-live-search="true" disabled="disabled">
+                        <option value="0" checked>选择仓库</option>
+                        <volist name="wh_data" id="v">
+                            <option <if condition="$v['id'] eq $boutbound_data['warehouse_id']">selected='selected'</if> value="{$v.id}"  >{$v.wh_name}</option>
+                        </volist >
+                    </select>
+                </td>
+                <td style="background-color:#f5f5f5">备注</td>
+                <td >
+                    <textarea name="comment" id="comment" value="{$boutbound_data.memo}">{$boutbound_data.memo}</textarea>
+                </td>
+            </tr>
+            </tbody >
+        </table>
+
+    </form>
+    <div class="main-content">
+        <!--<a class="btn btn-primary btn-small procureModal" href="#procureModal" style="cursor:pointer;"  data-toggle="modal" role="button" type="text">
+            选择采购单</a>-->
+        <div class="ta" style="margin-top: 10px;">
+            <table class="table table-bordered  table-hover">
+                <thead >
+                <tr>
+                    <th>序</th>
+                    <th style="width:200px;">货品编号</th>
+                    <th>商品名称</th>
+                    <th>详情</th>
+                    <th style="width:140px;">操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                <volist name="list" id="v">
+                    <tr old_data="old_data">
+                        <td class="text-center"></td>
+                        <td class="text-center" >{$v.product_code}</td>
+                        <td>{$v.goods_name}</td>
+                        <td>{$v.product_detail}</td>
+                        <td class="text-center">
+                            <a href="javascript:void(0);" out_id="{$v.id}" class="del" product_id="{$v.p_id}" >删除</a>
+                        </td>
+                        <td hidden=hidden class="product_id">{$v.p_id}</td>
+                    </tr>
+                </volist>
+                <tr id="last">
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class=""></td>
+                    <td class="text-center"></td>
+                    <td class="text-center" href="#myModal2" class="myModal2 on" style="cursor:pointer;" data-toggle="modal" role="button">
+                        <a>+</a>
+                    </td>
+                    <td hidden=hidden class="product_id"></td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div id="recovery_table" <if condition="$recovery_product_list">class="ta" <else/>class="ta hide"</if>>
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="javascript:void(0);">金料列表</a></li>
+            </ul>
+            <table class="table table-bordered  table-hover">
+                <thead >
+                <tr>
+                    <th>序</th>
+                    <th style="width:220px;">关联货号</th>
+                    <th >金料名称</th>
+                    <th >金料编号</th>
+                    <th >金料总重</th>
+                    <th style="width:220px;">纯度(‰)</th>
+                     <th style="width:220px;">金料金重</th>
+                    <th >金料金价</th>
+                    <th >服务克工费</th>
+
+                    <!-- <th style="width:220px;">损耗率</th>-->
+                    <th >抵扣费用</th>
+                    <th>材质</th>
+                    <th>颜色</th>
+                </tr>
+                </thead>
+                <tbody id="tbody" class="recovery_tbody">
+                <volist name="recovery_product_list" id="v">
+                    <tr  class="recovery_type_tr" product_code="{$v.product_code}">
+                        <td class="text-center"></td>
+                        <td class="text-center product_code">{$v.product_code}<input type="hidden" name="product_id" value="{$v.product_id}" placeholder="货品id"></td>
+                        <td class="text-center recovery_name"><input type="text" autocomplete="off" name="recovery_name" value="{$v.recovery_name}" ></td>
+                        <td class="text-center rproduct_code"><input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" value="{$v.rproduct_code}" ></td>
+                        <td class="text-right total_weight"><input  type="number" class="no_arrow"  autocomplete="off" name="total_weight" value="{$v.total_weight}" placeholder="总重"></td>
+                        <td class="text-center purity" >{$v['purity']}<input type="hidden" name="purity" value="{$v['purity']/1000}" placeholder="纯度"></td>
+                        <td class="text-right gold_weight"><input  type="number" class="no_arrow"  autocomplete="off" name="gold_weight" value="{$v.gold_weight}" placeholder="金重"></td>
+                        <td class="text-right recovery_price" ><input  type="number" class="no_arrow"  autocomplete="off" name="recovery_price" value="{$v.recovery_price}" placeholder="金料金价"></td>
+                        <td class="text-right service_fee" ><input  type="number" class="no_arrow"  autocomplete="off" name="service_fee" value="{$v.service_fee}" placeholder="服务克工费"></td>
+                        <!--<td class="text-center attrition" ><input type="text" autocomplete="off" name="attrition" value="" placeholder="损耗"></td>-->
+                        <td class="text-right cost_price" ><input  type="number" class="no_arrow"  autocomplete="off" name="cost_price" value="{$v.cost_price}" placeholder="回收价"></td>
+                        <td class="text-center td_material">
+                            <input type="text" autocomplete="off" name="material" class="material no_arrow" value="{$v.material}">
+                        </td>
+                        <td class="text-center td_color">
+                            <input type="text" autocomplete="off" name="color" class="color no_arrow" value="{$v.color}">
+                        </td>
+                        <input type="hidden" value="{$v.id}" name="recovery_product_id">
+                    </tr>
+                </volist>
+                </tbody>
+            </table>
+        </div>
+        <div class="form-actions text-center">
+            <button type="button" class="btn btn-primary baocun" id="baocun" data-type="-1">保存</button>
+            <button type="button" class="btn btn-primary baocun" id="submit" data-type="0">提交</button>
+            <!-- <button type="button" class="btn btn-primary baocun" id="baocun_print">添加并打印</button>-->
+            <!--  <a class="btn" href="javascript:history.back(-1);">取消</a>-->
+            <br/><span class="tips_error" style="color:red"></span>
+        </div>
+        <!--弹框选取货品-->
+        <div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="cursor:move">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">货品选取</b>
+                    </div>
+                    <div class="modal-body" style="max-height: 800px;padding: 0px;">
+                        <iframe  frameborder="0" class="appiframe" src="{:U('BOutboundOrder/product_list',array('mystore'=>$boutbound_data['warehouse_id']))}" id="goods_index" name="goods_index">
+                        </iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="check" class="btn btn-primary pull-left" >选中</button>
+                        <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+                        <button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <b id="clientModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">选择会员</b>
+                </div>
+                <div class="modal-body" style="max-height: 500px;padding: 0px;">
+                    <iframe  frameborder="0" class="appiframe" src="{:U('BOutboundOrder/client_list')}" id="goods_index2" name="goods_index2" >
+
+                    </iframe>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                    <button id="add-2" class="btn btn-primary" data-dismiss="modal">选中</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <include file="./public/common/footer.html" />
+    <script src="/public/js/common.js"></script>
+    <script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+    <script src="__PUBLIC__/js/shop_common.js"></script>
+   <script src="__PUBLIC__/shop/BOutboundOrder/js/edit.js"></script>
+</div>
+</body>
+

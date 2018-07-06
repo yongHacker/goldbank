@@ -1,0 +1,110 @@
+<systemtpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('rbac/index')}">{:L('SYSTEM_RBAC_INDEX')}</a></li>
+		<!--<li class=""><a href="{:U('rbac/shop_index')}">{:L('SYSTEM_RBAC_SHOP_INDEX')}</a></li>-->
+		<li><a href="{:U('rbac/roleadd')}">{:L('SYSTEM_RBAC_ROLEADD')}</a></li>
+		<!--<li><a href="{:U('rbac/authorize_list')}">权限点选择</a></li>-->
+	</ul>
+
+	<table class="table table-hover table-bordered table-list" id="menus-table">
+		<thead>
+		<tr>
+			<th width="30">序</th>
+			<th width="30">ID</th>
+			<th align="left">{:L('ROLE_NAME')}</th>
+			<th align="left">{:L('ROLE_DESCRIPTION')}</th>
+			<th width="40" align="left">{:L('STATUS')}</th>
+			<th width="120">{:L('ACTIONS')}</th>
+		</tr>
+		</thead>
+		<tbody>
+		{$categorys}
+		</tbody>
+	</table>
+</div>
+<div class="modal small fade in auto-adapt" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">选择员工</b>
+			</div>
+			<div class="modal-body" style="max-height: 500px;padding: 0px;">
+				<iframe  frameborder="0" class="appiframe" src="{:U('Rbac/user_list')}" id="user_list" name="user_list" >
+
+				</iframe>
+			</div>
+			<div class="modal-footer">
+				<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+				<button id="add" class="btn btn-primary" data-dismiss="modal">选中</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+	$(document).ready(function() {
+		Wind.css("treeTable");
+		Wind.use('treeTable',function() {
+			$("#menus-table").treeTable({
+				indent: 20
+			})
+		})
+	});
+
+	setInterval(function() {
+		var refersh_time = getCookie('refersh_time_admin_menu_index');
+		if (refersh_time == 1) {
+			reloadPage(window);
+		}
+	}, 1000);
+	setCookie('refersh_time_admin_menu_index', 0);
+</script>
+<script src="/public/js/layer/layer.js"></script>
+<script>
+	var role_id = 0;
+
+	$(".myModal3").click(function(){
+		role_id=$(this).attr("data-value");
+	});
+	$('#user_list').load(function(){
+		var htm=$('#user_list').contents();
+		$('#add').click(function(){
+			var check_boxs=htm.find('.check_box');
+			var user_id = '';
+			var i=0;
+			check_boxs.each(function(){
+				if($(this).is(':checked')){
+					i++;
+					if(i==1){
+						user_id=$(this).attr('uid');
+					}else{
+						user_id+=","+$(this).attr('uid');
+					}
+				}
+			});
+			if(!empty(user_id)){
+				layer.msg("添加中...");
+				$.ajax({
+					url: "{:U('Rbac/add_user_role')}",
+					type: 'post',
+					async: false,
+					data: {user_id: user_id, role_id: role_id},
+					success: function (rsData) {
+						if(rsData.status==1){
+							layer.msg(rsData.msg);
+							setTimeout(function(){reloadPage(window);},1000);
+						}else{
+							layer.msg(rsData.msg);
+						}
+					}
+				});
+			}
+		});
+	});
+</script>
+</body>
+</html>

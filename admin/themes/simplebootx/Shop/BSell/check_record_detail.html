@@ -1,0 +1,105 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BSell/check_record_detail.css">
+</head>
+<body class=" theme-blue">
+    <div class="wrap js-check-wrap"  >
+       <ul class="nav nav-tabs">
+			<li class="active"><a>{:L('SHOP_BSELL_CHECK_RECORD_DETAIL')}</a></li>
+			<button type="button" onclick="history.go( -1 )" class="btn js-ajax-back-btn" style="float:right">返回</button>
+		</ul>
+
+		<table class="table table-bordered" style="white-space:normal">
+			<tr>
+				<td class="sel" width="20%">销售日期（制单时间）</td>
+				<td width="25%">{$data["sell_time"]|date="Y-m-d",###}({$data["create_time"]|date="Y-m-d H:i:s",###})</td>
+				<td class="sel" width="20%">会员姓名</td>
+				<if condition='$data["u1"] eq "贵宾"'>
+					<td width="25%">{$data["shop_name"]}<if condition="$data['realname']">{$data['realname']}<else/>{$data['u1']}</if></td>
+					<else />
+					<td width="25%"><if condition="$data['realname']">{$data['realname']}<else/>{$data['buy_name']}</if></td>
+				</if>
+
+			</tr>
+			<tr width="25%">
+				<td class="sel">销售员</td>
+				<td><if condition="$data['realname']">{$data['realname']}<else/>{$data['user_nicename']}</if></td>
+				<td class="sel">销售总价</td>
+				<td>{$data['real_sell_price']}</td>
+			</tr>
+			<tr>
+				<td class="sel">销售单号</td>
+				<td >
+					{$data['order_id']}
+				</td>
+				<td class="sel">备注</td>
+				<td colspan="4" style="word-break:break-all;">{$data['memo']}</td>
+
+			</tr>
+			<tr width="25%">
+				<td class="sel">审核人</td>
+				<td>{$data['check_name']}</td>
+				<td class="sel">审核时间</td>
+				<td>
+					<if condition='$data["check_time"] neq ""'>
+						{$data["check_time"]|date="Y-m-d H:i:s",###}
+					</if>
+				</td>
+
+			</tr>
+			<tr>
+				<td class="sel">审核备注</td>
+				<td colspan="4" style="word-break:break-all;">{$data['check_memo']}</td>
+			</tr>
+		</table>
+		{$process_tpl}
+        <div class="main-content">
+			<div class="ta">
+				<table class="table table-bordered  table-hover">
+					<thead >
+					<tr>
+						<th>序</th>
+						<th>图片</th>
+						<th>品目</th>
+						<th>含金量</th>
+						<!--  <th>规格</th>-->
+						<th>商品编号</th>
+						<th>货品编号</th>
+						<th>重量</th>
+						<th>工费</th>
+						<th>克单价</th>
+						<th>单价</th>
+						<th>实际售价</th>
+						<th>计价方式</th>
+						<input type="hidden" class="weight" value="{$sun[0]['sun']}">
+					</tr>
+					</thead>
+					<volist name="list" id="v">
+						<tr height="30">
+							<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+							<td class=""><img width="40" src="{$v['pic']}"></td>
+							<!-- <td class="text-center">{$v.order_id}<input type="hidden" value="{$v.order_id}" id="id"/></td>-->
+							<td class="text-left">{$v.goods_name}</td>
+							<!--  <td class="text-left">{$v.gg}</td>-->
+							<td class="text-center">{$v['sell_pricemode'] == '1' ? $v['purity'] : '-'}</td>
+							<td class="text-center">{$v.goods_code}</td>
+							<td class="text-center">{$v.product_code}</td>
+							<!--<td class="text-center"><a href="{:U('BProduct/index',array(search_name=>$v['product_code']))}">{$v.product_code}</a></td>-->
+							<td class="text-right">
+								{$v.weight}
+							</td>
+							<td class="text-right">{$v.sell_fee}</td>
+							<td class="text-right"><if condition="$v['sell_pricemode'] eq 0">0<else/>{$v.gold_price}</if></td>
+							<td class="text-right">{:numberformat($v['sell_price'],2,'.',',')}</td>
+							<td class="text-right">{:numberformat($v['actual_price'],2,'.',',')}</td>
+							<td class="text-center"><if condition='$v.sell_pricemode eq 0'>计件<else/>计重</if></td>
+						</tr>
+					</volist>
+				</table>
+				{$operate_tpl}
+				<div class="form-actions text-center" style="margin: 0 auto">
+					 <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+					<div  style="color: red;" class="tishi"></div>
+				</div>
+			</div>
+<script src="__PUBLIC__/js/common.js"></script>
+

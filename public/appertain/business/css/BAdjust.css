@@ -1,0 +1,22 @@
+/**
+ * create by lzy 2016/06/13
+ * 调整开单的css
+ */
+
+a.productModal {cursor: pointer;}
+/*模态框*/
+.modal {width: 80% !important;left: 400px !important;top: 2% !important;bottom: 2% !important;display: none;}
+.modal-header {cursor: move;}
+.modal-header b{margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;}
+.modal-body {max-height: 800px; padding: 0px;}
+/*保存和提交按钮*/
+.center-block {width: 260px;margin: 0 auto;text-align: center;}
+.tishi {color: red;}
+
+table.hide{display:none;}
+td.hide{display:none;}
+
+/* td中的文本框 */
+td textarea { width: calc(100% - 16px); margin: 0px; resize: none; }
+
+.form-actions { text-align: center; }

@@ -1,0 +1,81 @@
+<?php
+/**
+ * 英文错误描述
+ * 
+ * 规则：
+ * 3位数表示系统错误
+ * 4位数表示应用错误
+ */
+return array(
+    'CODE_OK' => '200',
+    'CODE_FAIL' => '201',
+    'CODE_PARAM_LOST' => '202',
+    'CODE_EDIT_SUC' => '203',
+    'CODE_EDIT_ERR' => '204',
+    'CODE_ADD_SUC' => '205',
+    'CODE_ADD_ERR' => '206',
+    'CODE_DEL_SUC' => '207',
+    'CODE_DEL_ERR' => '208',
+    'CODE_HAVE_NO_PRIVILEGE' => '209',
+    'CODE_OPERATION_OBJECT' => '210',
+    'CODE_MSG_SEND_SUC' => '211',
+    'CODE_MSG_SEND_ERR' => '212',
+
+    'CODE_USER_EXIST' => '2101',
+    'CODE_USER_NOT_EXIST' => '2102',
+    'CODE_USER_NOT_LIFE' => '2103',
+    'CODE_ACCOUNT_ERR' => '2104',
+    'CODE_LOGIN_TIMEOUT' => '2105',
+    'CODE_HAVE_NOT_ROLE' => '2106',
+    'CODE_ROLE_SELECT' => '2107',
+    'CODE_ROLE_ERR' => '2109',
+    'CODE_PASSWORK_NULL' => '2110',
+    'CODE_REPASSWORK_NULL' => '2111',
+    'CODE_OLDPASSWORK_NULL' => '2112',
+    'CODE_PASSWORD_ERR' => '2113',
+    'CODE_RAW_PASSWORD_ERR' => '2114',
+    'CODE_PASSWORD_NOTACCORDANCE' => '2115',
+
+    'CODE_EMPLOYEE_EXIST' => '2201',
+    'CODE_EMPLOYEE_NOT_EXIST' => '2202',
+    'CODE_ROLE_USER_EXIST' => '2203',
+    'CODE_ROLE_CLEAR_SUC' => '2204',
+    'CODE_ROLE_SET_SUC' => '2205',
+    'CODE_ROLE_SET_ERR' => '2206',
+
+    'MSG_OK' => 'ok',
+    'MSG_FAIL' => '网络错误',
+    'MSG_PARAM_LOST' => '参数缺失[?]',
+    'MSG_EDIT_SUC' => '修改成功',
+    'MSG_EDIT_ERR' => '修改失败',
+    'MSG_ADD_SUC' => '添加成功',
+    'MSG_ADD_ERR' => '添加失败',
+    'MSG_DEL_SUC' => '删除成功',
+    'MSG_DEL_ERR' => '删除失败',
+    'MSG_HAVE_NO_PRIVILEGE' => '没有操作此功能的权限',
+    'MSG_OPERATION_OBJECT' => '没有权限操作对象',
+    'MSG_MSG_SEND_SUC' => '短信发送成功',
+    'MSG_MSG_SEND_ERR' => '短信发送失败',
+
+    'MSG_USER_EXIST' => '用户已存在',
+    'MSG_USER_NOT_EXIST' => '用户不存在',
+    'MSG_USER_NOT_LIFE' => '用户状态异常',
+    'MSG_ACCOUNT_ERR' => '账户名或密码错误',
+    'MSG_LOGIN_TIMEOUT' => '登录记录过期',
+    'MSG_HAVE_NOT_ROLE' => '没有终端角色',
+    'MSG_ROLE_SELECT' => '请选择终端角色',
+    'MSG_ROLE_ERR' => '终端角色未获许可',
+    'MSG_PASSWORK_NULL' => '修改密码不能为空',
+    'MSG_REPASSWORK_NULL' => '确认密码不能为空',
+    'MSG_OLDPASSWORK_NULL' => '原始密码不能为空',
+    'MSG_PASSWORD_ERR' => '密码错误',
+    'MSG_RAW_PASSWORD_ERR' => '原始密码错误',
+    'MSG_PASSWORD_NOTACCORDANCE' => '密码不一致',
+
+    'MSG_EMPLOYEE_EXIST' => '员工信息已存在',
+    'MSG_EMPLOYEE_NOT_EXIST' => '员工信息不存在',
+    'MSG_ROLE_USER_EXIST' => '角色已分配用户',
+    'MSG_ROLE_CLEAR_SUC' => '清除授权成功',
+    'MSG_ROLE_SET_SUC' => '授权操作成功',
+    'MSG_ROLE_SET_ERR' => '授权操作失败',
+);

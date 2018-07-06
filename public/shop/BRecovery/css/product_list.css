@@ -1,0 +1,13 @@
+    .table tr th{
+        text-align:center;
+    }
+    .table {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .ta {
+        overflow-x: auto;
+        width: 100%;
+        margin-bottom: 20px;
+    }

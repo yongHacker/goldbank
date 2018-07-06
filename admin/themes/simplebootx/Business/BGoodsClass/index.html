@@ -1,0 +1,132 @@
+<businesstpl file="header"/>
+<script src="__PUBLIC__/js/bootstraptree/tree.js"></script>
+
+<link href="__PUBLIC__/js/bootstraptree/tree.css" rel="stylesheet" type="text/css">
+<style>.expander{margin-left: -20px;}</style>
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BGoodsClass/index')}">{:L('BUSINESS_BGOODSCLASS_INDEX')}</a></li>
+		<!--	<li ><a href="{:U('BGoodsClass/lists')}">{:L('BUSINESS_BGOODSCLASS_LIST')}</a></li>-->
+			<li ><a href="{:U('BGoodsClass/add')}">{:L('BUSINESS_BGOODSCLASS_ADD')}</a></li>
+			<a id="doing" class="btn btn-primary" href="javascript:void(0);" data-toggle="modal" style="float:right;margin-left: 10px;">全部折叠</a>
+		</ul>
+		<form class="js-ajax-form"  method="post">
+			<div class="tree well">
+				<ul id="ul_tree">
+
+				</ul>
+			</div>
+		</form>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(function(){
+		//构造树
+		getdata();
+		//addfileZuzhijiagou();
+		//addZuzhijiagou();
+	});
+
+	function getdata(){
+		$("#ul_tree").jqtree({
+			//data: json,
+			// url:"/index.php?g=Business&m=BGoodsClass&a=bgoodsclassData",
+			url:API_URL+"&m=BGoodsClass&a=bgoodsclassData",
+			// param: {type:'goods_class',url:'/index.php?g=Business&m=BGoodsCommon',cur_url:'/index.php?g=Business&m=BGoodsClass'},
+			param: {type:'goods_class',url:API_URL+'&m=BGoodsCommon',cur_url:API_URL+'&m=BGoodsClass'},
+			onBeforeLoad: function (param) {
+			},
+			onLoadSuccess: function (data) {
+				console.log(data);
+				add_js();
+			},
+			onClickNode: function (selector) {
+
+			}
+		});
+
+
+
+	}
+
+
+
+</script>
+<script>
+	function add_js(){
+		//所有的删除操作，删除数据后刷新页面
+		if ($('a.js-ajax-delete').length) {
+			Wind.use('artDialog', function () {
+				$('.js-ajax-delete').on('click', function (e) {
+					e.preventDefault();
+					var $_this = this,
+							$this = $($_this),
+							href = $this.data('href'),
+							msg = $this.data('msg');
+					href = href?href:$this.attr('href');
+					art.dialog({
+						title: false,
+						icon: 'question',
+						content:msg?msg: '确定要删除吗？',
+						follow: $_this,
+						close: function () {
+							$_this.focus();; //关闭时让触发弹窗的元素获取焦点
+							return true;
+						},
+						okVal:"确定",
+						ok: function () {
+
+							$.getJSON(href).done(function (data) {
+								if (data.state === 'success') {
+									if (data.referer) {
+										location.href = data.referer;
+									} else {
+										reloadPage(window);
+									}
+								} else if (data.state === 'fail') {
+									//art.dialog.alert(data.info);
+									//alert(data.info);//暂时处理方案
+									art.dialog({
+										content: data.info,
+										icon: 'warning',
+										ok: function () {
+											this.title(data.info);
+											return true;
+										}
+									});
+								}
+							});
+						},
+						cancelVal: '关闭',
+						cancel: true
+					});
+				});
+
+			});
+		}
+
+	}
+</script>
+<script>
+
+	$("#doing").on("click",function(){
+		if($(this).attr("ishide")!="ok"){
+			$("#ul_tree").find("ul").find('li').css('display','none');
+			$("#ul_tree").find('.icon-minus-sign').removeClass('icon-minus-sign').addClass('icon-plus-sign');
+			$(this).text("全部展开");
+			$(this).attr("ishide","ok");
+		}else{
+			$("#ul_tree").find("ul").find('li').css('display','list-item');
+			$("#ul_tree").find('.icon-plus-sign').removeClass('icon-plus-sign').addClass('icon-minus-sign');
+			$(this).text("全部折叠");
+			$(this).attr("ishide","no");
+
+		}
+
+	})
+
+
+</script>

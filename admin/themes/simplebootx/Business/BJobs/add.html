@@ -1,0 +1,42 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li ><a href="{:U('BJobs/index',array('id'=>$sector_id))}">{:L('BUSINESS_BJOBS_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BJobs/add',array('id'=>$sector_id))}">{:L('BUSINESS_BJOBS_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BJobs/add')}">
+			<fieldset>
+				<input type="hidden" value="{$sector_id}" name="sector_id">
+				<!--<div class="control-group">
+					<label class="control-label">部门:</label>
+					<div class="controls">
+						<select name="sector_id">
+							{$select_categorys}
+						</select>
+					</div>
+				</div>-->
+				<div class="control-group">
+					<label class="control-label">岗位名称:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="job_name">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">岗位职责:</label>
+					<div class="controls">
+						<textarea name="job_duty" rows="5" cols="57" style="width: 500px;"></textarea>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

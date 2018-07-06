@@ -1,0 +1,199 @@
+<businesstpl file="header" />
+<link href="__PUBLIC__/appertain/business/css/BProcureReturn.css" rel="stylesheet">
+</head>
+<body class=" theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BProcureReturn/index')}">{:L('BUSINESS_BPROCURERETURN_INDEX')}</a></li>
+			<li class="active">
+			<a href="{:U('BProcureReturn/' . $Think.ACTION_NAME, array('return_id' => $return_id))}">{:L('BUSINESS_BPROCURERETURN_' . $Think.ACTION_NAME)}</a>
+			</li>
+		</ul>
+		<table class="table table-bordered" id="order_base">
+			<tr>
+				<td class="sel" width="20%">制单人</td>
+				<td width="30%">
+					<empty name="return_info['creator_name']">{$employee_info.employee_name}<else />{$return_info.creator_name}</empty>
+				</td>
+				<td class="sel" width="20%">退货日期</td>
+				<td width="30%">
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input id="return_date" class="form-control datepicker js-date span2" name="return_date" value="<empty name="return_info['return_time']">{$today}<else />{:date('Y-m-d',$return_info['return_time'])}</empty>" type="text">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">供应商</td>
+				<td>
+					<select name="supplier_id" class="supplier_id">
+						<option value="0">请选择供应商</option>
+						<volist name="supplier_info" id="sp">
+						<option value="{$sp.id}" <if condition="$sp['id'] eq $return_info['supplier_id']">selected</if>>{$sp.company_name}</option>
+						</volist>
+					</select>
+				</td>
+				<td class="sel">仓库</td>
+				<td>
+					<select name="wh_id" class="wh_id">
+						<option value="0">请选择仓库</option>
+						<volist name="wh_list" id="wh">
+						<option value="{$wh.id}" <if condition="$wh['id'] eq $return_info['wh_id']">selected</if>>{$wh.wh_name}</option>
+						</volist>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">克重</td>
+				<td>
+					<input type="number" step="0.001" name="return_weight" class="no_arrow" <empty name="return_info['weight']">value="0.00"<else />value="{:number_format($return_info['weight'], 2, '.', '')}"</empty>>
+				</td>
+				<td class="sel">工费总额</td>
+				<td>
+					<input type="number" step="0.001" name="return_price" class="no_arrow" <empty name="return_info['price']">value="0.00"<else />value="{:number_format($return_info['price'], 2, '.', '')}"</empty>>
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">件数</td>
+				<td id="return_num">
+					<empty name="return_info['num']">-<else />{$return_info['num']}</empty>
+				</td>
+				<td class="sel">抹零金额</td>
+				<td>
+					<input type="number" step="0.001" name="extra_price" class="no_arrow" <empty name="return_info['extra_price']">value="0.00"<else />value="{:number_format($return_info['extra_price'], 2, '.', '')}"</empty>>
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">备注</td>
+				<td colspan="3" width="80%">
+					<textarea name="memo"><notempty name="return_info['memo']">{$return_info['memo']}</notempty></textarea>
+				</td>
+			</tr>
+		</table>
+
+		<businesstpl file="BExpence/add_expence" />
+
+		<form id="excel_into" class="form" method="post" action="#" enctype="multipart/form-data">
+	        <!-- <p class="btn btn-primary btn-small excel_click" type="text">从excel文件中导入</p> -->
+	        <!-- <p class="btn btn-primary btn-small" onclick="location.href=''">点击此处下载模板</p> -->
+	        <a class="btn btn-primary btn-small procureModal" href="#procureModal" data-toggle="modal" role="button" type="text">
+	            选择采购单</a>
+	        <!-- <input type="file" name="excel_file"> -->
+		</form>
+		<div class="main-content">
+			<div class="ta" id="order_product" style="overflow-x: auto;">
+				<table class="table table-bordered  table-hover table-responsive">
+					<thead>
+						<tr>
+							<th class="text-center" style="min-width: 60px;">序</th>
+							<th class="text-center" style="min-width: 200px;">货品编码</th>
+							<th class="text-center" style="min-width: 200px;">附属货品编码</th>
+							<th class="text-center" style="min-width: 200px;">货品名称</th>
+							<th class="text-center" style="min-width: 200px;">商品编号</th>
+							<th class="text-center" style="min-width: 100px;">采购计价方式</th>
+							<th class="text-center" style="min-width: 100px;">克重</th>
+							<th class="text-center" style="min-width: 100px;">工费</th>
+							<th class="text-center" style="min-width: 100px;">采购价</th>
+							<th class="text-center" style="min-width: 100px;">总工费</th>
+							<th class="text-center" style="min-width: 60px;">操作</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<volist name="return_info['product_list']" id="v">
+							<tr class="plus" data-productid="{$v.id}" data-productcode="{$v.product_code}">
+							<td class="text-center"></td>
+							<td class="text-center product_code">{$v.product_code}</td>
+							<td class="text-center sub_product_code">{$v.sub_product_code}</td>
+							<td class="text-center product_name">{$v.goods_name}</td>
+							<td class="text-center goods_code">{$v.goods_code}</td>
+							<td class="text-center pricemode"><if condition="$v.procurement_pricemode eq 1">计重<else />计件</if></td>
+							<td class="text-center weight"><if condition="$v.procurement_pricemode eq 1">{$v.weight}<else />-</if></td>
+							<td class="text-center buy_m_fee"><if condition="$v.procurement_pricemode eq 1">{$v.buy_m_fee}<else />-</if></td>
+							<td class="text-center cost_price"><if condition="$v.procurement_pricemode eq 1">-<else />{$v.cost_price}</if></td>
+							<td class="text-center count_fee"><if condition="$v.procurement_pricemode eq 1">{:round(bcmul($v['weight'], $v['buy_m_fee'], 4), 2)}<else />-</if></td>
+							<td class="text-center" style="vertical-align: inherit;"><a class="del fa fa-trash" title="删除""></a></td>
+						</tr>
+						</volist>
+						<tr id="last">
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center"></td>
+							<td class="text-center productModal on" href="#productModal" style="cursor: pointer;" data-toggle="modal" role="button">
+								<a href="javascript:void(0);">+</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="form-actions center-block">
+				<div>
+					<input type="hidden" name="return_id" value="{$return_id}">
+					<button type="button" class="btn btn-primary baocun" id="save" data-type="-1" data-url="{:U('BProcureReturn/add')}">{:L('SAVE')}</button>
+					<button type="button" class="btn btn-primary submit" id="commit" data-type="0" data-url="{:U('BProcureReturn/add')}">提交</button>
+					<notempty name="return_id">
+		        	<button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+					</notempty>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal small fade" id="productModal" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<b id="productModalLabel">选择货品</b>
+				</div>
+				<div class="modal-body">
+					<iframe frameborder="0" class="appiframe" data-url="{:U('BProcureReturn/product_list')}" src="{:U('BProcureReturn/product_list')}" id="product_list" name="product_list"></iframe>
+				</div>
+				<div class="modal-footer">
+					<button id="product_check" class="btn btn-primary pull-left">选中</button>
+					<button id="product_cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+					<button id="product_add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal small fade" id="procureModal" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="procureModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<b id="procureModalLabel">采购清单</b>
+				</div>
+				<div class="modal-body">
+					<iframe frameborder="0" class="appiframe" data-url="{:U('BProcureReturn/procure_list')}" src="{:U('BProcureReturn/procure_list')}" id="procure_list" name="procure_list">
+
+					</iframe>
+				</div>
+				<div class="modal-footer">
+					<button id="procure_check" class="btn btn-primary pull-left" data-url="{:U('BProcureReturn/get_pro_product')}">选中</button>
+					<button id="procure_cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+					<button id="procure_add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<form></form>
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/appertain/business/js/BProcureReturn.js"></script>
+	<script>
+		update_iframe_url();
+		refresh_product_codes();
+		refresh_product_ids();
+		refresh_ifram_redio();
+		expence_postfix_function = ['reflush_table'];
+	</script>

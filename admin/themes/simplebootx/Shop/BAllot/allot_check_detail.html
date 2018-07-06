@@ -1,0 +1,94 @@
+<shoptpl file="header" />
+<body class="theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('BAllot/allot_check_detail')}">{:L('SHOP_BALLOT_ALLOT_CHECK_DETAIL')}</a></li>
+		 <span style="float: right">
+            <p  class="btn btn-danger js-ajax-submit" data-type="-2" >驳回</p>
+            <p  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</p>
+            <p  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</p>
+            <a class="btn" href="javascript:history.back(-1);">返回</a>
+        </span>
+	</ul>
+	<table class="table table-bordered " style="white-space:normal;">
+        <tbody >
+        <tr>
+            <td style="background-color:#f5f5f5">发货仓库</td>
+            <td>{$allocation['from_whname']}</td>
+            <td style="background-color:#f5f5f5">日期</td>
+            <td>{:date('Y-m-d',$allocation['allot_time'])}({:date('Y-m-d H:i:s',$allocation['create_time'])})</td>
+        </tr>
+        <tr>
+            <td style="background-color:#f5f5f5">收货仓库</td>
+            <td>{$allocation['to_whname']}</td>
+            <td style="background-color:#f5f5f5">状态</td>
+            <td style="max-width: 200px;">{$status[$allocation['status']]}</td>
+        </tr>
+        <tr>
+            <td style="background-color:#f5f5f5">开单人</td>
+            <td>{$allocation['user_nicename']}</td>
+            <td style="background-color:#f5f5f5">备注</td>
+            <td  style="max-width: 200px;">{$allocation['memo']}</td>
+        </tr>
+        <tr>
+            <td class="sel">审批备注</td>
+            <td colspan="4" style="word-break:break-all;"><textarea  name="check_memo" id="check_memo" rows="2" cols="60" style="width:96%;"></textarea></td>
+        </tr>
+        </tbody >
+	</table>
+	<div class="ta">
+		<table class="table table-bordered  table-hover">
+			<thead >
+			<tr>
+				<th>序</th>
+                <th>图片</th>
+				<th>货品编号</th>
+				<th>商品名称</th>
+                <th>详情</th>
+			</tr>
+			</thead>
+			<tbody>
+			<volist name="list" id="v">
+				<tr>
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                    <td class="">
+                        <if condition="empty($v['product_pic'])">
+                            <img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
+                            <else />
+                            <a href="javascript:parent.image_preview_dialog('{$v['product_pic']}');">
+                                <img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$v.product_pic}">
+                            </a>
+                        </if>
+                    </td>
+                    <td class="text-center">{$v.product_code}</td>
+					<!--<td class="text-center"><a href="{:U('BProduct/index',array(search_name=>$v['product_code']))}">{$v.product_code}</a></td>-->
+					<td>{$v.goods_name}</td>
+                    <td style="white-space: normal">{$v.product_detail}</td>
+				</tr>
+			</volist>
+			</tbody>
+		</table>
+	</div>
+	<div class="pagination">{$page}</div>
+	<!--流程进度 wuhy 2018.05.30-->
+	<shoptpl file="process" />
+	<!---->
+
+	<shoptpl file="operate" />
+    <div class="form-actions text-center">
+		<input type="hidden" value="{$allocation.id}" id="id"/>
+		<p  class="btn btn-danger js-ajax-submit" data-type="-2" >驳回</p>
+		<p  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</p>
+		<p  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</p>
+        <a class="btn" href="javascript:history.back(-1);">返回</a>
+        <span class="tips_error"></span>
+
+    </div>
+	<include file="./Application/Home/View/Public/footer.html" />
+</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script src="__PUBLIC__/js/shop_common.js"></script>
+<script src="__PUBLIC__/shop/BAllot/js/allot_check_detail.js"></script>
+</body>
+

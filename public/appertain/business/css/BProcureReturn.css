@@ -1,0 +1,99 @@
+/**
+ * create by alam 2016/06/05
+ * 采购退货的css
+ */
+
+.no_arrow::-webkit-outer-spin-button, .no_arrow::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+.no_arrow{
+	-moz-appearance: textfield;
+}
+
+.table .search_input {
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+#mobile {
+	margin: 8px 5px;
+	text-indent: 20px;
+}
+
+#product_code {
+	margin: 8px 5px;
+	text-indent: 20px;
+}
+
+.myModal3.leave {
+	position: absolute;
+	top: 12px;
+	left: 15px;
+	font-size: 14px;
+}
+
+.ta select, .ta input {
+	width: 90%;
+}
+
+input[name="return_date"] {
+	width: 178px;
+}
+textarea[name="memo"] {
+	width: 80%;
+}
+textarea[name="check_memo"] {
+	width: 80%;
+}
+input[name="excel_file"] {
+	opacity: 0;
+	position: absolute;
+}
+a.procureModal {
+	cursor: pointer;
+}
+
+.modal {
+	width: 80% !important;
+	left: 400px !important;
+	top: 2% !important;
+	bottom: 2% !important;
+	display: none;
+}
+
+.modal-header {
+	cursor: move;
+}
+
+.modal-header b{
+	margin: 0;
+	font-family: 'Microsoft Yahei', verdana;
+	color: #157ab5;
+}
+
+.modal-body {
+	max-height: 800px; padding: 0px;
+}
+
+.center-block {
+	width: 260px;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.click_pic {
+	float: left;
+	max-width: calc(50% - 4px);
+	max-height: 200px;
+	margin: 2px;
+}
+
+.payment_tr td {
+	vertical-align: top;
+}
+
+.upload_click, .remove_pic{
+	float: left;
+}

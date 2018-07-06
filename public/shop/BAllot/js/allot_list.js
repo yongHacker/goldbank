@@ -1,0 +1,31 @@
+    var allot_list=$("input[name='allot_list']").val();
+    $('.check_tr').unbind().click(function(){
+        var checkbox=$(this).find('input[type=checkbox]');
+        if(checkbox.is(':checked')){
+            checkbox.prop('checked',false);
+        }else{
+            checkbox.prop('checked',true);
+        }
+    });
+    $('.check_box').click(function(){
+        if($(this).is(':checked')){
+            $(this).prop('checked',false);
+        }else{
+            $(this).prop('checked',true);
+        }
+    });
+    $('#check_all').click(function(){
+        if(this.checked){
+            $('.check_box').prop('checked',true);
+            $('.check_box').each(function(){
+            });
+        }else{
+            $('.check_box').prop('checked',false);
+            $('.check_box').each(function(){
+            });
+        }
+    });
+    if(allot_list==''||allot_list==null||typeof(allot_list)=='undefined'){
+        $('.ta').hide();
+        $('.ts').show();
+    }

@@ -1,0 +1,187 @@
+<businesstpl file="header" />
+<style>
+
+.table tr th{
+			text-align:center;
+		}
+a:hover {text-decoration: none;}
+
+</style>
+</head>
+<body class=" theme-blue" >
+		<div class="wrap js-check-wrap"  >
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BWarehouse/index')}">{:L('BUSINESS_BWAREHOUSE_INDEX')}</a></li>
+			<li><a href="{:U('BWarehouse/add')}">{:L('BUSINESS_BWAREHOUSE_ADD')}</a></li>
+		</ul>
+		<form class="well form-search" method="post" action="{:U('BWarehouse/index')}" >
+			综合搜索:
+			<input id="search_name" name="search_name" style="width: 100px;" value="{$_POST['search_name']}" placeholder="关键字查询" type="text">
+
+			<input class="btn btn-primary" value="搜索" type="submit">
+		</form><!--<p class="btn btn-primary btn-small" style="margin-top: 10px;margin-bottom: 10px;" onclick="location.href='{:U("BWarehouse/export_inventory_profit")}'">下载盘盈表</p>-->
+		<div class="main-content">
+		<div class="ta">
+			<table class="table table-bordered  table-hover table-striped">
+				<thead >
+					<tr>
+						<th>序</th>
+						<th>仓库编码</th>
+						<th>仓库名</th>
+						<th>管理员</th>
+						<th>归属</th>
+						<th>零售库存</th>
+						<!--<th>批发库存</th>-->
+						<th>仓库地址</th>
+						<th>是否开启</th>
+						<th style="width:140px;">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<volist name="list" id="v">
+					<tr>
+					 <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					  <td class="text-center">{$v.wh_code}</td>
+					  <td>{$v.wh_name}</td>
+					  <td>{$v.user_nicename}</td>
+						<td>{$v['shop_id']>0?"门店":"总部"}</td>
+						<td class="text-right">
+						<if condition="$v.product_count gt 0">
+							<a href="{:U('BWarehouse/product_list',array('status'=>2,'wh_id'=>$v['id']))}">{$v.product_count}</a>
+						<else/>
+							{$v.product_count}
+						</if>
+						</td>
+						<!--<td class="text-right">{$v.wgoods_count}</td>-->
+					  <td>{$v.address}</td>
+
+					  <td class="text-center"><if condition='$v["status"] eq 1'>是<else/>否</if></td>
+					  <td class="text-center">
+							<!--<a href="{:U('BWarehouse/add_manager',array('ware_id'=>$v['id']))}" <if condition="$v.user_nicename neq ''">title="修改管理员" class="edit fa fa-credit-card"<else/>title="添加管理员" class="edit fa fa-plus-square-o"</if>></a>-->
+						  <a href="{:U('BWarehouse/edit',array('ware_id'=>$v['id'],'shop_id'=>$v['shop_id']))}" title="编辑" class="edit fa fa-edit"></a>
+						<if condition="$v[is_default] eq 0">
+						  	<a href="{:U('BWarehouse/deleted',array('ware_id'=>$v['id']))}"  class="js-ajax-delete del delete fa fa-trash" role="button" data-toggle="modal" title="删除"></i></a>
+							<else/>
+							<font class="delete fa fa-trash" color="#cccccc" title="默认仓库不能删除"></font>
+						</if>
+							<a href="#inventory" name="{$v.id}"style="" url="{:U('BWarehouse/inventory',array(id=>$v['id']))}" class="js-ajax-show inventory  detail fa fa-pie-chart"  title="下载库存盘点"></a>
+					  </td>
+					</tr>
+					</volist>
+				</tbody>
+			</table>
+
+		</div>
+<div class="pagination">{$page}</div>
+ <script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+			  <script type="text/javascript">
+			　		$(function(){
+						//构造树
+						setUser();
+					});
+					function setUser(){
+						$(".del").each(function(index, obj) {
+							$(this).click(function(){
+								var id=$(this).attr('name');
+								delUser(id);
+							})
+                    	});
+					}
+					
+					
+					function delUser(id){
+						$('#myModal').find('button').each(function(index, element) {
+							$(this).click(function(){
+								if($(this).attr('id')=='del'){
+									$.ajax({
+										url: "{:U('BWarehouse/deleted')}",
+										type: 'post',
+										data:{ware_id:id},
+										success: function(data) {
+											if(data.status==1){
+												//alert(data.msg);
+												location.reload();
+											}else{
+												alert(data.msg);
+											}
+											
+										}
+									})
+								}
+							})
+						});
+					}
+					
+ </script>
+
+
+<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog-div">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">删除警告</h3>
+        </div>
+        <div class="modal-body">
+            <p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要删除吗?</p>
+        </div>
+        <div class="modal-footer">
+            <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+            <button id="del" class="btn btn-danger"  data-dismiss="modal">删除</button>
+        </div>
+      </div>
+    </div>
+</div>
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script>
+	//锁定操作，锁定数据后刷新页面
+	if ($('.inventory').length) {
+		Wind.use('artDialog', function () {
+			$('.inventory').on('click', function (e) {
+				var id=$(this).attr('name');
+				var type="count";
+				var url ="{:U('BWarehouse/inventory')}";
+				var num=0;
+				$.ajax({
+					type:'post',
+					data:{id:id,type:type},
+					dataType:'json',
+					url:url,
+					async:false,
+					success:function(result){
+						if(result.status=="1"){
+							num=result.msg;
+						}
+					}
+				});
+				var str="当前仓库有"+num+"件货品，是否下载库存盘点？";
+				e.preventDefault();
+				var $_this = this,
+						$this = $($_this),
+						href = $this.data('url'),
+						msg = str;
+				art.dialog({
+					title: false,
+					icon: 'question',
+					content: msg,
+					follow: $_this,
+					close: function () {
+						$_this.focus();
+						; //关闭时让触发弹窗的元素获取焦点
+						return true;
+					},
+					okVal: "确定",
+					ok: function () {
+							location.href='{:U("BWarehouse/inventory")}&id='+id;
+					},
+					cancelVal: '关闭',
+					cancel: true
+				});
+			});
+
+		});
+	}
+</script>
+<include file="./Application/Home/View/Public/footer.html" />

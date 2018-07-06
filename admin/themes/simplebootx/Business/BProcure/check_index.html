@@ -1,0 +1,76 @@
+<businesstpl file="header" />
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li <?php if(!isset($request_data['status']) || $request_data['status'] != 0){?> class="active" <?php }?>><a href="{:U('BProcure/index')}">采购审核</a></li>
+		</ul>
+		
+        {$search_html}
+
+        <div class="main-content">
+            <div class="ta">
+                <table class="table table-bordered  table-hover table-striped">
+                    <thead>
+                    <tr>
+                    	<th class="text-center">采购单号</th>
+                        <th class="text-center">供应商</th>
+                        <th class="text-center">采购类型</th>
+                        <th class="text-center">采购数量/件</th>
+                        <th class="text-center">采购重量/克</th>
+                        <th class="text-center">采购金额/元</th>
+                        <th class="text-center">采购人员</th>
+                        <th class="text-center">状态</th>
+                        <th class="text-center">采购日期</th>
+                        <th class="text-center">创建日期</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="procure_list" id="v">
+                        <tr>
+                            <td class="text-center">
+                                {$v.batch}
+                            </td>
+                            <td class="coded text-left">{$v.company_name}</td>
+                            <td class="coded text-center">{$v.show_pricemode}</td>
+                            <td class="jhmc text-right"><!-- 计件0 显示数量，计重1不显示 -->
+                                <php>echo $v['pricemode'] != 1?$v['num']:'--';</php>
+                            </td>
+                            <td class="jhmc text-right"><!-- 计件0 不显示重量，计重1显示 -->
+                                <php>echo $v['pricemode'] == 1?$v['weight']:'--';</php>
+                            </td>
+                            <td class="clrq text-right">{:numberformat($v['price'], 2, '.', ',')}</td>
+                            <td class="text-left">{$v.creator_name}</td>
+                            <td class="text-center">{$v.show_status}</td>
+                            <td class="clrq text-center">{:date('Y-m-d', $v['procure_time'])}</td>
+                            <td class="clrq text-center">{:date('Y-m-d', $v['create_time'])}</td>
+                            <td class="text-center">
+
+                                <a href="{:U('BProcure/detail', array('id'=> $v['id']))}">查看</a>
+                                <a href="{:U('BProcure/check', array('id'=> $v['id']))}">审核</a>
+                            </td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">{$page}</div>
+            <div class="ts" style="display:none;">
+                <include file="./public/common/default_empty.html" />
+            </div>
+        </div>
+    </div>
+
+    <script src="/public/js/cookie.js"></script>
+    <script src="/public/js/common.js"></script>
+    <script>
+    if('{:count($procure_list)}' == 0 ||'{$procure_list}'==''||'{$procure_list}'==null||typeof('{$procure_list}')=='undefined'){
+    	$('.ta').hide();
+    	$('.ts').show();
+    }
+    </script>
+</body>
+</html>

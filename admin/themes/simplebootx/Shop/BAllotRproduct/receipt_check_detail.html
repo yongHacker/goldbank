@@ -1,0 +1,28 @@
+<shoptpl file="header" />
+<body class="theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('receipt_check_detail')}">{:L(MODULE_NAME.'_BALLOT_RECEIPT_CHECK_DETAIL')}</a></li>
+        <span style="float:right">
+            <button type="button" class="btn btn-primary baocun pass" name="{$allocation['id']?$allocation['id']:''}" id="baocun">审核通过</button>
+            <a class="btn btn-danger nopass" href="javascript:void(0);" name="{$allocation['id']?$allocation['id']:''}">审核不通过</a>
+            <button type="button" onclick="history.go( -1 )" class="btn  " >返回</button>
+        </span>
+	</ul>
+    <shoptpl file="BAllotRproduct/detail_tpl" />
+    <div class="form-actions text-center">
+        <button type="button" class="btn btn-primary baocun pass" name="{$allocation['id']?$allocation['id']:''}" id="baocun">审核通过</button>
+        <!-- <button type="button" class="btn btn-primary baocun" id="baocun_print">添加并打印</button>-->
+        <a class="btn btn-danger nopass" href="javascript:void(0);" name="{$allocation['id']?$allocation['id']:''}">审核不通过</a>
+        <a class="btn" href="javascript:history.back(-1);">返回</a>
+        <span class="tips_error"></span>
+
+    </div>
+	<include file="./Application/Home/View/Public/footer.html" />
+</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script src="__PUBLIC__/js/shop_common.js"></script>
+<script src="__PUBLIC__/shop/BAllotRproduct/js/receipt_check_detail.js"></script>
+</body>
+

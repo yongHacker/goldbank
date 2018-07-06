@@ -1,0 +1,101 @@
+<systemtpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<!--<li><a href="{:U('BEmployee/index')}">{:L('SYSTEM_BEMPLOYEE_INDEX')}</a></li>-->
+			<li class="active"><a href="{:U('Rbac/add_employee')}">{:L('SYSTEM_BEMPLOYEE_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('Rbac/add_employee')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">员工姓名</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="user_nicename">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">手机号(登录账号)</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="mobile">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">工号</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="workid">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">部门:</label>
+					<div class="controls">
+						<select name="sector_id">
+							<option value="0">选择部门</option>
+							{$select_categorys}
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">岗位:</label>
+					<div class="controls">
+						<select name="job_id" id="select_job">
+							<option value="0" >选择岗位</option>
+						</select>
+					</div>
+				</div>
+				<!--<div class="control-group">
+					<label class="control-label">{:L('ROLE')}</label>
+					<div class="controls">
+						<foreach name="roles" item="vo">
+						<label class="checkbox inline"><input value="{$vo.id}" type="checkbox" name="role_id[]" <if condition="get_user_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}</label>
+						</foreach>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">门店{:L('ROLE')}</label>
+					<div class="controls">
+						<foreach name="shop_roles" item="vo">
+							<label class="checkbox inline"><input value="{$vo.id}" type="checkbox" name="role_id[]" <if condition="get_user_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}</label>
+						</foreach>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">指派门店</label>
+					<div class="controls">
+						<foreach name="shop" item="vo">
+							<label class="checkbox inline"><input value="{$vo.id}" type="checkbox" name="shop_id[]" >{$vo.shop_name}</label>
+						</foreach>
+					</div>
+				</div>-->
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script>
+	$('select[name=sector_id]').unbind().change(function(){
+		get_jobs();
+	});
+	function get_jobs(){
+		var sector_id=$('select[name=sector_id]').val();
+		var jobs='{$bjobs}';
+		var jobs_json=eval(jobs);
+		var select_job=$("#select_job");
+		var job_html='<option value="0" >选择岗位</option>';
+		if(sector_id>0){
+			$.each(jobs_json, function (n, v) {
+				if(sector_id== v.sector_id){
+					console.log(v);
+					job_html+='<option value="'+ v.id+'">'+ v.job_name+'</option>';
+				}
+			});
+		}
+		select_job.html(job_html);
+	}
+
+</script>

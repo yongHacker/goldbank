@@ -1,0 +1,1411 @@
+<businesstpl file="header" />
+<link href="__PUBLIC__/business/BGoodsCommon/add.css" rel="stylesheet"/>
+<script src="__PUBLIC__/js/ueditor/ueditor.config.js"></script>
+<script src="__PUBLIC__/js/ueditor/ueditor.all.min.js"></script>
+<script src="__PUBLIC__/js/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+<body class=" theme-blue">
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('BGoodsCommon/index')}">{:L('BUSINESS_BGOODSCOMMON_INDEX')}</a></li>
+        <li class="active"><a href="javascript:void(0)">{:L('BUSINESS_BGOODSCOMMON_ADD')}</a></li>
+        <!--<li class="active"><a href="{:U('BGoodsCommon/inlay_add')}">{:L('BUSINESS_BGOODSCOMMON_INLAY_ADD')}</a></li>-->
+        <button type="button" onclick="history.go( -1 )" class="btn btn-default" style="float:right">返回</button>
+        <button id="save-all" type="button" class="btn btn-primary " style="float:right">保存</button>
+    </ul>
+    <div class="main-content">
+        <div class="table-info">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <td width="6%">商品分类</td>
+                    <td width="44%" >
+                        {$goods_class_name}
+                       <!-- <select name="class_id" style="width: 150px;" data-live-search="true">
+                            {$select_categorys}
+                        </select>*-->
+                    </td>
+                  <!--  <td width="6%">是否上架微信</td>
+                    <td width="44%"><a class="open fa fa-toggle-off" href="javascript:void(0)"><input type="hidden" name="mobile_show" value="0"/></a></td>
+                </tr>
+                <tr>-->
+                    <td width="6%">商品编码</td>
+                    <td width="44%"><input class="require" id="goods-code" type="text" name="goods_code" value=""/>*<span class="alert">请输入商品编码！</span></td>
+                   <!-- <td width="6%">是否为标规</td>
+                    <td width="44%"><a class="open fa fa-toggle-off" href="javascript:void(0)"><input type="hidden" name="is_standard" value="0"/></a></td>-->
+                </tr>
+                <tr>
+                    <td width="8%">商品名称</td>
+                    <td width="42%"><input class="require" type="text" name="goods_name" value="{$goods_detail.goods_name}"/>*<span class="alert">请输入商品名称！</span></td>
+                    <td width="8%">销售方式</td>
+                    <td width="25%">
+                        <span><input type="radio" style="width: auto" value="1" name="sell_type" checked="checked">&nbsp;&nbsp;零售&nbsp;&nbsp;</span>
+                        <!-- <span><input type="radio" style="width: auto" value="2" name="sell_type" >&nbsp;&nbsp;批发  </span> -->
+                    </td>
+
+                </tr>
+                <tr>
+                    <td width="8%">标签名</td>
+                    <td width="42%"><input class="require" type="text" name="tag_name" value="{$goods_detail.tag_name}"/><span class="alert">标签名！</span></td>
+                    <td width="8%">添加图片</td>
+                    <td width="42%" colspan="3">
+                        <span id="goods_img_show">
+                        <volist name="goods_img" id="vo">
+                            <img src="{$vo.pic}" height="40" style="height:30px;margin:0px 5px;" />
+                        </volist>
+                        </span>
+                        <input type="hidden" name="goods_default_img" value="0" />
+                        <a class="btn btn-primary btn-small" href="#uploadimgModal" class="uploadimgModal on" style="cursor:pointer;"  role="button" data-toggle="modal" role="button" type="text">+添加</a>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td width="6%">商品寓意</td>
+                    <td width="94%" colspan="3" id="spec-with"><textarea type="text" name="moral" style="width: 60%" value=""></textarea></td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <input type="hidden" id="meterage_sml" value="{$meterage.meterage_sml}">
+        <input type="hidden" id="meterage_ans" value="{$meterage.meterage_ans}">
+        <div class="modal small fade" style="width:80%;left: 400px;display:none;top: 2%;" id="uploadimgModal" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog-div">
+                <div class="modal-content">
+                    <div class="modal-header" style="cursor:move">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <b style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">上传图片</b>
+                    </div>
+                    <div class="modal-body" style="max-height: 800px;padding: 0px;">
+                        <div class="wrap js-check-wrap" style="min-height:380px;">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="/index.php?g=Kunjinjubao&m=procure&a=index">图片</a></li>
+                            </ul>
+                            <ul class="upload_img">
+                                <p id="goods_img_add"<if condition="!empty($goods_img)">style='display:none;'</if>><img src="__PUBLIC__/images/business/default_goods_img.png" width="72" height="72" /><br />添加图片</p>
+                                <volist name="goods_img" id="vo">
+                                    <li><img src="{$vo.pic}" />
+                                        <br />
+                                        <if condition="$vo['is_hot'] eq 1"><a  name="{$vo.id}" href="#" class="set_default" style="color:#f00;">主图</a><else /><a name="{$vo.id}" href="#" class="set_default">设为主图</a></if>
+
+                                        <a href="#myModal" name="{$vo.id}" class="delete fa fa-trash-o" role="button" data-toggle="modal" title="删除"></a>
+                                    </li>
+                                </volist>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button id="procure_cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">保存</button>
+                        <button id="procure_add" class="btn btn-primary" >添加更多</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-produce">
+            <div id="gold-type-html" style="display:none">
+                <select name="gold_type">
+                    <option value="0">选择贵金属</option>
+                    {$cate_list}
+                    <!-- <volist name="cate_list" id="v">
+                         <option value="{$v.id}">{$v.name}</option>
+                     </volist >-->
+                </select>
+            </div>
+            <div id="bank-gold-type-html" style="display:none">
+                <select name="bank_gold_type">
+                    <option value="0">选择金价</option>
+                    <!--<volist name="bank_gold_type_list" id="v">
+                        <option value="{$v.bgt_id}">{$v.name}</option>
+                    </volist >-->
+                </select>
+            </div>
+            <table class="table table-bordered">
+                <tbody>
+                <tr class="tr-spec-set">
+                    <td width="100%" class="td-spec-set" style="white-space: normal;" colspan="2">规格配置<span style="color: red">（双击一行编辑规格）</span></td>
+                </tr>
+                <tr class="tr-spec-set">
+                    <td width="100%" colspan="2">
+                        <div class="spec-table-info">
+                            <table class="table table-bordered spec-set">
+                                <thead id="spec-detail-thead">
+                                <tr>
+                                    <th class="img">图片</th>
+                                    <th class="spec">&nbsp;规格&nbsp;</th>
+                                    <th class="spec_code">规格编码
+
+                                    <th class="goods_unit" hidden="hidden" style="display: none">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>计量单位</h6>
+                                                <div class="bat-cont">
+                                                    <input type="text" autocomplete="off" name="goods_unit" class="bat-input"/>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        计量单位<span>*</span>
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th>
+                                    <th class="price_mode">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>采购计价方式</h6>
+                                                <div class="bat-cont">
+                                                    <select name="price_mode" class="bat-select">
+                                                        <!-- <option value="1">计重</option> -->
+                                                        <option value="0" selected>计件</option>
+                                                    </select>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        采购计价方式
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th>
+
+                                    <!-- <th class="pick_pricemode">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>配货计价方式</h6>
+                                                <div class="bat-cont">
+                                                    <select name="pick_pricemode" class="bat-select">
+                                                        <option value="1">计重</option>
+                                                        <option value="0">计件</option>
+                                                    </select>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        配货计价方式
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th> -->
+
+                                    <th class="sell_pricemode">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>销售计价方式</h6>
+                                                <div class="bat-cont">
+                                                    <select name="sell_pricemode" class="bat-select">
+                                                        <option value="1">计重</option>
+                                                        <option value="0">计件</option>
+                                                    </select>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        销售计价方式
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th>
+
+                                    <th class="procure_price">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>采购参考价</h6>
+                                                <div class="bat-cont">
+                                                    <input type="text" autocomplete="off" name="procure_price" class="bat-input"/>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        采购参考价<span>*</span>
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th>
+                                    <!-- <th class="pick_price">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>配货价</h6>
+                                                <div class="bat-cont">
+                                                    <input type="text" autocomplete="off" name="pick_price" class="bat-input"/>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        配货价
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th> -->
+                                    <th class="sell_price">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>销售价</h6>
+                                                <div class="bat-cont">
+                                                    <input type="text" autocomplete="off" name="sell_price" class="bat-input"/>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        销售价
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th>
+                                    <th class="market_price">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>市场价</h6>
+                                                <div class="bat-cont">
+                                                    <input type="text" autocomplete="off" name="market_price" class="bat-input"/>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        市场价
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th>
+                                    <th class="photo_switch">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>图片展示方式</h6>
+                                                <div class="bat-cont">
+                                                    <select name="photo_switch" class="bat-select">
+                                                        <option value="1">规格图</option>
+                                                        <option value="0">货品图</option>
+                                                    </select>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        图片展示方式
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th>
+                                    <th class="status">
+                                        <div class="batch">
+                                            <div class="batch-set">
+                                                <h6>是否启用</h6>
+                                                <div class="bat-cont">
+                                                    <select name="status" class="bat-select">
+                                                        <option value="1">启用</option>
+                                                        <option value="0">停用</option>
+                                                    </select>
+                                                    <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                </div>
+                                                <a href="javascript:void(0)" class="bat-close">x</a>
+                                            </div>
+                                        </div>
+                                        是否启用
+                                        <a href="#" class="fa fa-pencil-square-o bat-edit"></a>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody id="spec-detail-tbody">
+                                <tr class="spec-tr">
+                                    <td class="goods_pic"></td>
+                                    <td class="goods_spec"></td>
+                                    <td class="spec_code"></td>
+                                    <td class="goods_unit" hidden="hidden" style="display: none"></td>
+                                    <td class="price_mode"></td>
+                                    <!-- <td class="pick_pricemode"></td> -->
+                                    <td class="sell_pricemode"></td>
+                                    <td class="procure_price"></td>
+                                    <!-- <td class="pick_price"></td> -->
+                                    <td class="sell_price"></td>
+                                    <td class="market_price"></td>
+                                    <td class="photo_switch"></td>
+                                    <td style="text-align: center">
+                                        <a href="javascript:void(0)" id="spec-tr-add">+</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <a href="javascript:void(0)"  class="tr-delete fa fa-trash"></a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="6%">产品介绍</td>
+                    <td width="94%">
+                        <div id="panel-mobile" class="panel-mobile">
+                            <div class="mobile-editor">
+                                <div class="pannel">
+                                    <div class="size-tip"><span class="img_count_tip">图片总数不得超过<b>20</b>张</span><i>|</i><span class="txt_count_tip">文字不得超过<b>5000</b>字</span></div>
+                                    <div class="control-panel">
+                                    </div>
+                                    <div class="add-btn">
+                                        <ul class="btn-wrap">
+                                            <li><a href="javascript:void(0);" class="mb_add_img"><i class="icon-picture"></i>
+                                                <p>图片</p>
+                                            </a></li>
+                                            <li><a href="javascript:void(0);" class="mb_add_txt"><i class="icon-font"></i>
+                                                <p>文字</p>
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="explain">
+                                    <dl>
+                                        <dt>1、基本要求：</dt>
+                                        <dd>（1）手机详情总体大小：图片+文字，图片不超过20张，文字不超过5000字；</dd>
+                                        <dd>建议：所有图片都是商品相关的图片。</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>2、文字要求：</dt>
+                                        <dd>（1）每次插入文字不能超过500个字，标点、特殊字符按照一个字计算；</dd>
+                                        <dd>（2）请手动输入文字，不要复制粘贴网页上的文字，防止出现乱码；</dd>
+                                        <dd>（3）以下特殊字符“<”、“>”、“"”、“'”、“\”会被替换为空。</dd>
+                                        <dd>建议：不要添加太多的文字，这样看起来更清晰。</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="mobile-edit-area">
+                                <div  class="mea-img" style="display: none;">
+                                    <button class="btn btn-primary btn-small image-upload" >上传图片</button>
+                                    <a class="image-close"  href="javascript:void(0);">X</a>
+                                </div>
+                                <div class="mea-text" style="display: none;">
+                                    <textarea class="textarea valid meat_content" ></textarea>
+                                    <div class="button"><a class="btn btn-primary btn-small meat_submit" href="javascript:void(0);">确认</a><a class="btn btn-primary btn-small meat_cancel"  href="javascript:void(0);">取消</a></div>
+                                    <a class="text-close"  href="javascript:void(0);">X</a>
+                                </div>
+                            </div>
+                            <input name="m_body" autocomplete="off" type="hidden" value=''>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <!--图片压缩上传-->
+        <div class="modal small fade" style="top:2%;width:530px;background-color: #fff;" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog-div modal-lg">
+
+                <div class="modal-content">
+                    <div class="modal-header" style="cursor:move">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">商品图片</h3>
+                    </div>
+                    <div class="modal-body" style="max-height: 800px;">
+                        <link href="__PUBLIC__/js/h5pic/h5pic.css" rel="stylesheet"/>
+                        <input type="file" value="select img" hidden="hidden" id="ipt" value="选择图片">
+                        <div class="canvas-box">
+
+                        </div>
+                        <input type="file" id="choose" accept="image/*" multiple>
+                        <ul class="img-list" style="display: none"></ul>
+                        <div id="base64"></div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="save" type="button">上传</button>
+                            <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            <p class="tips_error" style="color:red">(提示：最好选择高宽的比例为1:1的原图)</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="modal small fade" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+             <div class="modal-dialog-div modal-lg">
+                 <div class="modal-content">
+                     <div class="modal-header" style="cursor:move">
+                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                         <h6>设置主图</h6>
+                     </div>
+                     <div class="modal-body">
+                         <p>是否设置该图为主图？</p>
+
+                     </div>
+                     <div class="modal-footer">
+                         <button class="btn btn-primary img-set-sure">确定</button>
+                         <button class="btn btn-primary img-set-cancel">取消</button>
+                     </div>
+
+                 </div>
+             </div>
+         </div>-->
+        <div class="modal small fade" id="myModal4" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog-div modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header" style="cursor:move">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h6>提示</h6>
+                    </div>
+                    <div class="modal-body">
+                        <p>请完成规格表所有数据的填写</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">确认</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="modal small fade" id="myModal5" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog-div modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header" style="cursor:move">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h6>提示</h6>
+                    </div>
+                    <div class="modal-body">
+                        <p>销售价格不能高于市场价</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">确认</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="modal small fade" id="myModal6" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog-div modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header" style="cursor:move">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h6>提示</h6>
+                    </div>
+                    <div class="modal-body">
+                        <p></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary pic-sure"  onclick="continue_input();">继续上传</button>
+                        <button class="btn btn-primary pic-sure" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--删除弹出框-->
+    <div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog-div">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel">删除警告</h3>
+                </div>
+                <div class="modal-body">
+                    <p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要删除吗?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="can" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                    <button id="del" class="btn btn-primary" data-dismiss="modal">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--tr_edit 编辑规格内容-->
+    <div class="modal hide fade auto-adapt" id="light">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 class="lightbox_content">对话框标题</h3>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered" id="spec-detail-edit_tbody">
+
+            </table>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">关闭</a>
+            <a href="#" class="btn btn-primary lightbox_save">保存</a>
+        </div>
+    </div>
+   <!-- <div id="light" class="white_content">
+        <span class="lightbox_content">This is the lightbox content.</span>
+        <button type="button" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'" class="btn btn-default" style="float:right;margin-bottom: 10px;">关闭</button>
+        <table class="table table-bordered" id="spec-detail-edit_tbody">
+            <tr>
+                <td>图片</td>
+                <td class="goods_pic" is_hot="0">+</td>
+                <td>规格</td>
+                <td class="goods_spec"><input name="goods_spec" type="text"></td>
+            </tr>
+            <tr>
+                <td>商品编码</td>
+                <td class="spec_code text-center">1001</td>
+                <td>克重</td>
+                <td class="weight"><input type="text" autocomplete="off" name="weight"></td>
+            </tr>
+        </table>
+        <span class="lightbox_content">This is the lightbox content.</span>
+        <button type="button" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'" class="btn btn-default" style="float:right;margin-bottom: 10px;">关闭</button>
+    </div>
+    <div id="fade" class="black_overlay">
+    </div>-->
+    <include file="./public/common/footer.html" />
+</div>
+<script src="__PUBLIC__/js/h5pic/zm-canvas-crop.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/business_common.js"></script>
+<script>
+    //JS屏蔽鼠标右键
+    document.oncontextmenu=new Function("event.returnValue=false;");
+    document.onselectstart=new Function("event.returnValue=false;");
+    $(".require").blur(function () {
+        $(this).parents("td").find(".alert").css("display","none");
+    });
+    //贵金属类型批量更改则金价类型更改
+    function changeall_gold_type() {
+        $(".batch-set").find("select[name='gold_type']").change(function () {
+            var html = $(this).parent().parent().html();
+            var bank_gold_type=$("select[name='bank_gold_type']");
+            bank_gold_type.html("");
+            new_bank_gold_type(bank_gold_type,$(this).val());
+        });
+    }
+    //贵金属类型单个更改则金价类型更改
+    function changeone_gold_type() {
+        $(".gold_type").find("select[name='gold_type']").change(function () {
+            var bank_gold_type=$(this).parent().parent().find("select[name='bank_gold_type']");
+            //console.log(bank_gold_type.html());
+            bank_gold_type.html("");
+            new_bank_gold_type(bank_gold_type,$(this).val());
+            var batch_bank_gold_type=$(".batch-set").find("select[name='bank_gold_type']");
+            batch_bank_gold_type.html("");
+            new_bank_gold_type(batch_bank_gold_type,$(this).val());
+        });
+    }
+    function new_bank_gold_type(bank_gold_type,gold_type_id){
+        var bank_gold_type_list='{$bank_gold_type_json}';
+        bank_gold_type_list=eval(bank_gold_type_list);
+        var bank_gold_type_html='<option value="0" >选择金价</option>';
+        $.each(bank_gold_type_list, function (n, v) {
+            // console.log(v);
+            if(gold_type_id== v.b_metal_type_id){
+                bank_gold_type_html+='<option value="'+ v.bgt_id+'">'+ v.name+'</option>';
+            }
+        });
+        bank_gold_type.html(bank_gold_type_html);
+    }
+    //商品编码变化时，规格码也变化
+    $("#goods-code").change(function(){
+        var spec_val=$(this).val();
+        if($("#spec-detail-tbody").length!=0){
+            $("#spec-detail-tbody tr").each(function (i) {
+                if(i!=$("#spec-detail-tbody tr").length-1){
+                    // var code=(i>=9)?(i>=99?(i+1):"0"+(i+1)):("00"+(i+1));
+                    var code=GetLetters(i);
+                    $(this).find(".spec_code").html('<input class="spec-code-v" value="'+spec_val+code+'" maxlength="20"/>');
+                }
+            })
+        }
+    });
+    function input_weight(){
+        $("input[name='weight']").change(function (e) {
+            if ($(this).val().trim() != "") {
+                var weight=$(this).val();
+                var meterage_sml=$("#meterage_sml").val();
+                var meterage_ans=$("#meterage_ans").val();
+                meterage_sml=weight/meterage_sml;
+                meterage_ans=weight/meterage_ans;
+                var sml= parseFloat(meterage_ans).toFixed(8);
+                var ans= parseFloat(meterage_sml).toFixed(8);
+                $(this).parent().nextAll().find("input[name='meterage_sml']").val(sml);
+                $(this).parent().nextAll().find("input[name='meterage_ans']").val(ans);
+            }else{
+                $(this).parent().nextAll().find("input[name='meterage_sml']").val("");
+                $(this).parent().nextAll().find("input[name='meterage_ans']").val("");
+            }
+        });
+    }
+    //添加规格行
+    $(document).on("click","#spec-tr-add",function (e) {
+        e.preventDefault();
+        var gold_html=$("#gold-type-html").html();
+        var bank_gold_html=$("#bank-gold-type-html").html();
+        var photo_show_type=$("#photo_show_type-html").html();
+        var spec_val=$("#goods-code").val();
+
+        if(spec_val==""){
+            $("#goods-code").parent().find(".alert").css("display","inline-block");
+            $("#goods-code").focus();
+            return false;
+        }
+        var i=$(this).parents(".spec-tr").index();
+        // var code=(i>=9)?(i>=99?(i+1):"0"+(i+1)):("00"+(i+1));
+        var code=GetLetters(i);
+        var mode=/* '<option value="1">计重</option>' */'<option value="0" selected>计价</option>';
+        var sell_mode='<option value="1">计重</option><option value="0" selected>计价</option>';
+        var photo_switch_html='<option value="1">规格图</option><option value="0">货品图</option>';
+        if($("input[name='sell_type']:checked").val()==1) {
+            var html = '<tr class="add_tr"><td class="goods_pic" is_hot="0">+</td><td class="goods_spec"><input name="goods_spec" type="text"></td>' +
+                '<td class="spec_code"><input type="text" class="spec-code-v" value=" '+spec_val+code+'" maxlength="20"/></td>';
+            html += '<td class="goods_unit" hidden="hidden"><input type="text" autocomplete="off" name="goods_unit"/></td>' ;//为了编辑添加
+            html += '<td class="price_mode"><select name="price_mode">' + mode + '</select></td>' +
+                    /* '<td class="pick_pricemode"><select name="pick_pricemode">' + mode + '</select></td>' + */
+                    '<td class="sell_pricemode"><select name="sell_pricemode">' + sell_mode + '</select></td>';
+            html += '</td><td class="procure_price"><input class="input_init" type="text" autocomplete="off" name="procure_price" value="0.00"/></td>' +
+/*                     '<td class="pick_price"><input type="text" autocomplete="off" name="pick_price"/></td>' + */
+                    '<td class="sell_price"><input class="input_init" type="text" autocomplete="off" name="sell_price" value="0.00"/></td>' +
+                    '<td class="market_price"><input class="input_init" type="text" autocomplete="off" name="market_price" value="0.00"/></td>' +
+                    '<td class="photo_switch"><select name="photo_switch">' + photo_switch_html + '</select></td>' +
+                    '<td style="width: 100px;"><select name="status"><option value="1">启用</option><option value="0">停用</option></select></td></tr>';
+        }else {
+            var html = '<tr class="add_tr"><td class="goods_pic" is_hot="0">+</td><td class="goods_spec"><input name="goods_spec" type="text"></td>' +
+                '<td class="spec_code"><input type="text" class="spec-code-v" value=" '+spec_val+code+'" maxlength="20"/></td>';
+            html += '<td class="goods_unit"><input type="text" autocomplete="off" name="goods_unit"/></td>' ;
+            html += '<td class="price_mode"><select name="price_mode">' + mode + '</select></td>' +
+                    /* '<td class="pick_pricemode" hidden="hidden"><select name="pick_pricemode">' + mode + '</select></td>' +//为了编辑添加 */
+                    '<td class="sell_pricemode"><select name="sell_pricemode">' + sell_mode + '</select></td>';
+            html += '</td><td class="procure_price"><input class="input_init" type="text" autocomplete="off" name="procure_price" value="0.00"/></td>' +
+                    /* '<td class="pick_price"><input type="text" autocomplete="off" name="pick_price"/></td>' + */
+                    '<td class="sell_price" hidden="hidden"><input class="input_init" type="text" autocomplete="off" name="sell_price" value="0.00"/></td>' +//为了编辑添加
+                    '<td class="market_price"><input class="input_init" type="text" autocomplete="off" name="market_price" value="0.00"/></td>' +
+                    '<td class="photo_switch" hidden="hidden"><select name="photo_switch">' + photo_switch_html + '</select></td>' +//为了编辑添加
+                    '<td style="width: 100px;"><select name="status"><option value="1">启用</option><option value="0">停用</option></select></td></tr>';
+        }
+        $(this).parents(".spec-tr").before(html);
+        input_weight();
+        changeall_gold_type();
+        changeone_gold_type();
+        te_edit();
+    })
+    $(".open").click(function (e) {
+        e.preventDefault();
+        if($(this).hasClass("fa-toggle-off")){
+            $(this).removeClass("fa-toggle-off");
+            $(this).addClass("fa-toggle-on");
+            $(this).parent("td").find("input").val("1");
+        }
+        else{
+            $(this).removeClass("fa-toggle-on");
+            $(this).addClass("fa-toggle-off");
+            $(this).parent("td").find("input").val("0")
+        }
+
+    });
+    //批量设置规格表的列的值
+    $(".bat-edit").mouseover(function(){
+        $(this).css("cursor","hand");
+    });
+    $(".bat-edit").click(function (e) {
+        e.preventDefault();
+        if($("#spec-detail-tbody tr").length>1) {
+            $(".batch").css("display", "none");
+            var html = $("#batch-html").html();
+            $(this).parent("th").append(html);
+            $(this).parent("th").find(".batch").css("display", "inline-block");
+        }
+    });
+    $(".bat-close").click(function (e) {
+        e.preventDefault();
+        $(this).parent().find("input").val("")
+        $(this).parents(".batch").css("display","none");
+    });
+    $(".bat-set").unbind("click").click(function (e) {
+        e.preventDefault();
+        var index=$(this).parents("th").index();
+        if($(this).parent(".bat-cont").find(".bat-select").length){
+            var val=$(this).parent(".bat-cont").find(".bat-select option:selected").val();
+            $("#spec-detail-tbody tr").each(function(i){
+                if(i!=$("#spec-detail-tbody tr").length-1) {
+                    $(this).find("td").eq(index).find("select option[value=" + val + "]").attr("selected", "selected")
+                }
+            })
+        }
+        else{
+            var val1=$(this).parent(".bat-cont").find(".bat-input").val();
+            $("#spec-detail-tbody tr").each(function(j) {
+                if(j!=$("#spec-detail-tbody tr").length-1) {
+                    $(this).find("td").eq(index).find("input").val(val1);
+                }
+            })
+        }
+        $(".batch").css("display","none");
+    });
+    //设置主图
+    $(document).on("mousedown",".goods_pic",function(e){
+        if($(this).parent().index()!=$("#spec-detail-tbody tr").length-1){
+            if(e.which==3){
+                $("#myModal3").modal('show');
+                $(".goods_pic").removeClass("active");
+                $(this).addClass("active");
+            }
+        }
+    });
+    $(".img-set-sure").click(function(){
+        $("#myModal3").modal("hide");
+        $(".goods_pic").removeClass("is_hot");
+        $(".goods_pic.active").addClass("is_hot");
+        $(".goods_pic").attr("is_hot","0");
+        $(".goods_pic.is_hot").attr("is_hot","1")
+    })
+    $(".img-set-cancel").click(function(){
+        $("#myModal3").modal("hide");
+    })
+    // 编辑器
+    $(".mb_add_txt").click(function () {
+        $(".mea-img").css("display","none");
+        $(".mea-text").css("display","block")
+    });
+    $(".mb_add_img").click(function () {
+        $(".mea-text").css("display","none");
+        $(".mea-img").css("display","block")
+    });
+    $(".meat_submit").click(function () {
+        var mea_value=$(".meat_content").val();
+        var html='<div class="module m-text"><div class="tools"><a class="mp_del" href="javascript:void(0);">X</a></div>' +
+                '<div class="content"><div class="text-div">'+mea_value+'</div></div><div class="cover"></div></div>';
+        $(".control-panel").append(html);
+        $(".mea-text").css("display","none");
+        $(".meat_content").val("");
+    });
+    $(".image-upload").click(function () {
+        $("#ipt").click();
+    });
+    $(".text-close").click(function () {
+        $(".mea-text").css("display","none");
+        $(".meat_content").val("");
+    });
+    $(".image-close").click(function () {
+        $(".mea-img").css("display","none");
+    });
+    $(".meat_cancel").click(function () {
+        $(".mea-text").css("display","none");
+        $(".meat_content").val("");
+    })
+    //编辑器中的模块选择
+    $(document).on("click",".module", function () {
+        $(".module .cover").css("display","none");
+        $(".module .tools").css("display","none");
+        $(this).find(".cover").css("display","block");
+        $(this).find(".tools").css("display","block");
+    });
+    //编辑器中的模块删除
+    $(document).on("click",".mp_del", function () {
+        $(this).parents(".module").remove();
+
+    });
+    var flag=0;
+    var up_img=0; //没有上传图片是否继续做ajax提交
+    //点击保存  确认添加商品
+    $("#save-all").click(function(){
+        flag=0;
+        var type="{$_GET['type']}";
+        var sell_type=$("input[name='sell_type']:checked").val();
+        var goods_name=$("input[name='goods_name']").val();
+        var tag_name=$("input[name='tag_name']").val();
+        var class_id="{$_GET['class_id']}";//$("select[name='class_id'] option:selected").val();
+        /* var is_standard=$("input[name='is_standard']").val(); */
+        var mobile_show=$("input[name='mobile_show']").val();
+        var goods_code=$("#goods-code").val();
+        var moral=$("textarea[name='moral']").val();
+        var goods_default_img = $("input[name='goods_default_img']").val();
+        if(goods_name == ""){
+            $("input[name='goods_name']").focus();
+            $("input[name='goods_name']").parent().find(".alert").css("display","inline-block");
+            return false;
+        }
+        if(goods_code== ""){
+            $("#goods-code").focus();
+            $("#goods-code").parent().find(".alert").css("display","inline-block");
+            return false;
+        }
+        if($("#spec-detail-tbody tr").length==1){
+            alert("规格表不能为空，请按流程选择");
+            return false;
+        }
+        var description=$(".control-panel").html();//产品介绍内容
+        var goods_common_info={"type":type,"sell_type":sell_type,"class_id":class_id,"goods_common_code":goods_code,
+            "goods_common_name":goods_name,"moral":moral,"tag_name":tag_name,"mobile_show":mobile_show,
+            "description":description,"goods_default_img":goods_default_img};
+        var goods_list=[];
+
+        //商品图片
+        var goods_img=[];
+        $(".upload_img li img").each(function(i) {
+            if (i != $('.upload_img li img').length) {
+                goods_img.push($(this).attr("src"));
+            }
+        });
+
+        var pic_num=[];
+        $("#spec-detail-tbody tr").each(function(i){
+            if(i!=$("#spec-detail-tbody tr").length-1) {
+                var goods_pic = $(this).find(".goods_pic img").attr("src");
+                var is_hot = $(this).find(".goods_pic").attr("is_hot");
+                var gold_type = $(this).find("select[name='gold_type'] option:selected").val();
+                var status = $(this).find("select[name='status'] option:selected").val();
+                var goods_code = $(this).find(".spec-code-v").val();
+                var goods_unit = $(this).find("input[name='goods_unit']").val();
+                var price_mode = $(this).find("select[name='price_mode'] option:selected").val();
+                /* var pick_pricemode = $(this).find("select[name='pick_pricemode'] option:selected").val(); */
+                var sell_pricemode = $(this).find("select[name='sell_pricemode'] option:selected").val();
+                var buy_fee = $(this).find("input[name='buy_fee']").val();
+                var procure_price = $(this).find("input[name='procure_price']").val();
+                var weight = $(this).find("input[name='weight']").val();
+                var sell_fee = $(this).find("input[name='sell_fee']").val();
+                /* var pick_fee = $(this).find("input[name='pick_fee']").val(); */
+                var market_price = $(this).find("input[name='market_price']").val();
+                var sell_price = $(this).find("input[name='sell_price']").val();
+                /* var pick_price = $(this).find("input[name='pick_price']").val(); */
+                var goods_spec = $(this).find("input[name='goods_spec']").val();
+                var bean=$(this).find("input[name='bean']").val();
+                var bank_gold_type = $(this).find("select[name='bank_gold_type'] option:selected").val();
+                var agent1_bean=$(this).find("input[name='agent1_bean']").val();
+                var agent2_bean=$(this).find("input[name='agent2_bean']").val();
+                var purity=$(this).find("input[name='purity']").val();
+                var memo=$(this).find("input[name='memo']").val();
+                var meterage_sml=$(this).find("input[name='meterage_sml']").val();
+                var meterage_ans=$(this).find("input[name='meterage_ans']").val();
+                var photo_switch= $(this).find("select[name='photo_switch'] option:selected").val();
+                if(goods_pic==undefined){
+                    pic_num.push(i);
+                }
+                /*//只为了批发，避免提示填写完整规格信息
+               if($("input[name='sell_type']:checked").val()==2){
+                   sell_price=true;
+               }else {
+                   goods_unit=true;
+               }
+              if(price_mode==1){
+                   market_price=sell_price=procure_price=true;//采购计重，采购参考价，销售价市场价可以为空
+               }*/
+                console.log(market_price+"|"+goods_unit+"|"+sell_price+"|"+goods_spec+"|"+procure_price);
+                if(market_price==""||sell_price==""/* ||pick_price=="" */||goods_spec==""||procure_price==""){
+                    flag=1;
+                    $("#myModal4").modal("show");
+                    return false;
+
+                }
+                if(parseFloat(sell_price)>parseFloat(market_price)){
+                    flag=1;
+                    $("#myModal5").modal("show");
+                    return false;
+
+                }
+                var goods_li = {
+                    "goods_pic": goods_pic,
+                    "is_hot": is_hot,
+                    "gold_type": gold_type,
+                    "status": status,
+                    "goods_code": goods_code,
+                    "price_mode": price_mode,
+                    /* "pick_pricemode": pick_pricemode, */
+                    "sell_pricemode": sell_pricemode,
+                    "buy_fee": buy_fee,
+                    "procure_price": procure_price,
+                    "weight": weight,
+                    "goods_unit": goods_unit,
+                    "sell_fee": sell_fee,
+                    /* "pick_fee": pick_fee, */
+                    "market_price": market_price,
+                    "sell_price": sell_price,
+                    /* "pick_price": pick_price, */
+                    "goods_spec": goods_spec,
+                    "bank_gold_type":bank_gold_type,
+                    'bean':bean,
+                    'agent1_bean':agent1_bean,
+                    'agent2_bean':agent2_bean,
+                    'purity':purity,
+                    'memo':memo,
+                    'meterage_sml':meterage_sml,
+                    'meterage_ans':meterage_ans,
+                    'photo_switch':photo_switch
+                };
+                goods_list.push(goods_li);
+            }
+        });
+        if(pic_num.length>0 && up_img==0 && flag==0){
+            var html="规格行表第";
+            for(var j=0;j<pic_num.length;j++){
+                var num=pic_num[j]+1
+                html+="&nbsp;&nbsp;"+num;
+            }
+            html+="行的图片未上传";
+            $("#myModal6").find("p").html(html);
+            $("#myModal6").modal("show");
+            flag=1;
+        }
+        if(flag==0){
+            $.ajax({
+                url:"{:U('BGoodsCommon/add')}",
+                type:"post",
+                dataType:"json",
+                data:{"goods_common_info":goods_common_info,"goods_list":goods_list,"goods_img":goods_img},
+                beforeSend: function () {
+                    $("#save-all").attr({ disabled: "disabled" });
+                },
+                success: function (data) {
+                    if(data.status==1){
+                        window.location.href="{:U('BGoodsCommon/index')}";
+                    }else {
+                        $("#save-all").attr({ disabled: false});
+                        if(data.info){
+                            artdialog_alert(data.info);
+                        }else{
+                            artdialog_alert('保存失败！');
+                        }
+                    }
+                }
+            })
+        }
+    })
+    //图片未上传点击时继续上传事件
+    function continue_input(){
+        up_img=1;
+        $("#save-all").click();
+    }
+    /*压缩图片 方法*/
+    var filechooser = document.getElementById("choose");
+    //    用于压缩图片的canvas
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext('2d');
+    //    瓦片canvas
+    var tCanvas = document.createElement("canvas");
+    var tctx = tCanvas.getContext("2d");
+    var maxsize = 100 * 1024;
+
+    //    使用canvas对大图片进行压缩
+    function compress(img) {
+        var initSize = img.src.length;
+        var width = img.width;
+        var height = img.height;
+        //如果图片大于四百万像素，计算压缩比并将大小压至400万以下
+        var ratio;
+        if ((ratio = width * height / 4000000) > 1) {
+            ratio = Math.sqrt(ratio);
+            width /= ratio;
+            height /= ratio;
+        } else {
+            ratio = 1;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        //        铺底色
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //如果图片像素大于100万则使用瓦片绘制
+        var count;
+        if ((count = width * height / 1000000) > 1) {
+            count = ~~(Math.sqrt(count) + 1); //计算要分成多少块瓦片
+            //            计算每块瓦片的宽和高
+            var nw = ~~(width / count);
+            var nh = ~~(height / count);
+            tCanvas.width = nw;
+            tCanvas.height = nh;
+            for (var i = 0; i < count; i++) {
+                for (var j = 0; j < count; j++) {
+                    tctx.drawImage(img, i * nw * ratio, j * nh * ratio, nw * ratio, nh * ratio, 0, 0, nw, nh);
+                    ctx.drawImage(tCanvas, i * nw, j * nh, nw, nh);
+                }
+            }
+        } else {
+            ctx.drawImage(img, 0, 0, width, height);
+        }
+        //进行最小压缩
+        var ndata = canvas.toDataURL('image/jpeg', 0.5);
+        console.log('压缩前：' + initSize);
+        console.log('压缩后：' + ndata.length);
+        console.log('压缩率：' + ~~(100 * (initSize - ndata.length) / initSize) + "%");
+        tCanvas.width = tCanvas.height = canvas.width = canvas.height = 0;
+        return ndata;
+    }
+
+    //商品公共图片设为主图
+    $(document).on('click','.set_default',function(){
+        $("input[name='goods_default_img']").val($('.set_default').index(this));
+        $('.set_default').html('设为主图');
+        $('.set_default').css('color','#2fa4e7');
+        $(this).html('主图');
+        $(this).css('color','#f00');
+    })
+
+    //删除商品公共图片
+    $(document).on('click','.delete',function(){
+        $('#del').attr('name',$('.delete').index(this));
+        $('#del').unbind('click');
+        $('#del').click(function(){
+            var id=$(this).attr('name');
+            $('.upload_img li').eq(id).remove();
+            $('#goods_img_show img').eq(id).remove();
+            if($('.delete').length <= 0){
+                $('#goods_img_add').show();
+            }
+        })
+    })
+
+    //上传图片
+    $(document).on('click','#goods_img_add img',function(){
+        $('#procure_add').click();
+    })
+    //    图片上传，将base64的图片转成二进制对象，塞进formdata上传
+    function upload(basestr, type, $li) {
+        var text = window.atob(basestr.split(",")[1]);
+        var buffer = new Uint8Array(text.length);
+        var pecent = 0, loop = null;
+        for (var i = 0; i < text.length; i++) {
+            buffer[i] = text.charCodeAt(i);
+        }
+        var blob = getBlob([buffer], type);
+        var xhr = new XMLHttpRequest();
+        var formdata = getFormData();
+        formdata.append('goods_pic',blob);
+        xhr.open('post', '{:U("BGoodsCommon/upload_goods_img")}');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var imagedata =JSON.parse(xhr.response);
+                clearInterval(loop);
+                //当收到该消息时上传完毕
+                $li.find(".h5progress span").animate({'width': "100%"}, pecent < 95 ? 200 : 0, function() {
+                    $(this).html(text);
+                });
+                if($("#procure_add.on").length){
+                    //数据库关联上传的图片
+                    //imgCommon('link',{$goods_detail['id']},imagedata.datas.file_name);
+
+                    $("#procure_add.on").removeClass("on");
+                    var html = '<li><img src="'+imagedata.datas.file_name+'"><br /> <a href="#" class="set_default">设为主图</a> <a href="#myModal" class="delete fa fa-trash-o" role="button" data-toggle="modal" title="删除"></a></li>';
+                    $(".upload_img").append(html);
+                    var html = '<img src="'+imagedata.datas.file_name+'" height="40" style="height:30px;margin:0px 5px;">';
+                    $("#goods_img_show").append(html);
+                    $("#myModal2").modal("hide");
+                    $('#goods_img_add').hide();
+
+                }else {
+
+                    if ($(".goods_pic.on").length) {
+                        $(".goods_pic.on").html('<img style="height: 30px" src=' + imagedata.datas.file_name + ' />');
+                        $(".goods_pic.on").removeClass("on")
+                        $(".pic-list").append('<a target="_blank" href="' + imagedata.path + '">' + imagedata.name + '（' + imagedata.size + '）<img src="' + imagedata.path + '" /></a>');
+                        $("#myModal2").modal("hide");
+                    }
+
+                    else {
+                        var html = '<div class="module m-image"><div class="tools"><a class="mp_del" href="javascript:void(0);">X</a></div>' +
+                                '<div class="content"><div class="image-div"><img src=' + imagedata.datas.file_name + '></div></div><div class="cover"></div></div>';
+                        $(".control-panel").append(html);
+                        $("#myModal2").modal("hide");
+                        $(".mea-img").css("display", "none");
+
+                    }
+                }
+                $(".canvas-box").html("");
+                //添加成功
+
+            }
+        };
+        //数据发送进度，前50%展示该进度
+        xhr.upload.addEventListener('h5progress', function(e) {
+            if (loop) return;
+            pecent = ~~(100 * e.loaded / e.total) / 2;
+            $li.find(".h5progress span").css('width', pecent + "%");
+            if (pecent == 50) {
+                mockProgress();
+            }
+        }, false);
+        //数据后50%用模拟进度
+        function mockProgress() {
+            if (loop) return;
+            loop = setInterval(function() {
+                pecent++;
+                $li.find(".h5progress span").css('width', pecent + "%");
+                if (pecent == 99) {
+                    clearInterval(loop);
+                }
+            }, 100)
+        }
+        xhr.send(formdata);
+    }
+    /**
+     * 获取blob对象的兼容性写法
+     * @param buffer
+     * @param format
+     * @returns {*}
+     */
+    function getBlob(buffer, format) {
+        try {
+            return new Blob(buffer, {type: format});
+        } catch (e) {
+            var bb = new (window.BlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder);
+            buffer.forEach(function(buf) {
+                bb.append(buf);
+            });
+            return bb.getBlob(format);
+        }
+    }
+    /**
+     * 获取formdata
+     */
+    function getFormData() {
+        var isNeedShim = ~navigator.userAgent.indexOf('Android')
+                && ~navigator.vendor.indexOf('Google')
+                && !~navigator.userAgent.indexOf('Chrome')
+                && navigator.userAgent.match(/AppleWebKit\/(\d+)/).pop() <= 534;
+        return isNeedShim ? new FormDataShim() : new FormData()
+    }
+    /**
+     * formdata 补丁, 给不支持formdata上传blob的android机打补丁
+     * @constructor
+     */
+    function FormDataShim() {
+        console.warn('using formdata shim');
+        var o = this,
+                parts = [],
+                boundary = Array(21).join('-') + (+new Date() * (1e16 * Math.random())).toString(36),
+                oldSend = XMLHttpRequest.prototype.send;
+        this.append = function(name, value, filename) {
+            parts.push('--' + boundary + '\r\nContent-Disposition: form-data; name="' + name + '"');
+            if (value instanceof Blob) {
+                parts.push('; filename="' + (filename || 'blob') + '"\r\nContent-Type: ' + value.type + '\r\n\r\n');
+                parts.push(value);
+            }
+            else {
+                parts.push('\r\n\r\n' + value);
+            }
+            parts.push('\r\n');
+        };
+        // Override XHR send()
+        XMLHttpRequest.prototype.send = function(val) {
+            var fr,
+                    data,
+                    oXHR = this;
+            if (val === o) {
+                // Append the final boundary string
+                parts.push('--' + boundary + '--\r\n');
+                // Create the blob
+                data = getBlob(parts);
+                // Set up and read the blob into an array to be sent
+                fr = new FileReader();
+                fr.onload = function() {
+                    oldSend.call(oXHR, fr.result);
+                };
+                fr.onerror = function(err) {
+                    throw err;
+                };
+                fr.readAsArrayBuffer(data);
+                // Set the multipart content type and boudary
+                this.setRequestHeader('Content-Type', 'multipart/form-data; boundary=' + boundary);
+                XMLHttpRequest.prototype.send = oldSend;
+            }
+            else {
+                oldSend.call(this, val);
+            }
+        };
+    }
+    function recompress(img,file,li){
+        var data = compress(img);
+        if(data.length<1024){
+            setTimeout(function(){
+                data = recompress(img,file,li);
+            },800);
+        }else{
+            upload(data, file.type, li);
+        }
+        return data;
+    }
+    /*方法结束*/
+    //压缩图片上传实用
+    $(document).on("click","#spec-detail-tbody .goods_pic",function() {
+        var index=$(this).parent().index();
+        var length=$("#spec-detail-tbody tr").length-1;
+        if(index!=length){
+            $("#ipt").click();
+            $("#spec-detail-tbody").find(".goods_pic").removeClass("on");
+            $(this).addClass("on");
+
+        }
+    });
+    //编辑规格时上传图片
+    $(document).on("click","#spec-detail-edit_tbody .goods_pic",function() {
+        var index=$(this).parent().index();
+        var length=$("#spec-detail-edit_tbody tr").length-1;
+        console.log(length);
+        if(index!=length){
+            $("#ipt").click();
+            $("#spec-detail-edit_tbody").find(".goods_pic").removeClass("on");
+            $(this).addClass("on");
+
+        }
+    });
+    $("#ipt").change(function(){
+        $('#myModal2').modal('show');
+    });
+    $("#procure_add").click(function(){
+        $(this).addClass("on");
+        $("#ipt").click();
+    })
+    var maxsize = 100 * 1024;
+    function saveCallBack(base64) {
+        var li = document.createElement("li");
+        var files=document.getElementById("ipt");
+        var file=files.files[0];
+        console.log(file.size);
+        //          获取图片大小
+        var size =file.size / 1024 > 1024 ? (~~(10 * file.size / 1024 / 1024)) / 10 + "MB" : ~~(file.size / 1024) + "KB";
+        li.innerHTML = '<div  class="h5progress"><span></span></div><div class="size">'+size+'</div>';
+        $(".img-list").append($(li));
+        $(li).css("background-image", "url(" + base64 + ")");
+        var img = new Image();
+        img.src = base64;
+        console.log(img.src.length);
+        //如果图片大小小于100kb，则直接上传
+        if (img.src.length <= maxsize) {
+            upload(img.src, file.type, $(li));
+            return;
+        }else{
+            var data = recompress(img,file,$(li));
+        }
+    }
+    var c = new ZmCanvasCrop({
+        fileInput: $('#ipt')[0],
+        saveBtn: $('#save')[0],
+        box_width: 500,  //剪裁容器的最大宽度
+        box_height: 500, //剪裁容器的最大高度
+        min_width: 1,  //要剪裁图片的最小宽度
+        min_height: 1  //要剪裁图片的最小高度
+    }, saveCallBack);
+</script>
+
+<script>
+   /* $(".td-spec-set").unbind("mousedown").mousedown(function(e){
+        if(e.button ==2){
+            var goods_name=$("input[name='goods_name']").val();
+            var goods_code=$("#goods-code").val();
+            if(goods_code== ""){
+                $("#goods-code").focus();
+                $("#goods-code").parent().find(".alert").css("display","inline-block");
+                return false;
+            }
+            if(goods_name == ""){
+                $("input[name='goods_name']").focus();
+                $("input[name='goods_name']").parent().find(".alert").css("display","inline-block");
+                return false;
+            }
+            $("#spec-tr-add").click();
+        }
+    })*/
+    te_edit();
+    //双击编辑一行，将内容填入弹出框
+    function te_edit(){
+       /* $(".td-spec-set").unbind("dblclick").dblclick(function(){
+            if($(".spec-tr").prev().attr("goods_type")=="edit"){
+                return false;
+            }
+            $(".spec-tr").prev().remove();
+        })*/
+        var light=$('#light');
+        $("#spec-detail-tbody").find("tr").each(function(){
+            if( $(this).hasClass("spec-tr")){
+                return false;
+            }
+            $(this).unbind("dblclick").dblclick(function(){
+                $('#light').modal();
+                var nth=$(this).index()+1;
+                $(".lightbox_save").attr("nth",nth);
+                var str="正在编辑第"+nth+"行：";
+               // str+='<button id="lightbox_save" nth="'+nth+'" type="button" class="btn btn-primary lightbox_save" style="float:right">保存</button>';
+                $(".lightbox_content").html(str);
+                //document.getElementById('light').style.display='block';
+                //document.getElementById('fade').style.display='block';
+                var td_contents=$(this).find("td");
+                var html="";
+                console.log(td_contents.length)
+                console.log($("#spec-detail-thead").find("th").length);
+                $("#spec-detail-thead").find("th").each(function(k,v){
+                    if($(this).css('display')!='none'){
+                        html+="<tr >"
+                    }else{
+                        html+="<tr style='display: none'>"
+                    }
+                    html+="<td>"
+                    html+=$(this).html();
+                    html+="</td>"
+                    html+="<td class='"+td_contents.eq(k).attr('class')+"'>"
+                    if(td_contents.eq(k).find("input").length>0){
+                        td_contents.eq(k).find("input").attr('value',td_contents.eq(k).find("input").val());
+                    }
+                    if(td_contents.eq(k).find("select").length>0){
+                        td_contents.eq(k).find("option:selected").attr("selected","selected");
+                    }
+                    html+=td_contents.eq(k).html();
+                    html+="</td>";
+                    html+="</tr>";
+                });
+                light.find("table").html(html);
+                light.find("table").find(".batch").remove();
+                light.find("table").find("a").remove();
+                lightbox_content_save();
+                changeone_gold_type(2);
+            })
+        })
+
+    }
+    //删除一行
+    $(".tr-delete").click(function(){
+        if($(".spec-tr").prev().attr("goods_type")=="edit"){
+            return false;
+        }
+        $(".spec-tr").prev().remove();
+    });
+    //点击弹出框保存按钮，将弹出框内容填入选择修改的规格行
+    function lightbox_content_save(){
+        $(".lightbox_save").unbind("click").click(function(){
+            var light=$('#light');
+            var nth=$(this).attr("nth")-1;
+            console.log(nth);
+            var tds=$("#spec-detail-tbody").find("tr").eq(nth).find("td");
+            $("#spec-detail-edit_tbody").find("tr").each(function(){
+                var is_text=true;
+                var td=$(this).find("td").eq(1);
+                if(td.find("input").length>0){
+                    tds.eq($(this).index()).find("input").val(td.find("input").val());
+                    is_text=false;
+                }
+                if(td.find("select").length>0){
+                    var option_val=td.find("option:selected").val();
+                    tds.eq($(this).index()).find("option:selected").removeAttr("selected");//根据值去除选中状态
+                    tds.eq($(this).index()).find("option[value='"+option_val+"']").attr("selected","selected");//根据值选中
+                    tds.eq($(this).index()).find("select").trigger("change");
+                    is_text=false;
+                }
+                if(is_text){
+                    tds.eq($(this).index()).html(td.html());
+                };
+            })
+            $("#light").modal('hide');
+        })
+    }
+  /*  var a = document.getElementById("spec-with").offsetWidth;
+    $(".spec-table-info").css("width",a);*/
+    //modal-body最大高度
+    function modalBdH($this){
+        var modalH=$this.height();
+        /*  console.log(modalH);
+          var modalHdH=$this.find(".modal-header").outerHeight(true);
+          console.log(modalHdH);
+          var modalFtH=$this.find(".modal-footer").outerHeight(true);
+          console.log(modalFtH);*/
+        $this.find(".modal-body").css("max-height",modalH-150);
+
+    }
+    modalBdH($("#light"));
+</script>
+<!--零售与批发-->
+<script>
+    $("input[name='sell_type']").change(function(){
+        if($(this).val()==1){
+            /* $(".pick_pricemode").show(); */
+            $(".sell_price").show();
+            $(".bank_gold_type").show();
+            $(".buy_fee").show();
+            /* $(".pick_fee").show(); */
+            $(".weight").show();
+            $(".photo_switch").show();
+            $(".goods_unit").hide();
+           // $("#spec-detail-tbody").find("tr[class='add_tr']").remove();
+        }else{
+           /*  $(".pick_pricemode").hide(); */
+            $(".sell_price").hide();
+            $(".bank_gold_type").hide();
+            $(".buy_fee").hide();
+            /* $(".pick_fee").hide(); */
+            $(".weight").hide();
+            $(".photo_switch").hide();
+            $(".goods_unit").show();
+           // $("#spec-detail-tbody").find("tr[class='add_tr']").remove();
+        }
+    });
+
+</script>

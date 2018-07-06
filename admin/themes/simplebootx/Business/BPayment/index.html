@@ -1,0 +1,50 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BPayment/index')}">{:L('BUSINESS_BPAYMENT_INDEX')}</a></li>
+			<li><a href="{:U('BPayment/add')}">{:L('BUSINESS_BPAYMENT_ADD')}</a></li>
+		</ul>
+        <form class="well form-search" method="post" action="{:U('BPayment/index')}">
+            综合搜索:
+            <input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="请输入收款方式名称">
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:U('BPayment/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<!--<th width="50">ID</th>-->
+					<th width="50">序</th>
+					<th>门店</th>
+					<th>收款方式名称</th>
+					<th>收款费率（‰）</th>
+					<th>是否启用</th>
+					<th>支付类型</th>
+					<th width="120">{:L('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<php>$user_statuses=array("0"=>L('USER_STATUS_BLOCKED'),"1"=>L('USER_STATUS_ACTIVATED'),"2"=>L('USER_STATUS_UNVERIFIED'));</php>
+				<foreach name="list" item="vo">
+				<tr>
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td class="">{$vo['shop_name']?$vo['shop_name']:'总部'}</td>
+					<td>{$vo.pay_name}</td>
+					<td class="text-right">{$vo.pay_fee}</td>
+					<td class="text-center">{$vo['status']==1?'启用':'禁用'}</td>
+					<td>{$pay_type[$vo['pay_type']]}</td>
+					<td class="text-center">
+						<a href='{:U("BPayment/edit",array("id"=>$vo["id"]))}'>{:L('EDIT')}</a> |
+						<a class="js-ajax-delete" href="{:U('BPayment/deleted',array('id'=>$vo['id']))}">{:L('DELETE')}</a>
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

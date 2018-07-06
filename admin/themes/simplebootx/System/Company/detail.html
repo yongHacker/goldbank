@@ -1,0 +1,119 @@
+<systemtpl file="header" />
+<style>
+input{width:280px;}
+a{cursor:pointer;}
+.table .search_input{
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+input[name=user]{
+	margin:8px 5px;
+	text-indent: 20px;
+}
+.myModal3.leave{
+	position: absolute;
+	top:12px;
+	left:15px;
+	font-size: 14px;
+}
+tr td img{ max-width:200px;max-height:60px;}
+</style>
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('Company/detail')}">{:L('SYSTEM_COMPANY_DETAIL')}</a></li>
+	</ul>
+	<table class="table table-bordered ">
+		<tbody >
+		<tr>
+			<td class="sel" width="10%">商户名称</td>
+			<td width="40%">{$company_info.company_name}</td>
+			<td class="sel"  width="10%">商户号</td>
+			<td  width="40%">{$company_info.company_code}</td>
+		</tr>
+		<tr>
+			<td class="sel">商户简称</td>
+			<td>{$company_info.company_short_name}</td>
+			<td class="sel">店面类型</td>
+			<td>
+				<if condition="$company_info.company_type eq 1">
+					加盟商商户({$company_info.p_name})
+					<else/>
+					品牌商户
+				</if>
+			</td>
+		</tr>
+		<tr>
+			<td class="sel">法人代表</td>
+			<td>{$company_info.company_legal_person}</td>
+			<td class="sel">社会信用代码</td>
+			<td>{$company_info.credit_code}</td>
+		</tr>
+		<tr>
+			<td class="sel">公司电话</td>
+			<td>{$company_info.company_tel}</td>
+			<td class="sel">关联信息用户</td>
+			<td>{$company_info.user_name}</td>
+		</tr>
+		<tr>
+			<td class="sel">地址</td>
+			<td>{$company_info.company_addr}</td>
+			<td class="sel">邮箱</td>
+			<td>{$company_info.company_mail}</td>
+		</tr>
+		<tr>
+			<td class="sel">传真</td>
+			<td>{$company_info.company_fax}</td>
+			<td class="sel">服务年限</td>
+			<td>【{$company_info.service_year}年】
+			<if condition="$company_info[service_year] gt 0">{:date('Y-m-d H:i:s', $company_info[begin_time])} 至 {:date('Y-m-d H:i:s', $company_info[end_time])}</if>
+			</td>
+		</tr>
+		<tr>
+			<td class="sel">加盟商数量限制</td>
+			<td>{$company_info.company_num}</td>
+			<td class="sel">店铺数量限制</td>
+			<td>{$company_info.shop_num}</td>
+		</tr>
+		<tr>
+			<td class="sel">创建人</td>
+			<td>{$company_info.create_name}</td>
+			<td class="sel" height="46px" style="line-height:46px;">营业执照</td>
+			<td height="46px">
+				<if condition="$company_info.company_img neq ''">
+					<img src="{$company_info.company_img}" onclick="window.open('{$company_info.company_img}');">
+				</if>
+			</td>
+		</tr>
+		<tr>
+			<td class="sel">审核人</td>
+			<td>{$company_info.check_name}</td>
+			<td class="sel">状态</td>
+			<td>{$status[$company_info['company_status']]}</td>
+		</tr>
+		<tr>
+			<td class="sel">备注</td>
+			<td colspan="3">{$company_info.check_remark}</td>
+		</tr>
+		</tbody >
+	</table>
+	<div class="form-actions text-center">
+		<button class="btn js-ajax-back-btn" type="submit">{:L('BACK')}</button>
+	</div>
+</div>
+<form id="ajax_f" action="{:U('Company/upload_img')}" method="post">
+	<input type="file" name="upload_img" id="upload_img" style="opacity:0;position:absolute;">
+	<input type="hidden" name="del_img" id="del_img">
+</form>
+<script src="__PUBLIC__/js/jquery-form.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<include file="./Application/Home/View/Public/footer.html" />
+
+
+
+
+
+

@@ -1,0 +1,143 @@
+<businesstpl file="header" />
+<link href="__PUBLIC__/appertain/business/css/BProcureReturn.css" rel="stylesheet">
+</head>
+<body class="theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BProcureReturn/check_index')}">{:L('BUSINESS_BPROCURERETURN_CHECK_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BProcureReturn/check')}">{:L('BUSINESS_BPROCURERETURN_CHECK')}</a></li>
+			<span style="float: right">
+				<if condition="$return_info['status'] eq 0">
+		            <p class="btn btn-danger js-ajax-submit reject" data-status="-2">驳回</p>
+		            <p class="btn btn-primary js-ajax-submit pass" data-status="1">审核通过</p>
+		            <p class="btn btn-danger js-ajax-submit unpass" data-status="2">审核不通过</p>
+		        </if>
+		        <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+	        </span>
+		</ul>
+		<table class="table table-bordered" id="order_base">
+			<tr>
+				<td class="sel" width="20%">制单人</td>
+				<td class="sel" width="30%">{$return_info.creator_name}</td>
+				<td class="sel" width="20%">退货日期</td>
+				<td class="sel" width="30%">{:date('Y-m-d', $return_info['return_time'])}</td>
+			</tr>
+			<tr>
+				<td class="sel">供应商</td>
+				<td class="sel">
+					{$return_info.supplier_name}
+				</td>
+				<td class="sel">仓库</td>
+				<td class="sel">
+					{$return_info.wh_name}
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">克重</td>
+				<td class="sel">{:number_format($return_info['weight'], 2, '.', '')}</td>
+				<td class="sel">工费总额</td>
+				<td class="sel">{:number_format($return_info['price'], 2, '.', '')}</td>
+			</tr>
+			<tr>
+				<td class="sel">件数</td>
+				<td class="sel" id="return_num">
+					<empty name="return_info['price']">-<else />{$return_info['num']}</empty>
+				</td>
+				<td class="sel">抹零金额</td>
+				<td class="sel">{:number_format($return_info['extra_price'], 2, '.', '')}</td>
+			</tr>
+			<tr>
+				<td class="sel" width="20%">备注</td>
+				<td colspan="3" width="80%">{$return_info['memo']}</td>
+			</tr>
+			<tr>
+				<td class="sel">审核备注</td>
+				<td colspan="3" width="80%">
+					<textarea name="check_memo"></textarea>
+				</td>
+			</tr>
+		</table>
+
+        <businesstpl file="process" />
+        
+		<div class="main-content">
+			<div class="ta" id="order_product" style="overflow-x: auto;">
+
+				<if condition="$sub_list">
+				<p>其它费用</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">费用类目</th>
+							<th class="text-center">费用金额</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<volist name="sub_list" id="v">
+						<tr>
+							<td class="text-center">{$key+1}</td>
+							<td class="text-center">{$v.name}</td>
+							<td class="text-center">{$v.cost}</td>
+						</tr>
+						</volist>
+					</tbody>
+				</table>
+				</if>
+				
+				<if condition="$return_info['product_list']">
+				<table class="table table-bordered  table-hover table-responsive">
+					<thead>
+						<tr>
+							<th class="text-center" style="min-width: 60px;">序</th>
+							<th class="text-center" style="min-width: 200px;">货品编码</th>
+							<th class="text-center" style="min-width: 200px;">附属货品编码</th>
+							<th class="text-center" style="min-width: 200px;">货品名称</th>
+							<th class="text-center" style="min-width: 200px;">商品编号</th>
+							<th class="text-center" style="min-width: 100px;">采购计价方式</th>
+							<th class="text-center" style="min-width: 100px;">克重</th>
+							<th class="text-center" style="min-width: 100px;">工费</th>
+							<th class="text-center" style="min-width: 100px;">采购价</th>
+							<th class="text-center" style="min-width: 100px;">总工费</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<volist name="return_info['product_list']" id="v">
+							<tr class="plus" data-productid="{$v.id}" data-productcode="{$v.product_code}">
+							<td class="text-center">{$key+1}</td>
+							<td class="text-center product_code">{$v.product_code}</td>
+							<td class="text-center product_code">{$v.sub_product_code}</td>
+							<td class="text-center product_name">{$v.goods_name}</td>
+							<td class="text-center goods_code">{$v.goods_code}</td>
+							<td class="text-center pricemode"><if condition="$v.procurement_pricemode eq 1">计重<else />计件</if></td>
+							<td class="text-center weight"><if condition="$v.procurement_pricemode eq 1">{$v.weight}<else />-</if></td>
+							<td class="text-center buy_m_fee"><if condition="$v.procurement_pricemode eq 1">{$v.buy_m_fee}<else />-</if></td>
+							<td class="text-center cost_price"><if condition="$v.procurement_pricemode eq 1">-<else />{$v.cost_price}</if></td>
+							<td class="text-center count_fee"><if condition="$v.procurement_pricemode eq 1">{:round(bcmul($v['weight'], $v['buy_m_fee'], 4), 2)}<else />-</if></td>
+						</tr>
+						</volist>
+					</tbody>
+				</table>
+				</if>
+			</div>
+
+			<businesstpl file="operate" />
+
+			<div class="form-actions text-center">
+				<input type="hidden" class="return_id" value="{$return_info['id']}">
+				<if condition="$return_info['status'] eq 0">
+					<input type="hidden" class="form_url" value="{:U('BProcureReturn/check')}">
+		            <p class="btn btn-danger js-ajax-submit reject" data-status="-2">驳回</p>
+		            <p class="btn btn-primary js-ajax-submit pass" data-status="1">审核通过</p>
+		            <p class="btn btn-danger js-ajax-submit unpass" data-status="2">审核不通过</p>
+		        </if>
+		        <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			</div>
+		</div>
+	</div>
+
+	<form></form>
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/appertain/business/js/BProcureReturn.js"></script>

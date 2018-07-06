@@ -1,0 +1,354 @@
+<systemtpl file="header"/>
+</head>
+<body>
+	<style>
+		.new td { vertical-align: middle; padding: 0px; line-height: 40px;}
+		.new td { border-right: none;}
+		.new th { text-align: center;}
+		.new2 { border: none;}
+	</style>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('CompanyRbac/role_company')}">{:L('SYSTEM_COMPANYRBAC_ROLE_COMPANY')}</a></li>
+			<a class="btn btn-primary" href="{:U('CompanyRbac/set_role')}" data-toggle="modal" style="float: right;">添加角色关联</a>
+		</ul>
+		<div>
+			<table class="table table-hover table-bordered table-list new" id="menus-table" style="width: 19%;float: left;margin-right: 1%;">
+				<tr>
+					<th>序</th>
+					<th>商户名称</th>
+				</tr>
+				<tbody>
+					{$companys}
+				</tbody>
+			</table>
+		</div>
+		<div style="border: 1px solid #ddd; float: left; width: 75%;">
+			<ul class="nav nav-tabs" style="padding: 15px 30px;">
+				<li>角色信息</li>
+			</ul>
+			<form class="form-horizontal js-ajax-form" action="{:U('CompanyRbac/roleedit')}" method="post">
+				<div style="margin-top:20px; margin-bottom: 20px; margin-left: 30px;">
+					<input type="hidden" name="id" value="{$data.id}">
+					商户名称:&nbsp;&nbsp;<span style="display: inline; width: 150px; margin-right: 50px;" id="company_name">{$cinfo.company_name}</span>
+					角色名称:&nbsp;&nbsp;<span style="width: 150px; margin-right: 50px;" id="name">{$crole.name}</span>
+					是否开启:&nbsp;&nbsp;<span style="margin-right: 50px;" id="status">{$crole['status'] == 1 ? '是' : '否'}</span>
+					备注:&nbsp;&nbsp;<span id="reamrk">{$crole.reamrk}</span>
+				</div>
+				<div style="float: left;margin-left: 30px;">角色权限：</div>
+				<table class="table table-hover table-bordered table-list new role_tree" id="menus-table" data-type="{$crole['type']}" style="width: 90%; float: left;">
+					<thead>
+						<tr>
+							<th width="120px">一级</th>
+							<th width="105px">二级</th>
+							<th >权限配置规则</th>
+						</tr>
+					</thead>
+					<tbody>
+					<volist name="menus" id="m" key="k">
+						<tr>
+							<td width="120px">
+								<input type="checkbox" name="menuid[]" value="{$m.id}" <if condition="in_array($m['id'],$h_menus)">checked</if> level="0" onclick="javascript:checknode(this);" style="margin-left: 10px; margin-right: 5px; margin-top: -3px;">{$m.name}
+							</td>
+							<td colspan="2">
+								<table class="table table-hover table-bordered table-list new2" width="100%" height="100%" id="menus-table">
+									<volist name="m.children" id="mc">
+									<tr>
+										<td width="120px"><input name="menuid[]" value="{$mc.id}" level="1"  <php> if(in_array($mc['id'],$h_menus)) echo "checked"; </php>  onclick="javascript:checknode(this);" style="margin-left:10px;margin-right: 5px;margin-top: -3px;" type="checkbox">{$mc.name}</td>
+										<td>
+											<php>$i=1;</php>
+											<volist name="mc.children" id="zc">
+											<php>$i++;if($i%7==0){echo "<br/>";}</php>
+											<input type="checkbox" name="menuid[]" value="{$zc.id}" <php> if(in_array($zc['id'],$h_menus)) echo "checked"; </php> level="2" onclick="javascript:checknode(this);" style="margin-left:10px; margin-right: 5px;margin-top: -3px;">{$zc.name}
+											<php>
+											if(!empty($zc["children"])){
+												echo "【";
+												foreach($zc['children'] as $z){
+													if(in_array($z['id'],$h_menus)){
+														$a="checked";
+													}else{
+														$a="";
+													}
+													echo '<input type="checkbox" name="menuid[]" value="'.$z['id'].'" '.$a.' level="3" style="margin-left:5px; margin-right: 5px; margin-top: -3px;" onclick="javascript:checknode(this);">'.$z["name"];
+												}
+												echo "&nbsp;】";
+											}
+											</php>
+											</volist>
+										</td>
+									</tr>
+									</volist>
+								</table>
+							</td>
+						</tr>
+					</volist>
+					</tbody>
+				</table>
+				<!--<div class="form-actions" style="float: left;width: 100%;">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+				</div>-->
+			</form>
+		</div>
+	</div>
+
+	<!-- 商户菜单 -->
+	<table id="business_menus" hidden>
+		<tbody>
+		<volist name="menus" id="m">
+			<tr>
+				<td width="120px">
+					<input type="checkbox" name="menuid[]" value="{$m.id}" level="0" onclick="javascript:checknode(this);" style="margin-left: 10px; margin-right: 5px; margin-top: -3px;" />{$m.name}
+				</td>
+				<td colspan="2">
+					<table class="table table-hover table-bordered table-list new2" width="100%" height="100%" id="menus-table">
+						<volist name="m.children" id="mc">
+						<tr>
+							<td width="120px">
+								<input type="checkbox" name="menuid[]" value="{$mc.id}" level="1" onclick="javascript:checknode(this);" style="margin-left:10px; margin-right: 5px; margin-top: -3px;">{$mc.name}
+							</td>
+							<td>
+								<volist name="mc.children" id="zc">
+								<input type="checkbox" name="menuid[]" value="{$zc.id}" level="2" onclick="javascript:checknode(this);" style="margin-left: 10px; margin-right: 5px; margin-top: -3px;">{$zc.name}
+								<php>
+								if(!empty($zc["children"])){
+									echo "【";
+									foreach($zc['children'] as $z){
+										if(in_array($z['id'],$h_menus)){
+											$a="checked";
+										}else{
+											$a="";
+										}
+										echo '<input type="checkbox" name="menuid[]" value="'.$z['id'].'" '.$a.' level="3" style="margin-left:5px; margin-right: 5px; margin-top: -3px;" onclick="javascript:checknode(this);">'.$z["name"];
+									}
+									echo "&nbsp;】";
+								}
+								</php>
+								</volist>
+							</td>
+						</tr>
+						</volist>
+					</table>
+				</td>
+			</tr>
+		</volist>
+		</tbody>
+	</table>
+	<!-- 门店菜单 -->
+	<table id="shop_menus" hidden>
+		<tbody>
+		<volist name="shop_menus" id="sm">
+			<tr>
+				<td width="120px">
+					<input type="checkbox" name="menuid[]" value="{$sm.id}" level="0" onclick="javascript:checknode(this);" style="margin-left: 10px; margin-right: 5px; margin-top: -3px;" />{$sm.name}
+				</td>
+				<td colspan="2">
+					<table class="table table-hover table-bordered table-list new2" width="100%" height="100%" id="menus-table">
+						<volist name="sm.children" id="smc">
+						<tr>
+							<td width="120px">
+								<input type="checkbox" name="menuid[]" value="{$smc.id}" level="1" onclick="javascript:checknode(this);" style="margin-left:10px; margin-right: 5px; margin-top: -3px;">{$smc.name}
+							</td>
+							<td>
+								<volist name="smc.children" id="zc">
+								<input type="checkbox" name="menuid[]" value="{$zc.id}" level="2" onclick="javascript:checknode(this);" style="margin-left: 10px; margin-right: 5px; margin-top: -3px;">{$zc.name}
+								<php>
+								if(!empty($zc["children"])){
+									echo "【";
+									foreach($zc['children'] as $z){
+										if(in_array($z['id'],$h_menus)){
+											$a="checked";
+										}else{
+											$a="";
+										}
+										echo '<input type="checkbox" name="menuid[]" value="'.$z['id'].'" '.$a.' level="3" style="margin-left:5px; margin-right: 5px; margin-top: -3px;" onclick="javascript:checknode(this);">'.$z["name"];
+									}
+									echo "&nbsp;】";
+								}
+								</php>
+								</volist>
+							</td>
+						</tr>
+						</volist>
+					</table>
+				</td>
+			</tr>
+		</volist>
+		</tbody>
+	</table>
+
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script>
+		$(document).ready(function() {
+			Wind.css("treeTable");
+			Wind.use('treeTable',function() {
+				$("#menus-table").treeTable({
+					indent: 20
+				})
+			})
+		});
+		$(function(){
+			$("input[type='checkbox']").attr('disabled', true);
+		});
+		window.onload=function(){
+			$("#node-"+"{$cinfo.company_id}").removeClass("collapsed");
+			$("#node-"+"{$cinfo.company_id}").addClass("expanded");
+			$(".child-of-node-"+"{$cinfo.company_id}").show();
+		}
+		function checknode(obj) {
+			var chk = $("input[type='checkbox']");
+			var count = chk.length;
+			var num = chk.index(obj);
+			var level_top = level_bottom = chk.eq(num).attr('level');
+			for (var j = num + 1; j < count; j++) {
+				var le = chk.eq(j).attr('level');
+				if (chk.eq(num).attr("checked") == "checked") {
+					if (eval(le) > eval(level_bottom)){
+						chk.eq(j).attr("checked", true);
+					}
+					else if (eval(le) == eval(level_bottom)){
+						break;
+					}
+				} else {
+					if (eval(le) > eval(level_bottom)){
+						chk.eq(j).attr("checked", false);
+					}else if(eval(le) == eval(level_bottom)){
+						break;
+					}
+				}
+			}
+		}
+		$('button.js-ajax-submit').bind('click', function (e) {
+			e.preventDefault();
+			var btn = $(this),
+					form = btn.parents('form.js-ajax-form');
+			var name=$("#name").val();
+			if(empty(name)){
+				$('<span class="tips_error">请输入角色名称</span>').appendTo(btn.parent()).fadeIn('fast');
+				return false;
+			}
+			//批量操作 判断选项
+			if (btn.data('subcheck')) {
+				btn.parent().find('span').remove();
+				if (form.find('input.js-check:checked').length) {
+					var msg = btn.data('msg');
+					if (msg) {
+						art.dialog({
+							id: 'warning',
+							icon: 'warning',
+							content: btn.data('msg'),
+							cancelVal: "{:L('CLOSE')}",
+							cancel: function () {
+								btn.data('subcheck', false);
+								btn.click();
+							}
+						});
+					} else {
+						btn.data('subcheck', false);
+						btn.click();
+					}
+
+				} else {
+					$('<span class="tips_error">请至少选择一项</span>').appendTo(btn.parent()).fadeIn('fast');
+				}
+				return false;
+			}
+
+			//ie处理placeholder提交问题
+			if ($.browser && $.browser.msie) {
+				form.find('[placeholder]').each(function () {
+					var input = $(this);
+					if (input.val() == input.attr('placeholder')) {
+						input.val('');
+					}
+				});
+			}
+
+			form.ajaxSubmit({
+				url: btn.data('action') ? btn.data('action') : form.attr('action'),
+				//按钮上是否自定义提交地址(多按钮情况)
+				dataType: 'json',
+				beforeSubmit: function (arr, $form, options) {
+					var text = btn.text();
+
+					//按钮文案、状态修改
+					btn.text(text + '中...').attr('disabled', true).addClass('disabled');
+				},
+				success: function (data, statusText, xhr, $form) {
+					var text = btn.text();
+
+					//按钮文案、状态修改
+					btn.removeClass('disabled').text(text.replace('中...', '')).parent().find('span').remove();
+
+					if (data.state === 'success') {
+						$('<span class="tips_success">' + data.info + '</span>').appendTo(btn.parent()).fadeIn('slow').delay(1000).fadeOut(function () {
+							if (data.referer) {
+								//返回带跳转地址
+								if (window.parent.art) {
+									//iframe弹出页
+									window.parent.location.href = data.referer;
+								} else {
+									window.location.href = data.referer;
+								}
+							} else {
+								if (window.parent.art) {
+									reloadPage(window.parent);
+								} else {
+									//刷新当前页
+									reloadPage(window);
+								}
+							}
+						});
+					} else if (data.state === 'fail') {
+						$('<span class="tips_error">' + data.info + '</span>').appendTo(btn.parent()).fadeIn('fast');
+						btn.removeProp('disabled').removeClass('disabled');
+					}
+				}
+			});
+		});
+		$('.show_cr').bind('click', function (e) {
+			var role_id = $(this).attr("data-role");
+			var company_id = $(this).attr("data-company");
+			var url = $(this).attr("data-url");
+			var data = {role_id:role_id,company_id:company_id};
+			var role_tree = $('.role_tree');
+			var type = role_tree.data("type");
+			$.ajax({
+				type:'post',
+				data:data,
+				dataType:'json',
+				url:url,
+				success:function(result){
+					var cinfo = result.cinfo;
+					var crole = result.crole;
+					var h_menus = result.h_menus;
+					$("#company_name").html(cinfo['company_name']);
+					$("#name").html(crole['name']);
+					$("#remark").html(crole['remark']);
+					$("#status").html(crole['status'] == 1 ? "是" : "否");
+					/*change by alam 2018/5/10 start*/
+					if (crole.type != type) {
+						var html = '';
+						role_tree.data('type', crole.type);
+						role_tree.find('tbody').remove();
+						if (crole.type == 0) {
+							role_tree.append($('#business_menus').html());
+						} else {
+							role_tree.append($('#shop_menus').html());
+						}
+					}
+					/*change by alam 2018/5/10 end*/
+					var chk = $("input[type='checkbox']");
+					chk.attr("checked", false);
+					var count = chk.length;
+					for (var j = 0; j < count - 1; j ++) {
+						if(h_menus.indexOf(chk.eq(j).val()) > -1){
+							chk.eq(j).attr("checked",true);
+						}
+					}
+				}
+			});
+		});
+	</script>
+</body>
+</html>

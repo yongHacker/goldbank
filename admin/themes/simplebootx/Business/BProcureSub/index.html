@@ -1,0 +1,144 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a>{:L('BUSINESS_BPROCURESUB_INDEX')}</a></li>
+		</ul>
+        <form class="well form-search" method="post" action="{:U('BProcureSub/index')}">
+            <input type="text" name="search_content" style="width:200px;margin-left:10px;margin-right: 10px;" value="{:I('search_content')}" placeholder="类别名称">
+            <input type="submit" class="btn btn-primary" value="搜索">
+            <input type="submit" class="btn btn-primary js-ajax-submit" data-action="{:U('BProcureSub/add')}" value="添加">
+        </form>
+        <div class="main-content">
+        <if condition="$list">
+            <div class="ta">
+                <table class="table table-bordered  table-hover table-striped">
+                    <thead>
+                    <tr>
+                    	<th class="text-center">序</th>
+                    	<th class="text-center">类目</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="list" id="v">
+                        <tr>
+                            <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                            <td class="text-center">
+                                <input type="text" autocomplete="off" name="name" value="{$v['name']}" data-id="{$v.expence_id}" placeholder="类别名称" style="text-align: center;">
+                            </td>
+                            <td class="text-center">
+                                <a href="{:U('BProcureSub/deleted', array('expence_id' => $v['expence_id']))}" class="js-ajax-delete" role="button" title="删除" data-toggle="modal">删除</a>
+                            </td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">{$page}</div>
+        <else/>
+            <div class="ts">
+                <include file="./public/common/default_empty.html" />
+            </div>
+            <script type="text/javascript" src="/public/js/artDialog/artDialog.js?v="></script>
+        </if>
+        <include file="./public/common/footer.html" />
+	</div>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script>
+        // 增加类目名称
+        $('.js-ajax-submit').on('click', function(){
+            var url = $(this).data('action');
+            var search_content = $('input[name="search_content"]').val();
+            if (search_content == '' || search_content == undefined) {
+                art.dialog({
+                    content: '请先填写类目名称！',
+                    icon: 'warning'
+                });
+                return false;
+            }
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: {name:search_content},
+                success: function(data) {
+                    if(data.status == 1){
+                        art.dialog({
+                            content: '增加成功！',
+                            icon: 'warning',
+                            fixed: true,
+                            ok: function () {
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        art.dialog({
+                            content: data.info,
+                            icon: 'warning',
+                            fixed: true
+                        });
+                    }
+                },
+                error: function() {
+                    art.dialog({
+                        content: '网络错误！',
+                        icon: 'warning',
+                        fixed: true
+                    });
+                }
+            })
+            return false;
+        });
+        // 修改类目名称
+        $('input[name="name"]').on('change', function(){
+            var name = $(this).val();
+            var expence_id = $(this).data('id');
+            var url = "{:U('BProcureSub/edit')}";
+            if (name == '' || name == undefined) {
+                art.dialog({
+                    content: '请先填写类目名称！',
+                    icon: 'warning',
+                    fixed: true
+                });
+                return false;
+            }
+            if (expence_id == '' || expence_id == undefined) {
+                art.dialog({
+                    content: '网络错误！',
+                    icon: 'warning'
+                });
+                return false;
+            }
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: {name:name, expence_id:expence_id},
+                success: function(data) {
+                    if(data.status == 1){
+                        art.dialog({
+                            content: data.info,
+                            icon: 'succeed',
+                            fixed: true
+                        });
+                    } else {
+                        art.dialog({
+                            content: data.info,
+                            icon: 'warning',
+                            fixed: true
+                        });
+                    }
+                },
+                error: function() {
+                    art.dialog({
+                        content: '网络错误！',
+                        icon: 'warning',
+                        fixed: true
+                    });
+                }
+            })
+        });
+    </script>
+</body>
+</html>

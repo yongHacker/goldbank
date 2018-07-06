@@ -1,0 +1,48 @@
+<businesstpl file="header" />
+</head>
+<style type="text/css">
+.tips_success {
+	color: red;
+}
+</style>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li ><a href="{:U('BSectors/index')}">{:L('BUSINESS_BSECTORS_INDEX')}</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BSECTORS_EDIT')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BSectors/edit')}">
+			<input type="hidden" name="id" value="{$sector_info.id}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">上级:</label>
+					<div class="controls">
+						<select name="sector_pid">
+							<option value="0">作为顶级部门</option>
+							{$select_categorys}
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">部门名称:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="sector_name" value="{$sector_info.sector_name}">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">部门描述:</label>
+					<div class="controls">
+						<textarea name="sector_des" rows="5" cols="57" style="width: 500px;">{$sector_info.sector_des}</textarea>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

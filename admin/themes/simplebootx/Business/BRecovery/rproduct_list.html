@@ -1,0 +1,81 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class=""><a href="{:U('BProduct/index')}">零售货品</a></li>
+			<li class="active"><a href="{:U('BRecovery/rproduct_list')}">{:L('BUSINESS_BPRODUCT_INDEX')}</a></li>
+		</ul>
+        <form class="well form-search search_row" method="post" action="{:U('BRecovery/rproduct_list')}">
+            综合搜索:
+            <input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="金料名称/金料编号">
+            <input type="submit" class="btn btn-primary" value="搜索" />
+			<input class="btn btn-primary export" url="{:U('BRecovery/rproduct_export')}" value="导出" type="button" onclick="export_excel();">
+        	<a href="{:U('BRecovery/rproduct_list')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<!--<th width="50">ID</th>-->
+					<th width="50">序</th>
+					<th class="text-center">金料编号</th>
+					<th class="text-center">金料名称</th>
+					<th class="text-center">金价</th>
+					<th class="text-center">金重</th>
+					<th class="text-center">总重</th>
+					<th class="text-center">纯度(‰)/损耗率</th>
+					<th class="text-center">成本价</th>
+					<th class="text-center">来源</th>
+					<th class="text-center">金料状态</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="list" item="v">
+				<tr>
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td class="text-center">{$v.rproduct_code}</td>
+					<td class="text-center">{$v.recovery_name}</td>
+					<td class="text-center">{$v.gold_price}</td>
+					<td class="text-center">{$v.gold_weight}</td>
+					<td class="text-center">{$v.total_weight}</td>
+					<td class="text-center">{$v.purity} / {$v.attrition}</td>
+					<td class="text-center">{$v.cost_price}</td>
+					<td class="text-center">
+						<!-- 0回购 1销售截金 2金料 -->
+						<if condition="$v[type] eq 0">金料回购</if>
+						<if condition="$v[type] eq 1">销售截金</if>
+						<if condition="$v[type] eq 2">金料采购</if>
+						<if condition="$v[type] eq 3">结算来料</if>
+					</td>
+					<td class="text-center">
+						<if condition="$v[status] eq 0">
+							<if condition="$v[type] eq 0">回购中</if>
+							<if condition="$v[type] eq 1">销售回购中</if>
+							<if condition="$v[type] eq 2">采购中</if>
+							<if condition="$v[type] eq 3">来料结算中</if>
+						</if>
+						<if condition="$v[status] eq 1">正常在库</if>
+						<if condition="$v[status] eq 2">
+							<if condition="$v[type] eq 0">回购审核不通过</if>
+							<if condition="$v[type] eq 1">销售审核不通过</if>
+							<if condition="$v[type] eq 2">采购审核不通过</if>
+							<if condition="$v[type] eq 3">结算单审核不通过</if>
+						</if>
+						<if condition="$v[status] eq 3">
+							<if condition="$v[type] eq 0">回购单已撤销
+							<elseif condition="$v[type] eq 3" />结算单已撤销
+							<else />已撤销
+							</if>
+						</if>
+						<if condition="$v[status] eq 4">结算中</if>
+						<if condition="$v[status] eq 5">结算完成</if>
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

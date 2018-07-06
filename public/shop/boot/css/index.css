@@ -1,0 +1,258 @@
+    .navbar .nav_shortcuts .btn {
+        margin-top: 5px;
+    }
+
+    .macro-component-tabitem {
+        width: 101px;
+    }
+    /*-----------------不同端导航颜色区分--------------------*/
+
+    .navbar-inner {
+        background-color: #528B8B;
+        background-image: -moz-linear-gradient(top, #528B8B, #2F4F4F);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#528B8B), to(#2F4F4F));
+        background-image: -webkit-linear-gradient(top, #528B8B, #2F4F4F);
+        background-image: -o-linear-gradient(top, #528B8B, #2F4F4F);
+        background-image: linear-gradient(to bottom, #528B8B, #2F4F4F);
+    }
+
+    .navbar .nav>li>a:focus,
+    .navbar .nav>li>a:hover {
+        background-color: #2F4F4F;
+    }
+    /*-----------------不同端导航颜色区分--------------------*/
+    /*-----------------导航hack--------------------*/
+
+    .nav-list>li.open {
+        position: relative;
+    }
+
+    .nav-list>li.open .back {
+        display: none;
+    }
+
+    .nav-list>li.open .normal {
+        display: inline-block !important;
+    }
+
+    .nav-list>li.open a {
+        padding-left: 7px;
+    }
+
+    .nav-list>li .submenu>li>a {
+        background: #fff;
+    }
+
+    .nav-list>li .submenu>li a>[class*="fa-"]:first-child {
+        left: 20px;
+    }
+
+    .nav-list>li ul.submenu ul.submenu>li a>[class*="fa-"]:first-child {
+        left: 30px;
+    }
+    /*-----------------导航hack 20180530新增--------------------*/
+
+    .sidebar {
+        background-color: #001529;
+    }
+
+    .nav-list>li {
+        border: none;
+    }
+
+    .nav-list>li.open {
+        background: #001529;
+        color: #fff;
+        border: none;
+    }
+
+    .nav-list>li.open>a {
+        background: #001529;
+        color: #fff;
+    }
+
+    .nav-list>li>a {
+        background-color: #001529;
+        color: rgba(255, 255, 255, 0.65);
+        padding: 0 0 0 20px;
+        height: 40px;
+        line-height: 40px;
+    }
+
+    .nav-list>li>a .svg.svg-small {
+        fill: rgba(255, 255, 255, 0.65)
+    }
+
+    .nav-list>li.open>a .svg.svg-small {
+        fill: #fff;
+    }
+
+    .nav-list>li.open .back {
+        display: none;
+    }
+
+    .nav-list>li.open .normal {
+        display: inline-block !important;
+    }
+
+    .nav-list>li.open a {
+        padding-left: 20px;
+    }
+
+    .nav-list>li>a:hover {
+        background: #001529;
+        color: #fff;
+        border: none;
+    }
+
+    .nav-list>li>a:hover .svg.svg-small {
+        fill: #fff
+    }
+
+    .nav-list>li a:hover>.arrow,
+    .nav-list>li.active>a>.arrow,
+    .nav-list>li.open>a>.arrow {
+        color: #fff;
+    }
+
+    .nav-list>li>a:focus {
+        color: #fff;
+        background-color: #001529;
+    }
+
+    .nav-list>li .submenu {
+        background: rgba(3, 3, 4, 0.65);
+        ;
+        border: none;
+        color: #fff;
+    }
+
+    .nav-list>li .submenu>li>a {
+        background: rgba(3, 3, 4, 0.65);
+        border: none;
+        color: rgba(255, 255, 255, 0.65)
+    }
+
+    .nav-list>li .submenu>li>a:hover {
+        background: rgba(3, 3, 4, 0.65);
+        ;
+        color: #fff;
+    }
+    /*.nav-list>li .submenu>li>a:focus{background: #2188FF;color:#fff;}*/
+
+    .nav-list>li .submenu>li.open>a,
+    .nav-list>li .submenu>li.open>a>.arrow {
+        color: #fff;
+    }
+
+    .nav-list>li .submenu>li.li-active>a {
+        background: #2188FF;
+        color: #fff;
+    }
+
+    .nav-list>li .submenu>li a>[class*="fa-"]:first-child {
+        left: 20px;
+    }
+
+    .nav-list>li ul.submenu ul.submenu>li a>[class*="fa-"]:first-child {
+        left: 30px;
+    }
+
+    .nav-list>li>.submenu>li:first-child>a {
+        border: none
+    }
+
+    .nav-list>li>.submenu>li:before {
+        border: none;
+    }
+    /*navbar*/
+
+    .navbar .nav.pull-right {
+        margin-right: 100px;
+    }
+
+    .navbar .container-fluid {
+        background: #fff;
+        color: #333;
+        box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar .container-fluid span {
+        background: #fff;
+        color: #333;
+    }
+
+    .navbar .container-fluid .brand {
+        background: #002140;
+        width: 149px;
+        height: 25px;
+    }
+
+    #right_tools_wrapper {
+        top: 5px!important;
+        right: 20px!important;
+    }
+
+    .simplewind-nav>li>a {
+        display: inline-block
+    }
+
+    .navbar .nav>li>a:focus,
+    .navbar .nav>li>a:hover {
+        background: #fff;
+    }
+
+    .breadcrumbs {
+        box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1);
+        border-bottom: none
+    }
+    /*关于滚动条的定义*/
+    /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 5px;
+        background-color: #F5F5F5;
+    }
+    /*定义滚动条轨道 内阴影+圆角*/
+
+    ::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        background-color: #001529;
+    }
+    /*定义滑块 内阴影+圆角*/
+
+    ::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+        background-color: #fff;
+    }
+
+    .macro-component-tabitem {
+        background: #fff;
+        min-width: 300px!important;
+        text-align: left;
+    }
+
+    .macro-component-tabitem span {
+        /*display: inline-block;*/
+    }
+
+    .macro-tabs-item-text {
+        display: block;
+        background: #fff;
+        color: #999;
+        font-size: 14px;
+        font-weight: normal;
+        width: 100%;
+    }
+
+    .macro-component-tabitem:hover {
+        background: #fff;
+    }
+
+    .macro-component-tabitem.current {
+        background: #fff;
+    }
+    /*-----------------/导航hack 20180530新增--------------------*/
+    /*----------------导航hack--------------------*/

@@ -1,0 +1,8 @@
+.table .search_input { margin: 0; padding: 0; position: relative;}
+#mobile { margin: 8px 5px; text-indent: 20px;}
+#product_code { margin: 8px 5px; text-indent: 20px;}
+.myModal3.leave { position: absolute; top: 12px; left: 15px; font-size: 14px;}
+.ta select, .ta input { width: 90%;}
+input[type="number"] { text-align: right;}
+.no_arrow::-webkit-outer-spin-button, .no_arrow::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0;}
+.no_arrow { -moz-appearance: textfield;}

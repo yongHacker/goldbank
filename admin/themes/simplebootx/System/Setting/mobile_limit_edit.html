@@ -1,0 +1,181 @@
+<systemtpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li ><a  href="{:U('setting/mobile_setting')}">短信设置</a></li>
+			<li <if condition="$sms_mobile['type'] eq 1">class="active"</if> ><a href="{:U('setting/mobile_limit',array('type'=>1))}" >短信白名单</a></li>
+			
+			<li <if condition="$sms_mobile['type'] eq 2">class="active"</if> ><a href="{:U('setting/mobile_limit',array('type'=>2))}">短信黑名单</a></li>
+			<li  ><a href="#">名单添加</a></li>
+			
+		</ul>
+		<form class="form-horizontal js-ajax-forms" action="{:U('setting/mobile_limit_edit_post')}" method="post">
+			<fieldset>
+				<div class="tabbable">
+					<div class="tab-content">
+						
+						<div class="tab-pane active" id="H">
+							<fieldset>
+								<div class="control-group">
+								<label class="control-label">手机号</label>
+									<div class="controls">
+										<input type="text" autocomplete="off" name="mobile" value="{$sms_mobile['mobile']}">
+										<span class="form-required">* </span>
+									</div>
+								</div>
+								<div class="control-group">
+									<label class="control-label">名单类型</label>
+									<div class="controls">
+										<php>$mobile_type=array( "1"=>"白名单", "2"=>"黑名单");</php>
+										<select name="type">
+											<foreach name="mobile_type" item="vo">
+											<php>$mobile_type_selected=$key==$sms_mobile['type']?"selected":"";</php>
+											<option value="{$key}" {$mobile_type_selected}>{$vo}</option>
+											</foreach>
+										</select>
+										<span class="form-required">* </span>
+									</div>
+								</div>
+								<div class="control-group">
+									<label class="control-label">备注</label>
+									<div class="controls">
+										<textarea name="memo" value="{$sms_mobile['memo']}" rows="5" cols="57">{$sms_mobile['memo']}</textarea>
+									</div>
+								</div>
+								<input type="hidden" name="id" value="{$sms_mobile['id']}">
+							</fieldset>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary  js-ajax-submit">{:L("SAVE")}</button>
+				</div>
+			</fieldset>
+		</form>
+
+	</div>
+	<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+	<script>
+		/////---------------------
+		
+		Wind.use('validate', 'ajaxForm', 'artDialog', function() {
+			//javascript
+			var form = $('form.js-ajax-forms');
+			//ie处理placeholder提交问题
+			if ($.browser && $.browser.msie) {
+				form.find('[placeholder]').each(function() {
+					var input = $(this);
+					if (input.val() == input.attr('placeholder')) {
+						input.val('');
+					}
+				});
+			}
+			//表单验证开始
+			form.validate({
+				//是否在获取焦点时验证
+				onfocusout : false,
+				//是否在敲击键盘时验证
+				onkeyup : false,
+				//当鼠标掉级时验证
+				onclick : false,
+				//验证错误
+				showErrors : function(errorMap, errorArr){
+					//errorMap {'name':'错误信息'}
+					//errorArr [{'message':'错误信息',element:({})}]
+					try {
+						$(errorArr[0].element).focus();
+						art.dialog({
+							id : 'error',
+							icon : 'error',
+							lock : true,
+							fixed : true,
+							background : "#CCCCCC",
+							opacity : 0,
+							content : errorArr[0].message,
+							cancelVal : "{:L('OK')}",
+							cancel : function() {
+								$(errorArr[0].element).focus();
+							}
+						});
+					} catch (err) {
+					}
+				},
+				//验证规则
+				rules : {
+					'options[site_name]' : {
+						required : 1
+					},
+					'options[site_host]' : {
+						required : 1
+					},
+					'options[site_root]' : {
+						required : 1
+					}
+				},
+				//验证未通过提示消息
+				messages : {
+					'options[site_name]' : {
+						required : "{:L('WEBSITE_SITE_NAME_REQUIRED_MESSAGE')}"
+					},
+					'options[site_host]' : {
+						required : "{:L('WEBSITE_SITE_HOST_REQUIRED_MESSAGE')}"
+					}
+				},
+				//给未通过验证的元素加效果,闪烁等
+				highlight : false,
+				//是否在获取焦点时验证
+				onfocusout : false,
+				//验证通过，提交表单
+				submitHandler : function(forms) {
+					$(forms).ajaxSubmit({
+						url : form.attr('action'), //按钮上是否自定义提交地址(多按钮情况)
+						dataType : 'json',
+						beforeSubmit : function(arr, $form, options) {
+
+						},
+						success : function(data, statusText, xhr, $form) {
+							if (data.status) {
+								setCookie("refersh_time", 1);
+								var admin_url_changed=$("#js-site-admin-url-password").data("changed");
+								var message =admin_url_changed?data.info+'<br><span style="color:red;">后台地址已更新(请劳记！)</span>':data.info;
+								
+								//添加成功
+								Wind.use("artDialog", function() {
+									art.dialog({
+										id : "succeed",
+										icon : "succeed",
+										fixed : true,
+										lock : true,
+										background : "#CCCCCC",
+										opacity : 0,
+										content : message,
+										button : [ {
+											name : "{:L('OK')}",
+											callback : function() {
+												location.href=$(".nav").find(".active").find("a").attr("href");
+												return true;
+											},
+											focus : true
+										}, {
+											name : "{:L('CLOSE')}",
+											callback : function() {
+												reloadPage(window);
+												return true;
+											}
+										} ]
+									});
+								});
+							} else {
+								alert(data.info);
+							}
+						}
+					});
+				}
+			});
+		});
+		////-------------------------
+	</script>
+</body>
+</html>

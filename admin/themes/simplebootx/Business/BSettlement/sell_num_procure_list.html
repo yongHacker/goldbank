@@ -1,0 +1,25 @@
+<volist name="procure_list" id="v">
+	<tr>
+		<td class="text-center">
+			<label class="checkbox">
+				<input type="checkbox" name="procure_batch" value="{$v.order_id}"> {$v.order_id}
+				<input type="hidden" class="weight" value="{$v.weight}">
+				<!-- <input type="hidden" class="price" value="{$v.price}"> -->
+			</label>
+		</td>
+		<td class="text-center">{:date('Y-m-d', $v['create_time'])}</td>
+		<td class="text-center">{$v.show_pricemode}</td>
+		<td class="text-center">{$v.creator_name}</td>
+		<td class="text-center">{$v.show_status}</td>
+		<td class="text-center">{:numberformat($v['weight'], 2, '.', ',')}g</td>
+		<td class="text-center">
+		<if condition="$v['pricemode'] eq 1">
+		￥{:numberformat($v['total_fee_price'], 2, '.', ',')}
+		<input type="hidden" class="price" value="{$v.total_fee_price}">
+		<else />
+		￥{:numberformat($v['real_sell_price'], 2, '.', ',')}
+		<input type="hidden" class="price" value="{$v.real_sell_price}">
+		</if>
+		</td>
+	</tr>
+</volist>

@@ -1,0 +1,111 @@
+<businesstpl file="header" />
+<style>
+	td a.weixin {
+		color: #ddd;
+	}
+	td a.down {
+		color: #2fa4e7;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BGoodsCommon/index')}">{:L('BUSINESS_BGOODSCOMMON_INDEX')}</a></li>
+			<li ><a href="{:U('BGoodsCommon/add_first')}">{:L('BUSINESS_BGOODSCOMMON_ADD_FIRST')}</a></li>
+			<!--<li><a href="{:U('BGoodsCommon/add')}">{:L('BUSINESS_BGOODSCOMMON_ADD')}</a></li>
+			<li><a href="{:U('BGoodsCommon/inlay_add')}">{:L('BUSINESS_BGOODSCOMMON_INLAY_ADD')}</a></li>-->
+		</ul>
+        <form class="well form-search search_row" method="post" action="{:U('BGoodsCommon/index')}">
+        综合搜索:
+			<input type="text" autocomplete="off" name="search_name" style="width: 180px;" value="{:I('request.search_name/s','')}" placeholder="请输入商品编号/商品名称/标签名">
+            商品分类:
+			<select name="class_id">
+				<option value="0">全部分类</option>
+				{$select_categorys}
+			</select>
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:U('BGoodsCommon/index')}">清空</a>
+			<input class="btn btn-primary export" url="{:U('BGoodsCommon/export_excel')}" value="导出" type="button" onclick="export_excel();">
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">序</th>
+					<th>图片</th>
+					<th>商品编码</th>
+					<th>商品名称</th>
+					<th>标签名</th>
+					<th>商品分类</th>
+					<!-- <th>销售类型</th> -->
+					<th>规格数量</th>
+					<th width="120">{:L('ACTIONS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<php>$user_statuses=array("0"=>L('USER_STATUS_BLOCKED'),"1"=>L('USER_STATUS_ACTIVATED'),"2"=>L('USER_STATUS_UNVERIFIED'));</php>
+				<foreach name="list" item="vo">
+				<tr>
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td class="text-center">
+						<if condition="empty($vo['pic'])">
+							<img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
+							<else />
+							<a href="javascript:parent.image_preview_dialog('{$vo['pic']}');">
+								<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$vo.pic}">
+							</a>
+						</if>
+					</td>
+					<td class="text-center">{$vo.goods_code}</td>
+					<td>{$vo.goods_name}</td>
+					<td>{$vo.tag_name}</td>
+					<td>{$vo.class_name}</td>
+					<!-- <td class="text-center">{$vo['sell_type']==1?'零售':'批发'}</td> -->
+					<td class="text-center"><a href="{:U('BGoods/index',array('goods_common_id'=>$vo['id']))}">{$vo.goods_num}</a></td>
+					<td class="text-center" id="con">
+						<a href="{:U('BGoodsCommon/detail',array('type'=>$vo['type'],'goods_common_id'=>$vo['id']))}"  title="查看" class="detail fa fa-file-text-o"></a>
+						<a href="{:U('BGoodsCommon/edit',array('type'=>$vo['type'],'goods_common_id'=>$vo['id']))}" title="编辑" name="113" class="edit fa fa-edit"></a>
+						<a href="{:U('BGoodsCommon/delGoodsCommon',array('goods_common_id'=>$vo['id']))}"  class="delete js-ajax-delete fa fa-trash" role="button" title="删除" data-toggle="modal"></a>
+						<!--<if condition="$vo['mobile_show']">
+							<a class="weixin fa fa-weixin down js-ajax-delete" href="{:U('BGoodsShelves/add',array('id'=>$vo['id'],'mobile_show'=>$vo['mobile_show']))}" data-msg="是否在微信端下架？"  ></a>
+							<else/>
+							<a class="weixin fa fa-weixin js-ajax-delete" href="{:U('BGoodsShelves/add',array('id'=>$vo['id'],'mobile_show'=>$vo['mobile_show']))}" data-msg="是否在微信端上架？"  ></a>
+						</if>-->
+					</td>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+<script>
+	//删除商品公共
+	var del_status=0;
+	$(".delete").each(function(){
+		$(this).click(function(){
+			var id=$(this).attr('name');
+			$(".shanchu").click(function(){
+				if(del_status==0){
+					del_status=1;
+					$.ajax({
+						url: "{:U('BGoodsCommon/delGoodsCommon')}",
+						type: 'post',
+						dataType: 'json',
+						data: {goods_common_id:id},
+						success: function (data) {
+							del_status=0;
+							if(data.code==200){
+								//alert(data.datas.msg);
+								location.reload();
+							}else{
+								alert(data.msg);
+							}
+						}
+					})
+				}
+			})
+		})
+	})
+</script>
+</body>
+</html>

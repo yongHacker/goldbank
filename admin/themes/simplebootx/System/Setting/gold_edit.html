@@ -1,0 +1,160 @@
+<systemtpl file="header" />
+<style>
+.tips_success,.tips_error{color:red;}
+.wrap{padding: 20px 20px 0;}
+.form-horizontal .control-group{/*margin-bottom:0;*/}
+.bbt a.btn{margin-bottom:20px; margin-left:10px;}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('setting/gold_setting')}">{:L('SYSTEM_SETTING_GOLD_SETTING')}</a></li>
+			<li class="active"><a href="{:U('setting/gold_edit',array('id'=>$_GET['id']))}">编辑{$cate_info.name}</a></li>
+		</ul>
+		<form class="form-horizontal" method="post" action="{:U('setting/gold_edit',array('id'=>$_GET['id']))}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">{$cate_info.name}</label>
+					<!--<label class="control-label">{$cate_info.name}系统价=</label>-->
+					<!--<div class="controls">
+						<input type="text" autocomplete="off" name="expression" class="expression" value="{$expression}"/> *    <a class="btn btn-danger" id="del">清空</a>
+					</div>-->
+				</div>
+				<!--<div class="control-group">
+					<label class="control-label">运算符选择</label>
+					<div class="controls bbt">
+						<a class="btn btn-primary" style="margin-left:0px;" id="round">四舍五入</a>
+						<a class="btn btn-primary" id="ceil">向上取整</a>
+						<a class="btn btn-primary" id="floor">向下取整</a>
+						</br>
+						<a class="btn btn-danger" style="margin-left:0px;" id="plus">+</a>
+						<a class="btn btn-danger" style="margin-left:15px;" id="minus">-</a>
+						<a class="btn btn-danger"style="margin-left:15px;" id="multiply">×</a>
+						<a class="btn btn-danger"style="margin-left:15px;" id="divide">÷</a>
+						<a class="btn btn-primary"style="margin-left:15px;" id="price">price</a>
+					</div>
+				</div>-->
+				<div class="control-group">
+					<label class="control-label">商户显示名称</label>
+					<div class="controls ">
+						<if condition="$cate_info.memo neq ''">
+							<textarea name="memo" value="{$cate_info.memo}">{$cate_info.memo}</textarea>
+							<else/>
+							<textarea name="memo" value="{$cate_info.name}">{$cate_info.name}</textarea>
+						</if>
+
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<p class="btn btn-primary save" type="text">{:L('SAVE')}</p>
+				<p class="btn js-ajax-back-btn" type="text">{:L('BACK')}</p>
+			</div>
+		</form>
+	</div>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+var expression=$('input[name=expression]');
+$('p.save').click(function(){
+	var url=$('form').attr('action');
+	$.ajax({
+		url:url,
+		type:'post',
+		data:{expression:expression.val(),memo:$("textarea[name='memo']").val()},
+		dataType:"json",
+		success:function(result){
+			var code=result.code;
+			var str="";
+			if(code==200){
+				str="操作成功！";
+			}else{
+				str="操作失败！";
+			}
+			$(".form-actions").append('<p class="tips" style="display:inline;margin-left:20px;color:red;">'+str+'</p>');
+			setTimeout(function(){$('.form-actions .tips').remove();},1000);
+		}
+	});
+});
+$('#del').click(function(){
+	expression.val("");
+});
+$('#round').click(function(){
+	var value=expression.val();
+	expression.val("round("+value+")");
+});
+$('#ceil').click(function(){
+	var value=expression.val();
+	expression.val("ceil("+value+")");
+});
+$('#floor').click(function(){
+	var value=expression.val();
+	expression.val("floor("+value+")");
+});
+$('#plus').click(function(){
+	var value=expression.val();
+	expression.val(value+"+");
+});
+$('#minus').click(function(){
+	var value=expression.val();
+	expression.val(value+"-");
+});
+$('#multiply').click(function(){
+	var value=expression.val();
+	expression.val(value+"*");
+});
+$('#divide').click(function(){
+	var value=expression.val();
+	expression.val(value+"/");
+});
+$('#price').click(function(){
+	var value=expression.val();
+	expression.val(value+"price");
+});
+/*$('#round').click(function(){
+	var value=expression.val();
+	if(value.indexOf('round')>-1){
+		value=value.replace("round(","");
+		value=value.replace(")","");
+		expression.val(value);
+	}else{
+		value=clean();
+		expression.val("round("+value+")");
+	}
+});
+$('#ceil').click(function(){
+	var value=expression.val();
+	if(value.indexOf('ceil')>-1){
+		value=value.replace("ceil(","");
+		value=value.replace(")","");
+		expression.val(value);
+	}else{
+		value=clean();
+		expression.val("ceil("+value+")");
+	}
+});
+$('#floor').click(function(){
+	var value=expression.val();
+	if(value.indexOf('floor')>-1){
+		value=value.replace("floor(","");
+		value=value.replace(")","");
+		expression.val(value);
+	}else{
+		value=clean();
+		expression.val("floor("+value+")");
+	}
+});
+function clean(){
+	var value=expression.val();
+	value=value.replace("round(","");
+	value=value.replace(")","");
+	value=value.replace("ceil(","");
+	value=value.replace(")","");
+	value=value.replace("floor(","");
+	value=value.replace(")","");
+	return value;
+}*/
+</script>
+</body>
+</html>

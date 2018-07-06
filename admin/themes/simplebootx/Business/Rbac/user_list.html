@@ -1,0 +1,72 @@
+<businesstpl file="header" />
+<style>
+input{width: 163px;margin-bottom:0px;}
+.table {text-overflow: ellipsis;white-space: nowrap;overflow: hidden;}
+.ta {overflow-x: auto;width: 100%;margin-bottom: 20px;}
+.ta input{width: 177px;margin-bottom:0px;border-left:0px;border-top:0px;border-right:0px;border-bottom:0px;padding:8px 1px ; margin-left:0px;width:95%;}
+.ta input:focus{
+			-webkit-box-shadow: 0px 0px 0px;
+			  -moz-box-shadow: 0px 0px 0px;
+box-shadow: 0px 0px 0px;  }
+.ta td{padding: 0px;vertical-align: middle;}
+.td_border{border: solid 1px #157ab5;}
+.sel{background: #f4f4f4;}
+.my_page li{margin-top: 10px;display:none;}
+.table tr th{text-align:center;}
+.dropdown-menu_sell { position: absolute;z-index: 1000;display: none;float: left; min-width: 177px;background-color: rgb(255, 255, 255);box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 10px;
+    -webkit-background-clip: padding-box; background-clip: padding-box;padding: 5px 0px; margin: 2px 0px 0px;list-style: none;
+    border-width: 1px;border-style: solid;border-color: rgba(0, 0, 0, 0.2);border-image: initial;border-radius: 6px;
+}
+
+</style>
+</head>
+<body class=" theme-blue">
+<div class="wrap js-check-wrap"  >
+	<form id="lis" method="POST" action="{:U('Rbac/user_list')}" style="margin: 0 0 -20px">
+		<div class="well form-search">
+            综合搜索:
+            <input id="mobile" name="mobile" style="width: 150px;" value="{$mobile}" placeholder="关键字查询" type="text">
+            <input id ="from" class="btn btn-primary" value="搜索" type="submit">
+			<a id ="add_user" href="{:U('Rbac/add_employee')}" class="btn btn-primary" type="text" onclick="aa()">添加员工</a>
+        </div>
+	</form>
+	<table class="table table-bordered  table-hover">
+		<thead  style="background:#e5e5ea">
+			<tr >
+				<th width="80px"><input type="checkbox" value="0" name="select_all"></th>
+				<th width="80px;">序号</th>
+				<th>姓名</th>
+				<th>手机</th>
+			</tr>
+		</thead>
+		<tbody id="table">
+			<volist name="user_list" id="v">
+					<tr class="check_tr">
+						<td class="text-center"><input name="sub_record_id"  class="check_box" uid="{$v.user_id}"  u_name="{$v.user_nicename}" mobile="{$v.mobile}" type="checkbox" ></td>
+						<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+						<td class="user_nicename">{$v.employee_name}</td>
+						<td class="text-center mobile">{$v.employee_mobile}</td>
+					</tr>
+			</volist>
+		</tbody>
+	</table>
+	<div class="pagination">{$page}</div>
+	</div>
+	<script>
+		$(".check_tr").click(function(){
+			$(this).find(".check_box").attr('checked', 'checked');
+		});
+		$('input[name="select_all"]').change(function(){
+			if($(this).attr('checked') !== undefined){
+				$('input[name="sub_record_id"]').attr('checked', true);
+			}else{
+				$('input[name="sub_record_id"]').attr('checked', false);
+			}
+		});
+		function aa(){
+			parent.change(1);
+		}
+	</script>
+</body>
+
+

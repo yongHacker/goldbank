@@ -1,0 +1,10 @@
+            #login_btn_wraper{
+                text-align: center;
+            }
+            #login_btn_wraper .tips_success{
+                color:#fff;
+            }
+            #login_btn_wraper .tips_error{
+                color:#DFC05D;
+            }
+            #login_btn_wraper button:focus{outline:none;}

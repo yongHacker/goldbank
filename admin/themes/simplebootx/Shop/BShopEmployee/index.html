@@ -1,0 +1,83 @@
+<shoptpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BShopEmployee/index')}">{:L('SHOP_BSHOPEMPLOYEE_INDEX')}</a></li>
+		</ul>
+        <form class="well form-search" method="post" action="{:U('BShopEmployee/index')}">
+			用户:
+			<input type="text" autocomplete="off" name="mobile" style="width: 100px;" value="{:I('request.mobile/s','')}" placeholder="手机号/姓名">
+			部门：
+			<select name="sector_id">
+				<option value="0">全部</option>
+				{$select_categorys}
+			</select>
+			<!--角色：
+			<select name="role_id">
+				<option value="0">全部</option>
+				<volist name="roles" id="v">
+					<option value="{$v.id}" <if condition="$v['id'] eq $_REQUEST['role_id']">selected=selected</if>>{$v.name}</option>
+				</volist>
+			</select>-->
+			状态：
+			<select name="status">
+				<option value="-1">全部</option>
+				<volist name="status" id="v" key="k">
+					<option value="{$key}" <if condition="$key eq $_REQUEST['status']&&$_REQUEST['status'] gt -1">selected=selected</if>>{$v}</option>
+				</volist>
+			</select>
+			创建时间:
+			<div class="input-prepend input-group">
+				<span class="add-on input-group-addon">
+					<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+				</span>
+				<input id="begintime" class="js-datetime" name="begin_time" value="{$_GET['begin_time']?$_GET['begin_time']:$_POST['begin_time']}" type="text"  >
+			</div>
+			-
+			<div class="input-prepend input-group">
+				<span class="add-on input-group-addon">
+					<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+				</span>
+				<input id="endtime" class="js-datetime" name="end_time" value="{$_GET['end_time']?$_GET['end_time']:$_POST['end_time']}" type="text"  >
+			</div>
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:U('BShopEmployee/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<!--<th width="50">ID</th>-->
+					<th width="50">序</th>
+					<th>用户名</th>
+					<th>手机号</th>
+					<th>部门</th>
+					<th>职位</th>
+					<th>创建时间</th>
+					<th>{:L('STATUS')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<php>$user_statuses=array("0"=>L('USER_STATUS_BLOCKED'),"1"=>L('USER_STATUS_ACTIVATED'),"2"=>L('USER_STATUS_UNVERIFIED'));</php>
+				<foreach name="list" item="vo">
+				<tr>
+					<!--<td>{$vo.id}</td>-->
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td><a href="{:U('BShopEmployee/info',array('user_id'=>$vo['user_id']))}">{$vo.employee_name}</a></td>
+					<td class="text-center">{$vo.employee_mobile}</td>
+					<td>{$vo.sector_name}</td>
+					<td>{$vo.job_name}</td>
+					<td class="text-center">
+						{:date('Y-m-d H:i:s',$vo['create_time'])}
+					</td>
+					<td>{$status[$vo['status']]}</td>
+
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>

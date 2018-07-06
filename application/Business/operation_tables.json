@@ -1,0 +1,226 @@
+[
+  {
+    "table_name": "b_allot",
+    "table_comment": "调拨单"
+  },
+  {
+    "table_name": "b_allot_detail",
+    "table_comment": "调拨单明细"
+  },
+  {
+    "table_name": "b_article",
+    "table_comment": "Portal文章表"
+  },
+  {
+    "table_name": "b_article_class",
+    "table_comment": "Portal 文章分类表"
+  },
+  {
+    "table_name": "b_auth_access",
+    "table_comment": "权限授权表"
+  },
+  {
+    "table_name": "b_auth_rule",
+    "table_comment": "权限规则表"
+  },
+  {
+    "table_name": "b_bank_gold",
+    "table_comment": "商户金子价格设定表"
+  },
+  {
+    "table_name": "b_bank_gold_log",
+    "table_comment": "商户金子价格设定记录表"
+  },
+  {
+    "table_name": "b_bank_gold_type",
+    "table_comment": "商户金子类型"
+  },
+  {
+    "table_name": "b_caccount_record",
+    "table_comment": "商户记账流水表（钱）"
+  },
+  {
+    "table_name": "b_client",
+    "table_comment": "B端客户表"
+  },
+  {
+    "table_name": "b_company_account",
+    "table_comment": "商户记账账户表"
+  },
+  {
+    "table_name": "b_company_account_flow",
+    "table_comment": "商户结欠账户流水记录"
+  },
+  {
+    "table_name": "b_currency",
+    "table_comment": "币种表"
+  },
+  {
+    "table_name": "b_employee",
+    "table_comment": "B端员工表"
+  },
+  {
+    "table_name": "b_goldgoods_detail",
+    "table_comment": "零售素金商品规格明细表"
+  },
+  {
+    "table_name": "b_goods",
+    "table_comment": "商品规格表 "
+  },
+  {
+    "table_name": "b_goods_class",
+    "table_comment": "商品分类表 "
+  },
+  {
+    "table_name": "b_goods_common",
+    "table_comment": "商品公共表"
+  },
+  {
+    "table_name": "b_goods_pic",
+    "table_comment": "商品图片表 "
+  },
+  {
+    "table_name": "b_goods_shelves",
+    "table_comment": "仓库表"
+  },
+  {
+    "table_name": "b_jobs",
+    "table_comment": "岗位表"
+  },
+  {
+    "table_name": "b_material_order",
+    "table_comment": "买料记录表"
+  },
+  {
+    "table_name": "b_material_record",
+    "table_comment": "来往金料记录表"
+  },
+  {
+    "table_name": "b_material_record_detail",
+    "table_comment": "来往料记录明细表"
+  },
+  {
+    "table_name": "b_menu",
+    "table_comment": "后台菜单表"
+  },
+  {
+    "table_name": "b_metal_price",
+    "table_comment": "商户贵金属价格"
+  },
+  {
+    "table_name": "b_metal_type",
+    "table_comment": "商户贵金属类型"
+  },
+  {
+    "table_name": "b_options",
+    "table_comment": "设置表"
+  },
+  {
+    "table_name": "b_outbound_detail",
+    "table_comment": "出库单详情"
+  },
+  {
+    "table_name": "b_outbound_order",
+    "table_comment": "出库单"
+  },
+  {
+    "table_name": "b_payment",
+    "table_comment": "收款方式表"
+  },
+  {
+    "table_name": "b_procure_settle",
+    "table_comment": "采购结算单表"
+  },
+  {
+    "table_name": "b_procure_settle_gold",
+    "table_comment": "结算货品金料联系表"
+  },
+  {
+    "table_name": "b_procure_settle_relation",
+    "table_comment": "采购结算与采购关系列表"
+  },
+  {
+    "table_name": "b_procure_storage",
+    "table_comment": "采购入库单表"
+  },
+  {
+    "table_name": "b_procurement",
+    "table_comment": "采购单表"
+  },
+  {
+    "table_name": "b_product",
+    "table_comment": "货品表"
+  },
+  {
+    "table_name": "b_product_diamond",
+    "table_comment": "裸钻类货品明细表"
+  },
+  {
+    "table_name": "b_product_gold",
+    "table_comment": "素金类货品明细表"
+  },
+  {
+    "table_name": "b_product_goldm",
+    "table_comment": "金料货品表"
+  },
+  {
+    "table_name": "b_product_inlay",
+    "table_comment": "镶嵌类货品明细表"
+  },
+  {
+    "table_name": "b_product_jade",
+    "table_comment": "玉石类货品明细表"
+  },
+  {
+    "table_name": "b_product_pic",
+    "table_comment": "货品图片表"
+  },
+  {
+    "table_name": "b_product_sub",
+    "table_comment": "货品附属信息表"
+  },
+  {
+    "table_name": "b_recovery",
+    "table_comment": "旧金回收单据表"
+  },
+  {
+    "table_name": "b_recovery_product",
+    "table_comment": "旧金货品表"
+  },
+  {
+    "table_name": "b_saccount_record",
+    "table_comment": "记账账户流水表"
+  },
+  {
+    "table_name": "b_sectors",
+    "table_comment": "部门表"
+  },
+  {
+    "table_name": "b_sell",
+    "table_comment": "销售单表"
+  },
+  {
+    "table_name": "b_sell_cut_product",
+    "table_comment": "销售截金详情表"
+  },
+  {
+    "table_name": "b_sell_detail",
+    "table_comment": "销售详情表"
+  },
+  {
+    "table_name": "b_shop",
+    "table_comment": "门店表"
+  },
+  {
+    "table_name": "b_shop_employee",
+    "table_comment": "门店员工表"
+  },
+  {
+    "table_name": "b_supplier",
+    "table_comment": "供应商\/经销商表"
+  },
+  {
+    "table_name": "b_warehouse",
+    "table_comment": "仓库表"
+  }
+]

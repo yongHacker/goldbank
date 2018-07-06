@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>组织架构</title>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <include file="./public/common/js_css.html" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/stylesheets/bootstraptree/style.css">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/stylesheets/bootstraptree/bootstrap.min.css">
+    <script src="__PUBLIC__/bootstrap-3.3.4/js/bootstrap.js"></script>
+</head>
+<body class=" theme-blue">
+<div class="content">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="">{:L('SYSTEM_SECTORS_INDEX')}</a></li>
+        <a id="doing" class="btn btn-primary"  href="javascript:void(0);" data-toggle="modal" style="float:right;margin-left: 10px;">隐藏操作</a>
+        <a href="#myModal2" class="btn btn-primary"  data-toggle="modal" style="float: right;">添加</a>
+    </ul>
+    <div class="main-content">
+
+        <div class="tree well">
+            <ul id="ul_tree">
+
+            </ul>
+        </div>
+        <script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+        <script type="text/javascript">
+            $(function(){
+                //构造树
+                getdata();
+                addfileZuzhijiagou();
+                addZuzhijiagou();
+            });
+
+            function getdata
+            (){
+                $("#ul_tree").jqtree({
+                    //data: json,
+                    url:"{:U('Sectors/shuju')}",
+                    param: {type:'bm'},
+                    onBeforeLoad: function (param) {
+                    },
+                    onLoadSuccess: function (data) {
+                        setZuzhijiagou();
+                    },
+                    onClickNode: function (selector) {
+
+                    }
+                });
+
+            }
+
+            function getZuzhijiagou(id,bmmc,pid){
+                //$('#myModal3').on('show.bs.modal', function () {
+                $('#basic').val('');
+                $('#bmmc').val(bmmc);
+                $.ajax({
+                    url: "{:U('Sectors/gethtmltree')}",
+                    type: 'post',
+                    dataType:'json',
+                    data:{optype:'edit',bm_id:id},
+                    success: function(json) {
+                        if(json){
+                            var str = '<option value="top">顶级结点</option>';
+                            $.each(json,function(i,obj){
+                                if(obj.sectors_id==pid){
+                                    str += '<option value="'+obj.id+'" selected>'+obj.html+'└'+obj.sector_name+'</option>';
+                                }
+                                else{
+                                    str += '<option value="'+obj.id+'">'+obj.html+'└'+obj.sector_name+'</option>';
+                                }
+                            })
+                            $('#basic').html(str);
+
+                        }
+                    }
+                })
+                //})
+            }
+            function setZuzhijiagou(){			//修改部门
+                $("#ul_tree li .edit").each(function(index, obj) {
+                    $(this).unbind('click').click(function(){
+                        var id=$(this).prev().prev().attr('id');
+                        var pid=$(this).prev().prev().attr('pid');
+                        var bmmc=$.trim($(this).prev().prev().text());
+                        getZuzhijiagou(id,bmmc,pid); //选择父节点部门
+                        $('#bmmc').val(bmmc);
+                        subZuzhijiagou(id);
+                    })
+                });
+                $("#ul_tree li .delete").each(function(index, obj) {  //删除部门
+                    $(this).unbind('click').click(function(){
+                        var id=$(this).prev().prev().prev().attr('id');
+                        var leave =$(this).prev().prev().prev().find('i').attr('class');
+                        if(leave=='icon-minus-sign'){
+                            alert('该部门下还有子部门不能删除');
+                            return false;
+                        }
+                        else{
+                            delZuzhijiagou(id);
+                        }
+                    })
+                });
+            }
+
+            function subZuzhijiagou(id){
+                $('#myModal3').find('button').each(function(index, element) {
+                    $(this).unbind('click').click(function(){
+                        if($(this).attr('id')=='modify'){
+                            if($.trim($('#bmmc').val())){
+                                $.ajax({
+                                    url: "{:U('Sectors/edit')}",
+                                    type: 'post',
+                                    data:{id:id,sector_pid:$('#basic').val(),sector_name:$.trim($('#bmmc').val())},
+                                    //data:{bm_id:id,bmmc:$.trim($('#bmmc').val())},
+                                    success: function(data) {
+                                        if(data.status==1){
+                                            location.reload();
+                                        }
+                                        else{
+                                            alert(data.msg);
+                                        }
+                                    }
+                                })
+                            }
+                            else{
+                                alert('请输入部门名称');
+                                return false;
+                            }
+                        }
+                    })
+                });
+            }
+            function delZuzhijiagou(id){			//删除部门
+                //$('#myModal').find('button').each(function(index, element) {
+                $('#del').unbind('click').click(function(){
+                    $.ajax({
+                        url: "{:U('Sectors/delete')}",
+                        type: 'post',
+                        data:{id:id},
+                        success: function(data) {
+                            if(data.status==1){
+                                location.reload();
+                            }
+                            else{
+                                alert(data.msg);
+                            }
+                        }
+                    })
+                    //}
+                })
+                //});
+            }
+            function addZuzhijiagou(){		//添加部门
+                $('#myModal2').find('button').each(function(index, element) {
+                    $(this).unbind('click').click(function(){
+                        if($(this).attr('id')=='add'){
+                            var bm_pid=$('#addbasic').val();
+                            var bmmc=$.trim($('#addbmmc').val());
+                            if(!bmmc){
+                                alert('请填写部门名称');
+                                return false;
+                            }
+                            else{
+                                $.ajax({
+                                    url: "{:U('Sectors/add')}",
+                                    type: 'post',
+                                    data:{sector_pid:bm_pid,sector_name:bmmc},
+                                    success: function(data) {
+                                        if(data.status==1){
+                                            location.reload();
+                                        }
+                                        else{
+                                            alert(data.msg);
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                });
+            }
+
+            function addfileZuzhijiagou(){
+                //$('#myModal2').on('show.bs.modal', function () {
+                $('#addbasic').html('');
+                $('#addbmmc').html('');
+                $.ajax({
+                    url: "{:U('Sectors/gethtmltree')}",
+                    type: 'post',
+                    dataType:'json',
+                    data:{optype:'add'},
+                    success: function(json) {
+                        if(json){
+                            var str = '<option value="top">顶级结点</option>';
+                            $.each(json,function(i,obj){
+                                str += '<option value="'+obj.id+'">'+obj.html+'└'+obj.sector_name+'</option>';
+                            })
+                            $('#addbasic').html(str);
+
+                        }
+                    }
+                })
+                //})
+            }
+
+
+        </script>
+        <!--删除弹出框-->
+        <div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">删除警告</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要删除吗?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="can" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                        <button id="del" class="btn btn-primary" data-dismiss="modal">删除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--修改节点弹出框-->
+        <div class="modal small fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #cccccc;">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">修改节点</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="dropdown">
+
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="inputEmail3" class="col-sm-2 control-label">父节点</label>
+                                    <div class="col-sm-10">
+                                        <div class="col-lg-12" style="padding-left:0px;padding-right:0px;">
+                                            <select id="basic" class="selectpicker show-tick form-control bs-select-hidden" data-live-search="true">
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bmmc" class="col-sm-2 control-label">节点名称</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" autocomplete="off" class="form-control" id="bmmc" placeholder="请输入节点名称">
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                            <button id="modify" class="btn btn-primary" data-dismiss="modal">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--修改节点弹出框end-->
+        <!--添加节点弹出框-->
+        <div class="modal small fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #cccccc;">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">添加节点</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="dropdown">
+
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="inputEmail3" class="col-sm-2 control-label">父节点</label>
+                                    <div class="col-sm-10">
+                                        <div class="col-lg-12" style="padding-left:0px;padding-right:0px;">
+                                            <select id="addbasic" class="selectpicker show-tick form-control bs-select-hidden" data-live-search="true">
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputPassword3" class="col-sm-2 control-label">节点名称</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" autocomplete="off" class="form-control" id="addbmmc" placeholder="请输入节点名称">
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="quxiao" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
+                            <button id="add" class="btn btn-primary" data-dismiss="modal">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--添加节点弹出框end-->
+    </div>
+    <include file="./public/common/footer.html" />
+</div>
+        <script>
+            $("#doing").on("click",function(){
+                if($(this).attr("ishide")!="ok"){
+                    $("#ul_tree").find("a").hide();
+                    $(this).find("button").val("显示操作");
+                    $(this).find("button").text("显示操作");
+                    $(this).attr("ishide","ok");
+                }else{
+                    $("#ul_tree").find("a").show();
+                    $(this).find("button").val("隐藏操作");
+                    $(this).find("button").text("隐藏操作");
+                    $(this).attr("ishide","no");
+
+                }
+
+            })
+        </script>
+</body>
+

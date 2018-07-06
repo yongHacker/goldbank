@@ -1,0 +1,78 @@
+<shoptpl file="header" />
+<link rel="stylesheet" href="__PUBLIC__/shop/BAllot/receipt_index.css">
+
+
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="javascript:void(0);">{:L('SHOP_BALLOT_RECEIPT_INDEX')}</a></li>
+	</ul>
+	<form class="well form-search" method="post" action="{:U('BAllot/receipt_index')}">
+		调拨单号:
+		<input id="search_name" name="search_name" style="width: 100px;" value="{$_GET['search_name']?$_GET['search_name']:$_POST['search_name']}" placeholder="调拨单号查询" type="text">
+		<select id="status" name="status" style="width: 100px;" data-live-search="true">
+			<option value="-1" <if condition="$_GET['status'] eq -1 || $_POST['status'] eq -1"> checked</if>>选择状态</option>
+			<option value="1" <if condition="$_GET['status'] eq 1 || $_POST['status'] eq 1"> checked</if>>已通过</option>
+			<option value="2" <if condition="$_GET['status'] eq 2 || $_POST['status'] eq 2"> checked</if>>未通过</option>
+		</select>
+		<input class="btn btn-primary" value="搜索" type="submit">
+	</form>
+	<div class="main-content">
+		<if condition="$list">
+			<div class="ta">
+				<table class="table table-bordered  table-hover table-striped">
+					<thead >
+					<tr>
+						<th>序</th>
+						<th>调拨单号</th>
+						<th>入库仓库</th>
+						<th>出库仓库</th>
+						<th>数量</th>
+						<th>调拨人</th>
+						<th>调拨日期</th>
+						<th>制单时间</th>
+						<th>审核人</th>
+						<th>审核时间</th>
+						<th>出库人</th>
+						<th>出库时间</th>
+						<th>入库人</th>
+						<th>入库时间</th>
+						<th style="width:140px;">状态</th>
+					</tr>
+					</thead>
+					<tbody>
+					<volist name="list" id="v">
+						<tr>
+							<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+							<td class="text-center">{$v.batch}</td>
+							<td>{$v.to_whname}</td>
+							<td>{$v.from_whname}</td>
+							<td>{$v.count}</td>
+							<td>{$v.user_nicename}</td>
+							<td class="text-center">{:date('Y-m-d',$v['allot_time'])}</td>
+							<td class="text-center">{:date('Y-m-d H:i:s',$v['create_time'])}</td>
+							<td>{$v.check_name}</td>
+							<td class="text-center"><if condition="$v['check_time']">{:date('Y-m-d H:i:s',$v['check_time'])}<else/></if></td>
+							<td>{$v.outbound_name}</td>
+							<td class="text-center"><if condition="$v['outbound_time']">{:date('Y-m-d H:i:s',$v['outbound_time'])}<else/></if></td>
+							<td>{$v.receipt_name}</td>
+							<td class="text-center"><if condition="$v['receipt_time']">{:date('Y-m-d H:i:s',$v['receipt_time'])}<else/></if></td>
+							<td class="text-center">
+								<a href="{:U('BAllot/receipt_index_detail',array('id'=>$v['id']))}"> {$status[$v['status']]}</a>
+							</td>
+						</tr>
+					</volist>
+					</tbody>
+				</table>
+			</div>
+			<div class="pagination">{$page}</div>
+			<script src="/public/js/cookie.js"></script>
+			<script src="/public/js/common.js"></script>
+			<else/>
+			<include file="./public/common/default_empty.html" />
+		</if>
+	</div>
+	<include file="./public/common/footer.html" />
+</div>
+</body>

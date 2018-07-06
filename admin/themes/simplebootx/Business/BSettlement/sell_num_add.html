@@ -1,0 +1,700 @@
+<businesstpl file="header" />
+<style>
+	.form,.form>table{margin-bottom: 10px; }
+	.table tr th{text-align:center;}
+	input{width: 163px;margin-bottom:0px;}
+	.table {text-overflow: ellipsis;white-space: nowrap;overflow: hidden;}
+	.ta {overflow-x: auto;width: 100%;margin-bottom: 20px;}
+	.ta td{position:relative;}
+	.ta input[type="text"]{width: 177px;margin-bottom:0px;border:none;border-bottom:0px;padding:8px 0;box-shadow:none;border-radius:none;width:90%;text-align:center;}
+	.ta input:focus{box-shadow: none;outline:none;-webkit-box-shadow: 0px 0px 0px;  -moz-box-shadow: 0px 0px 0px;  box-shadow: 0px 0px 0px;}
+	.td_border{border:solid 1px #157ab5;}
+	.select_goods{display:inline-block;background:#fff url('public/images/icon-select.gif') no-repeat scroll 55% 55%;width:10%;height:36px;position:absolute;top:0;right:0;}
+	tr td img{ width:200px;height:60px;}
+	input.left{text-align:left;}
+	input.right{text-align:right;}
+	td.left{text-align:left;}
+	td.right{text-align:right;}
+	.sel{background: #f4f4f4;}
+	.myModal{display:block;position:absolute;width:100%;height:100%;left:0;top:0;line-height:35px;}
+</style>
+<script type="text/javascript" src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class=" theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#">{:L('BUSINESS_BSETTLEMENT_SELL_NUM_ADD')}</a></li>
+	</ul>
+
+	<form id="form" class="form form-search" method="post" action="{:U('BSettlement/sell_num_add')}" >
+		<div class="row">
+			<div class="span4">经销商欠料：<span id="account_info_weight">0.00</span> 克</div>
+			<div class="span4">经销商欠款：<span id="account_info_price">0.00</span> 元</div>
+		</div>
+
+		<table class="table table-bordered">
+			<tbody>
+			<tr>
+				<td class="sel">经销商</td>
+				<td>
+					<select id="company_name">
+						<option value="">--请选择--</option>
+						<volist name="supplier_info" id="v">
+							<option value="{$v.id}">{$v.company_name}</option>
+						</volist>
+					</select>  
+					<span class="form-required">*</span>
+				</td>
+				<td class="sel">结算日期</td>
+				<td>
+                    <div class="input-prepend input-group">
+						<span class="add-on input-group-addon">
+							<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+						</span>
+						<input id="input_date" class="form-control datepicker js-date" name="input_date" value="{$today}" type="text">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">累计待结克重</td>
+				<td id="all_weight"></td>
+				<td class="sel">累计待结金额</td>
+				<td id="all_price"></td>
+			</tr>
+			<tr>
+				<td style="line-height:30px;">来料克重</td>
+				<td style="line-height:30px;"><span id="d_weights">0</span>克</td>
+				<td style="line-height:30px;">结算金额</td>
+				<td><input type="text" autocomplete="off" name="price" style="width:190px;"></td>
+			</tr>
+			<tr>
+				<td>向经销商买料</td>
+				<td class="buy_w">0克</td>
+				<td>向经销商卖料</td>
+				<td class="sell_w">0克</td>
+			</tr>
+			<tr>
+				<td style="line-height: 60px;">备注</td>
+				<td colspan="3">
+					<textarea name="memo" style="width: 220px;"></textarea>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<div>选择结算批发单 <span id="show_select" style="display: none;"><a href="#" onclick="select(1)">全选</a> <a href="#" onclick="select(0)">反选</a></span></div>
+		<div class="main-content">
+			<div class="ta">
+				<table class="table table-bordered  table-hover table-striped">
+					<thead >
+						<tr>
+							<th class="text-center">批发编号</th>
+							<th class="text-center">批发时间</th>
+							<th class="text-center">批发类型</th>
+							<th class="text-center">批发员</th>
+							<th class="text-center">批发单状态</th>
+							<th class="text-center">本单应付克重</th>
+							<th class="text-center">本单工费及一口价</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+
+						<!-- <volist name="procure_list" id="v">
+							<tr>
+								<td class="text-center">
+									<label class="checkbox">
+										<input type="checkbox" name="procure_batch" value="{$v.batch}"> {$v.batch}
+										<input type="hidden" class="weight" value="{$v.weight}">
+										<input type="hidden" class="price" value="{$v.price}">
+									</label>
+								</td>
+								<td class="text-center">{:date('Y-m-d', $v['create_time'])}</td>
+								<td class="text-center">{$v.show_pricemode}</td>
+								<td class="text-center">{$v.creator_name}</td>
+								<td class="text-center">{$v.show_status}</td>
+								<td class="text-center">{:numberformat($v['weight'], 2, '.', ',')}g</td>
+								<td class="text-center" >￥{:numberformat($v['price'], 2, '.', ',')}</td>
+							</tr>
+						</volist> -->
+
+						<tr id="last_tr">
+							<th class="text-center">本单统计</th>
+							<th class="text-left" colspan="3">本单应付克重 <span id="real_weight">0.00</span> 克</th>
+							<th class="text-left" colspan="3">本单应付金额 <span id="total_price">0.00</span> 元</th>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div style="float: left;font-weight: bold;margin-bottom: 20px;">【选择料结】</div><a class="btn btn-primary btn-small order_show" href="#showorder1"  class="showorder1 on" style="cursor:pointer;margin-left: 30px;"  role="button" data-toggle="modal" role="button" type="text">选择金料</a>
+		<table class="table table-bordered">
+			<tr>
+				<th class="sel">序</th>
+				<th class="sel">货品编码</th>
+				<th class="sel">商品名称</th>
+				<th class="sel">来源</th>
+				<th class="sel">克重</th>
+				<th class="sel">折纯克重</th>
+				<th class="sel">操作</th>
+			</tr>
+			<tbody class="product">
+				<tr id="first_product"></tr>
+			</tbody>
+		</table>
+		<div>向经销商买卖金料</div>
+		<table class="table table-bordered ta">
+			<tbody class="buy_sell">
+			<tr>
+				<th class="sel" width="5%"><input type="radio" class="type" checked="checked" name="type" data-value="buy" onclick="choose_change('buy');"></th>
+				<th class="sel" width="10%">买料克重</th>
+				<th class="sel" width="22%"><input type="text" autocomplete="off" id="buy_weight" name="buy_weight">克</th>
+				<th class="sel" width="10%">买料金价</th>
+				<th class="sel" width="22%"><input type="text" autocomplete="off" id="buy_price" name="buy_price">元</th>
+				<th class="sel" width="10%">买料支出</th>
+				<th class="sel" width="21%" id="buy_prices"></th>
+			</tr>
+			<tr>
+				<th class="sel"><input type="radio" class="type" name="type" data-value="sell" onclick="choose_change('sell');"></th>
+				<th class="sel">卖料克重</th>
+				<th class="sel"><input type="text" autocomplete="off" disabled="true" id="sell_weight" name="sell_weight">克</th>
+				<th class="sel">卖料金价</th>
+				<th class="sel"><input type="text" autocomplete="off" disabled="true" id="sell_price" name="sell_price">元</th>
+				<th class="sel">卖料价值</th>
+				<th class="sel" id="sell_prices"></th>
+			</tr>
+			</tbody>
+		</table>
+	</form>
+	
+	<div class="form-actions text-center">
+		<p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+	</div>
+</div>
+<div class="modal small fade" style="width:80%;left: 400px;display:none;top: 2%;bottom: 2%;" id="showorder1" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header" style="cursor:move">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<b id="showorder" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">金料列表</b>
+			</div>
+			<div class="modal-body" style="max-height: 800px;padding: 0px;">
+				<iframe  frameborder="0" class="appiframe" src="{:U('BSettlement/get_product_gold')}" id="show_order" name="show_order">
+
+				</iframe>
+			</div>
+			<div class="modal-footer">
+				<button id="check" class="btn btn-primary pull-left" >选中</button>
+				<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+				<button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+<script src="__PUBLIC__/js/jquery-form.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+
+<script type="text/javascript">
+	heightAuto($("#showorder1"));
+	$("#showorder1").on("shown.bs.modal",function () {
+		$("#show_order").contents().find("#procure_list").focus();
+	})
+	localStorage.removeItem('p_id');
+	$(document).ready(function(){
+		$("#buy_weight").val('');
+		$("#buy_price").val('');
+		$("#sell_weight").val('');
+		$("#sell_price").val('');
+		$("select").val('');
+	});
+	$("#showorder1").draggable();
+	$('#show_order').load(function(){
+		$('#check,#add').unbind("click").click(function(){
+			var htm = $('#show_order').contents();
+			var tr = htm.find('.ta tbody tr');
+			var datas = new Array();
+			var checked_num = htm.find('input[type="checkbox"]:checked').length;
+			// 没勾选任何
+			if(checked_num == 0) return;
+			tr.each(function(){
+				var tr_ = $(this);
+				var id = tr_.find('.check_box').attr('id');
+				var product_code =tr_.find('.product_code').html();
+				var goods_name = tr_.find('.goods_name').html();
+				var source = tr_.find('.source').html();
+				var weight = tr_.find('.weight').html();
+				var d_weight = tr_.find('.d_weight').html();
+				var htm = "";
+				if(tr_.find('.check_box').attr('checked')){
+					var check=localStorage.getItem('p_id');
+					var z = 1;
+					var num=0;
+					if(!empty(check)) {
+						var checked = check.split(',');
+						for( var i in checked){
+							num++;
+							if(checked[i]==id){
+								z = 2;
+								break;
+							}
+						}
+						num=num-1;
+					}
+					if(z==1){
+						if(empty(check)){
+							check='';
+						}
+						check+=id+",";
+						num++;
+						localStorage.setItem('p_id',check);
+						htm = add_line(id,product_code, goods_name, source, weight, d_weight,num);
+						$('#first_product').before(htm);
+					}
+				}
+			});
+			del_input();
+			count_product();
+		});
+
+		$('#add').unbind("click").click(function(){$('#check').click();});
+	});
+	function count_product() {
+		var total_weight = 0.00;
+		$('.product tr').each(function(){
+			if($(this).attr('id') != 'first_product'){
+				var weight = parseFloat($(this).find('.d_weight').html());
+				total_weight += weight;
+			}
+		});
+		total_weight = total_weight.toFixed(2);
+		$("#d_weights").html(total_weight);
+	}
+	function del_input(){
+		$('.del').each(function(){
+			$(this).click(function(){
+				var tr = $(this).parent('td').parent('tr');
+				tr.remove();
+			});
+		});
+	}
+	function add_line(id,product_code,goods_name,source, weight, d_weight,num){
+		var htm = '<tr id="'+id+'" product_code="'+ product_code +'">'
+				+'<td class="text-right">'+ num+'</td>'
+				+'<td class="text-center">'+ product_code +'</td>'
+				+'<td class="text-left">'+goods_name+'</td>'
+				+'<td class="text-left" style="padding:8px 3px">'+ source +'</td>'
+				+'<td class="text-right" style="padding:8px 3px">'+ weight +'</td>'
+				+'<td class="text-right d_weight" style="padding:8px 3px">'+ d_weight +'</td>'
+				+'<td class="text-center"><a class="del"href="javascript:;">删除</a></td>'
+				+'</tr>';
+		return htm;
+	}
+	var is_loading = false;
+	// 提交表单 - ajax
+	$('.js-ajax-submit').click(function(){
+		if(is_loading == true) return;
+
+		var a = check_positive_number();
+		if(!a) {
+			appear_error('非法数字！');
+			return;
+		}
+		var settle_time = $('#input_date').val();
+		var supplier_id = $('#company_name').val();
+		var memo = $('[name="memo"]').val();
+
+		var type=$("input[type=radio]:checked").attr("data-value");
+		var buy_weight = parseFloat(empty($('input[name="buy_weight"]').val())?0:$('input[name="buy_weight"]').val());
+		var buy_price = parseFloat(empty($('input[name="buy_price"]').val())?0:$('input[name="buy_price"]').val());
+
+		var sell_weight =parseFloat( empty($('input[name="sell_weight"]').val())?0:$('input[name="sell_weight"]').val());
+		var sell_price = parseFloat(empty($('input[name="sell_price"]').val())?0:$('input[name="sell_price"]').val());
+		var d_weights = parseFloat(empty($("#d_weights").html())?0:$("#d_weights").html());
+		var price = parseFloat($("input[name='price']").val());
+		var p_id = localStorage.getItem('p_id');
+		if(supplier_id == ''){
+			appear_error('请选择经销商');
+			return;
+		}
+		if(checked_value.length == 0){
+			appear_error('请勾选需要结算批发单');
+			return;
+		}
+		if(!empty(buy_price) && (isNaN(buy_price) || buy_price <0)){
+			appear_error('买料价格式不正确'+buy_price);
+			return;
+		}
+		if(!empty(buy_weight) && (isNaN(buy_weight) || buy_weight <0)){
+			appear_error('买料克重格式不正确'+buy_weight);
+			return;
+		}
+		if(!empty(sell_price) && (isNaN(sell_price)|| sell_price <0)){
+			appear_error('卖料金价格式不正确'+sell_price);
+			return;
+		}
+		if(!empty(sell_weight) && (isNaN(sell_weight)|| sell_weight <0)){
+			appear_error('卖料价格式不正确'+sell_weight);
+			return;
+		}
+		var settle_weight=d_weights-sell_weight+buy_weight;
+		var settle_price=price+sell_price*sell_weight-buy_price*buy_weight;
+		is_loading = true;
+
+		var postdata = {
+			supplier_id: supplier_id,
+			material_weight: buy_weight,
+			material_g_price: buy_price,
+			settle_weight: settle_weight,
+			settle_price: settle_price,
+			settle_time: settle_time,
+			sell_weight: sell_weight,
+			sell_price:sell_price,
+			mrecord_weight:d_weights,
+			p_id:p_id,
+			memo: memo,
+			type:type,
+			procure_list: checked_value,
+		};
+
+        $.ajax({
+            async: false,
+            url: $('#form').attr('action'),
+            type: 'post',
+            data: postdata,
+            dataType: 'json',
+            success: function(result){
+            	is_loading = false;
+
+                if(result.status == "success"){
+                    appear_error('操作成功！');
+                }else if(result.status == "fail"){
+                    appear_error('操作失败！'+ result.msg);
+                }
+                if(result.referer){
+                    window.location.href = result.referer;
+                }else{
+                    if (result.state === 'success') {
+                        //刷新当前页
+                        window.location.reload;
+                    }
+                }
+            }
+        });
+	});
+
+	function check_positive_number(){
+		var rs = true;
+
+		$('.is_positive').each(function(){
+			if($(this).val() * 1.0 < 0){
+				rs = false;
+				return rs;
+			}
+		});
+
+		return rs;
+	}
+
+	$('#company_name').change(function(){
+		var supplier_id = $(this).val();
+
+		var last_tr = $('#last_tr').clone();
+
+		$('#tbody').html(last_tr);
+
+		if(supplier_id !== ''){
+
+			$('#show_select').show();
+
+			var url = '{:U("BSettlement/get_sell_num_procure_list")}';
+
+			$.post(url, {supplier_id: supplier_id}, function(rsdata){
+				rsdata = eval("("+ rsdata +")");
+
+				$('#last_tr').before(rsdata.content);
+
+				$("#all_price").html(rsdata.all_price+"元");
+				$("#all_weight").html(rsdata.all_weight+"克");
+
+				initAccountInfo(rsdata.account_info);
+
+				initCheckBoxTrigger();
+
+				initInputTrigger();
+				
+				count_weight();
+
+				count_price();
+			})
+		}else{
+			initAccountInfo();
+
+			count_weight();
+
+			count_price();
+		}
+	});
+
+	$('[name="buy_weight"],[name="buy_price"]').keyup(function(){
+		var buy_weight=$(this).parent().parent().find("#buy_weight").val();
+		var buy_price=$(this).parent().parent().find("#buy_price").val();
+		if(empty(buy_weight)){
+			buy_weight=0;
+		}
+		if(empty(buy_price)){
+			buy_price=0;
+		}
+		var buy_prices = (parseFloat(buy_weight) * parseFloat(buy_price)).toFixed(2);
+		$(this).parent().parent().find("#buy_prices").html(buy_prices)
+		$(".buy_w").html(buy_weight+"克");
+	});
+	$('[name="sell_weight"],[name="sell_price"]').keyup(function(){
+		var sell_weight=parseFloat($(this).parent().parent().find("#sell_weight").val());
+		var sell_price=$(this).parent().parent().find("#sell_price").val();
+		if(empty(sell_weight)){
+			sell_weight=0;
+		}
+		if(empty(sell_price)){
+			sell_price=0;
+		}
+		var sell_prices = (parseFloat(sell_weight) * parseFloat(sell_price)).toFixed(2);
+		$(this).parent().parent().find("#sell_prices").html(sell_prices);
+		$(".sell_w").html(sell_weight+"克");
+	});
+	function choose_change(str){
+		if(str=="buy"){
+			$(".buy_sell").find("#buy_weight").removeAttr("disabled");
+			$(".buy_sell").find("#buy_price").removeAttr("disabled");
+			$(".buy_sell").find("#sell_weight").attr("disabled","true");
+			$(".buy_sell").find("#sell_price").attr("disabled","true");
+			$(".buy_sell").find("#sell_weight").val("");
+			$(".buy_sell").find("#sell_price").val("");
+			$(".buy_sell").find("#sell_prices").html("");
+			$(".sell_w").html("0克");
+		}
+		if(str=="sell"){
+			$(".buy_sell").find("#sell_weight").removeAttr("disabled");
+			$(".buy_sell").find("#sell_price").removeAttr("disabled");
+			$(".buy_sell").find("#buy_weight").attr("disabled","true");
+			$(".buy_sell").find("#buy_price").attr("disabled","true");
+			$(".buy_sell").find("#buy_weight").val("");
+			$(".buy_sell").find("#buy_price").val("");
+			$(".buy_sell").find("#buy_prices").html("");
+			$(".buy_w").html("0克");
+		}
+	}
+	$('[name="settle_weight"], [name="settle_price"]').keyup(function(){
+		count_weight();
+
+		count_price();
+	});
+
+	initAccountInfo();
+
+	initCheckBoxTrigger();
+
+	initInputTrigger();
+
+	var checked_value = [];
+
+	function initCheckBoxTrigger(){
+		$('input[name="procure_batch"]').unbind('change').change(function(){
+
+			checked_value = [];
+
+			$('input[name="procure_batch"]:checked').each(function(i){
+				var checkbox_obj = $(this);
+
+				checked_value.push(checkbox_obj.val());
+			});
+
+			count_weight();
+
+			count_price();
+		});
+	}
+
+	function initInputTrigger(){
+		$('[name="buy_weight"], [name="gold_price"]').unbind('keyup').keyup(function(){
+			
+			var total = 0.00;
+
+			var buy_weight = (isNaN($('[name="buy_weight"]').val()) || $('[name="buy_weight"]').val() == '') ? 0 : $('[name="buy_weight"]').val();
+			var gold_price = (isNaN($('[name="gold_price"]').val()) || $('[name="gold_price"]').val() == '') ? 0 : $('[name="gold_price"]').val();
+
+			if(isNaN(buy_weight)){
+				buy_weight = 0;
+			}
+
+			if(isNaN(gold_price)){
+				gold_price = 0;
+			}
+
+			total = parseFloat(buy_weight * gold_price).toFixed(2);
+
+			setShowText($('#buy_weight_price'), total);
+
+			count_weight();
+
+			count_price();
+		});
+	}
+
+	function initAccountInfo(obj){
+		var price = weight = 0.00;
+		if(obj !== undefined){
+			weight = obj.weight;
+			price = obj.price;
+		}
+
+		weight = parseFloat(weight);
+		price = parseFloat(price);
+
+		$('#account_info_weight').text(weight.toFixed(2));
+		$('#account_info_price').text(price.toFixed(2));
+	}
+	
+    function select(type){
+		checked_value = [];
+
+		switch (type) {
+			case 0:
+				$('input[name="procure_batch"]').each(function(){
+					var checked = $(this).attr('checked');
+
+					if(checked){
+						$(this).attr('checked', false);
+					}else{
+						$(this).attr('checked', true);
+
+						checked_value.push($(this).val());
+					}
+				});
+			break;
+			case 1:
+				$('input[name="procure_batch"]').each(function(){
+					$(this).attr('checked', true);
+
+					checked_value.push($(this).val());
+				});
+			break;
+		}
+
+		count_weight();
+
+		count_price();
+	}
+
+    function setShowText(obj, total_weight){
+    	$(obj).text(total_weight);
+    }
+    function setInputValue(inputName, inputValue){
+    	if($('input[name="'+ inputName +'"]')[0] != undefined){
+    		$('input[name="'+ inputName +'"]').val(inputValue);
+    	}
+    }
+
+    function count_weight(){
+        var total_weight = 0.00;
+        
+        $('.ta tbody tr').each(function(){
+        	if($(this).attr('id') != 'last_tr' && $(this).find('input[name="procure_batch"]').is(":checked")){
+
+        		var weight = parseFloat($(this).find('.weight').val());
+
+            	total_weight += weight;
+        	}
+        });
+
+        total_weight = total_weight.toFixed(2);
+
+        setInputValue('real_weight', total_weight);
+
+        setShowText($('#real_weight'), total_weight);
+
+        var buy_weight = (isNaN($('[name="buy_weight"]').val()) || $('[name="buy_weight"]').val() == '') ? 0 : $('[name="buy_weight"]').val();
+        var settle_weight = (isNaN($('[name="settle_weight"]').val()) || $('[name="settle_weight"]').val() == '') ? 0 : $('[name="settle_weight"]').val();
+        var account_total_weight = total_weight * 1.0 
+        - parseFloat(buy_weight) * 1.0 
+        - parseFloat($('#account_info_weight').text()) * 1.0
+        - parseFloat(settle_weight) * 1.0
+
+        setShowText($('#show_account_total_weight'), parseFloat(account_total_weight).toFixed(2));
+
+        return total_weight;
+    }
+    function count_price(){
+        var total_price = 0.00;
+
+        $('.ta tbody tr').each(function(){
+        	if($(this).attr('id') != 'last_tr' && $(this).find('input[name="procure_batch"]').is(":checked")){
+
+        		var price = parseFloat($(this).find('.price').val());
+
+            	total_price += price;
+        	}
+        });
+
+        total_price = total_price.toFixed(2);
+
+        setInputValue('price', total_price);
+
+        setShowText($('#total_price'), total_price);
+
+        // 当前总额 + 买料总额 + 欠额
+        var account_total_price = total_price * 1.0
+        - parseFloat($('#buy_weight_price').text()) * 1.0
+        + parseFloat($('#account_info_price').text()) * 1.0
+        + parseFloat($('[name="settle_price"]').val()) * 1.0
+
+        setShowText($('#show_account_total_price'), account_total_price);
+
+        return total_price;
+    }
+
+    // 各种辅助函数
+    function check_price(tag){
+        var price=$(tag).val()?$(tag).val():$(tag).html();
+        if(!/^[0-9\.]+$/.test(price)||price<0){
+            //	 alert('请输入正确的价格');
+            //	 $(tag).focus();
+            //	 $(tag).css('color','red');
+            return false;
+        }else{
+            $(tag).css('color','black');
+            return true;
+        }
+    }
+    function is_empty(str){
+        if(str!=null&&str!=""&&typeof(str)!="undefined"&&str!='NAN'){
+            return false;
+        }
+        return true;
+    }
+    function appear_error(str){
+        var tips=$('.tips_error');
+        if(!tips.length){
+            $('.form-actions').append('<span class="tips_error" style="color:red;">'+str+'</span>');
+        }else{
+            tips.html(str);
+        }
+    }
+    function check_num(tag){
+        var num=$(tag).val()?$(tag).val():$(tag).html();
+        if(!/^[0-9]+$/.test(num)||num<=0){
+            //	 alert('请输入正确的数量值');
+            //	 $(tag).focus();
+            //	 $(tag).css('color','red');
+            return false;
+        }else{
+            $(tag).css('color','black');
+        }
+        return true;
+    }
+</script>
+
+
+<include file="./Application/Home/View/Public/footer.html" />

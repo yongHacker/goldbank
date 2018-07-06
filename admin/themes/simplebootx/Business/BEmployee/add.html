@@ -1,0 +1,174 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BEmployee/index')}">{:L('BUSINESS_BEMPLOYEE_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BEmployee/add')}">{:L('BUSINESS_BEMPLOYEE_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BEmployee/add')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">员工姓名</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="user_nicename">
+						<span class="tips" style="color:#ff5500;display: none">请输入姓名</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">手机号</label>
+					<div class="controls">
+						<div class="btn-group">
+						    <button type="button" class="btn btn-default dropdown-toggle area-title" data-toggle="dropdown" style="width: 60px; text-align: left; border: 1px solid #ccc;">86
+						        <span class="caret" style="right: 4px; position: absolute;"></span>
+						    </button>
+						    <ul class="dropdown-menu" role="menu" style="width: 218px;">
+						        <li>
+						            <a class="area_code" data-code="1" data-title="86" href="#">中国大陆（86）</a>
+						        </li>
+						        <li>
+						            <a class="area_code" data-code="2" data-title="852" href="#">中国香港（852）</a>
+						        </li>
+						        <li>
+						            <a class="area_code" data-code="3" data-title="853" href="#">中国澳门（853）</a>
+						        </li>
+						    </ul>
+						</div>
+						<input type="hidden" autocomplete="off" name="mobile_area" value="1">
+						<input type="text" autocomplete="off" name="mobile" style="width:142px;">
+						<span class="tips" style="color:#ff5500;display: none">请输入有效的手机号</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态:</label>
+					<div class="controls">
+						<select name="status">
+							<volist name="status" id="v">
+								<option value="{$key}">{$v}</option>
+							</volist>
+						</select>
+						<span class="tips" style="color:#ff5500;display: none">请选择部门</span>
+					</div>
+				</div>
+				<!--<div class="control-group">
+					<label class="control-label">登录密码</label>
+					<div class="controls">
+						<input type="password" name="user_pass">
+					</div>
+				</div>-->
+				<div class="control-group">
+					<label class="control-label">部门:</label>
+					<div class="controls">
+						<select name="sector_id">
+							<option value="0">选择部门</option>
+							{$select_categorys}
+						</select>
+						<span class="tips" style="color:#ff5500;display: none">请选择部门</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">岗位:</label>
+					<div class="controls">
+						<select name="job_id" id="select_job">
+							<option value="0" >选择岗位</option>
+						</select>
+						<span class="tips" style="color:#ff5500;display: none">请选择岗位</span>
+					</div>
+				</div>
+				<div class="control-group" style="margin: 0">
+					<label class="control-label" style="margin:0;padding:0;">
+						<span class="role-tips" style="color:#ff5500;display: none">请选择角色</span>
+					</label>
+				</div>
+				<div class="control-group">
+					<label class="control-label">总部{:L('ROLE')}</label>
+					<div class="controls">
+						<foreach name="roles" item="vo">
+						<label class="checkbox inline"><input value="{$vo.id}" type="checkbox" name="role_id[]" <if condition="get_user_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}</label>
+						</foreach>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">门店{:L('ROLE')}</label>
+					<div class="controls">
+						<foreach name="shop_roles" item="vo">
+							<label class="checkbox inline"><input value="{$vo.id}" type="checkbox" name="role_id[]" <if condition="get_user_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}</label>
+						</foreach>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">指派门店</label>
+					<div class="controls">
+						<foreach name="shop" item="vo">
+							<label class="checkbox inline"><input value="{$vo.id}" type="checkbox" name="shop_id[]" >{$vo.shop_name}</label>
+						</foreach>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+	<script>
+		$('select[name=sector_id]').unbind().change(function(){
+			get_jobs();
+		});
+		function get_jobs(){
+			var sector_id=$('select[name=sector_id]').val();
+			var jobs='{$bjobs}';
+			var jobs_json=eval(jobs);
+			var select_job=$("#select_job");
+			var job_html='<option value="0" >选择岗位</option>';
+			if(sector_id>0){
+				$.each(jobs_json, function (n, v) {
+					if(sector_id== v.sector_id){
+						console.log(v);
+						job_html+='<option value="'+ v.id+'">'+ v.job_name+'</option>';
+					}
+				});
+			}
+			select_job.html(job_html);
+		}
+	  $("button[type='submit']").click(function(event){
+
+		    var user_nicename=$("input[name='user_nicename']").val(); //姓名
+		    var mobile=$("input[name='mobile']").val();   //手机号
+		    var mobile_area=$("input[name='mobile_area']").val();
+			if(empty(user_nicename)){
+				$("input[name='user_nicename']").focus().parents(".control-group").find(".tips").show();
+				var event = event || window.event;
+				event.preventDefault(); // 兼容标准浏览器
+				window.event.returnValue = false; // 兼容IE6~8
+				return false;
+			}
+			if(!is_mobile(mobile, mobile_area)){
+				$("input[name='mobile']").focus().parents(".control-group").find(".tips").show();
+				var event = event || window.event;
+				event.preventDefault(); // 兼容标准浏览器
+				window.event.returnValue = false; // 兼容IE6~8
+				return false;
+			}
+		});
+		$("input[name='mobile']").keyup(function(){
+		    if(is_mobile($("input[name='mobile']").val(), $("input[name='mobile_area']").val())){
+		        $("input[name='mobile']").parents(".control-group").find(".tips").hide();
+			}
+		});
+	    $("input[name='user_nicename']").keypress(function(){
+	        if(empty($(this).val())){
+	            $(this).parents(".control-group").find(".tips").hide();
+	        }
+	    });
+	</script>
+	<!-- 手机号区号切换js -->
+	<script type="text/javascript">
+		$('.area_code').click(function(){
+			$(this).closest('.btn-group').find('.area-title').html($(this).data('title') +'<span class="caret" style="right: 4px; position: absolute;"></span>');
+			$('input[name=mobile_area]').val($(this).data('code'));
+		});
+	</script>
+</body>
+</html>

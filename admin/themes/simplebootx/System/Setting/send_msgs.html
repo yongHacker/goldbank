@@ -1,0 +1,243 @@
+<systemtpl file="header"/>
+</head>
+<body>
+<style>
+    .myModal3.leave {
+        font-size: 14px;
+        left: 75px;
+        position: absolute;
+        top: 5px;
+    }
+    .search_input {
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+    #user_name{
+        text-indent: 20px;
+    }
+    .send{border: 1px solid #ddd; border-radius: 2px; width: 450px;margin-left: 30px;margin-top: 20px;float: left;}
+    .ts{color:red; display: inline-block; width: 100%; text-align: center}
+    .sub{margin-left: 200px;margin-top: 10px;}
+    textarea { width: 320px;height: 150px;}
+    label{display: inline-block;}
+</style>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('setting/send_msgs')}">{:L('System_SETTING_send_msgs')}</a></li>
+    </ul>
+    <div style="margin-left: 30px;">
+        选择发送方式&nbsp;&nbsp;
+        <select name="type" id="type">
+            <option value="1">精准发送</option>
+            <option value="2">多人发送</option>
+            <option value="3">全部发送</option>
+        </select>
+    </div>
+    <div class="send" data-value="1">
+        <div style="margin :10px 0px; text-align: center;" >精准发送</div>
+        <div  style="margin-bottom: 10px;">
+            <div class="search_input" width="25%">
+                <span style="display:inline-block; width: 60px;padding-left: 5px;">发送人</span>
+                <input  type="text" id="user_name"  class="form-control" onclick="$('#myModal3').modal('show');"> <!--style="display: none;"-->
+                <input type="hidden" id="buyer_id" name="buyer_id" class="form-control" value="">
+                <input type="hidden" id="mobile"  class="form-control" value="" style="display:none;">
+                <input type="hidden" id="is_realname" name="is_realname" class="form-control" value="">
+                <a href="#myModal3" class="myModal3 leave" data-toggle="modal" name="{$v.id}" role="button"><span><i class="fa fa-search normal"></i></span></a>*
+            </div>
+        </div>
+        <div>
+            <span style="display:inline-block; width: 60px;padding-left: 5px;">短信内容</span>
+            <textarea name="message" id="msg1"></textarea>*
+        </div>
+        <div style="height:80px;">
+            <button  class="btn btn-primary sub type="button">发送</button>
+            <span class="ts" id="ts1"></span>
+        </div>
+    </div>
+    <div class="send" data-value="2" style="display: none">
+        <div style="margin :10px 0px; text-align: center;" >多人发送</div>
+        <div>
+            <span style="display:inline-block; width: 60px;padding-left: 5px;">手机号</span>
+            <textarea name="mobiles" id="mobiles" placeholder="多个手机号之间请用'英文逗号'隔开"></textarea>*
+        </div>
+        <div>
+            <span style="display:inline-block; width: 60px;padding-left: 5px;">短信内容</span>
+            <textarea name="message" id="msg2"></textarea>*
+        </div>
+        <div style="height:80px;">
+            <button class="btn btn-primary sub" type="button">发送</button>
+            <div class="ts"><span id="ts2"></span><a id="down2"  target="_blank" style="display: none;" href="">查看失败号码</a></div>
+        </div>
+    </div>
+    <div class="send" data-value="3" style="display: none">
+        <div style="margin :10px 0px; text-align: center;" >全部发送</div>
+        <div class="control-group">
+            <label class="control-label"  style="padding-left: 5px;">发送用户</label>&nbsp;&nbsp;&nbsp;&nbsp;
+            <input class="radio open" name="choose" value="1" checked="checked" type="radio">已实名</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input class="radio open" name="choose" value="0" type="radio">全部</label>
+        </div>
+        <div>
+            <span style="display:inline-block; width: 60px;padding-left: 5px;">短信内容</span>
+            <textarea name="message" id="msg3"></textarea>*
+        </div>
+        <div style="font-size: 12px;color:#aaa;text-align: center;">(开启白名单则发白名单里用户,开启黑名单则不发黑名单用户)</div>
+        <div style="height:80px;">
+            <button class="btn btn-primary sub" type="button">发送</button>
+            <div class="ts"></idv><span id="ts3"></span><a id="down3"  target="_blank" style="display: none;" href="">查看失败号码</a></div>
+        </div>
+    </div>
+</div>
+<div class="modal small fade" style="width:80%;left: 400px;top:2%;bottom: 2%;display:none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">发送人</b>
+        </div>
+        <div class="modal-body" style="max-height: 500px;padding: 0px;">
+            <iframe  frameborder="0" class="appiframe" src="{:U('Setting/user_list')}" id="buyer_model" name="buyer_model">
+            </iframe>
+        </div>
+        <div class="modal-footer" id="btn">
+            <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+            <button id="check" class="btn btn-primary" data-dismiss="modal">选中</button>
+        </div>
+    </div>
+</div>
+</div>
+<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    heightAuto($("#myModal3"));
+    $("#myModal3").draggable();
+    $("#myModal3").on("shown.bs.modal",function () {
+        $("#buyer_model").contents().find("#search_name").focus();
+    })
+    $('#buyer_model').load(function(){
+        $('#check').unbind("click").click(function(){
+            var htm = $('#buyer_model').contents();
+            var tr=htm.find('#table tr');
+            tr.each(function(){
+                var tr_=$(this);
+                if(tr_.find('.check_box').is(':checked')){
+                    $('#user_name').val(tr_.attr('name'));
+                    $('#buyer_id').val(tr_.attr('id'));
+                    $('#mobile').val(tr_.attr('mobile'));
+                    var is_realname=tr_.attr('is_realname');
+                    if(is_realname=="1"){
+                        $('#is_realname').val(is_realname);
+                        var idno=tr_.attr('idno');
+                        $('#id_card').val(idno);
+                        $('#id_card').attr("readonly","readonly");
+                        var realname=tr_.attr('realname');
+                        $('#realname').val(realname);
+                        $('#realname').attr("readonly","readonly");
+                    }
+                }
+            });
+        });
+    });
+    window.onload=function () {
+        var type = $("#type").val();
+        $(".send").each(function(){
+            if($(this).attr("data-value")==type){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+    }
+    $("#type").change(function(){
+        $("#down").hide();
+        $("#ts1").html("");
+        $("#ts2").html("");
+        $("#ts3").html("");
+       var type = $(this).val();
+        $(".send").each(function(){
+            if($(this).attr("data-value")==type){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+    })
+    var send_msg=false;
+    $(".sub").click(function(){
+        $("#dow").hide();
+        $("#ts1").html("");
+        $("#ts2").html("");
+        $("#ts3").html("");
+        if(send_msg){
+            return;
+        }
+        send_msg=true;
+        var type=$("#type").val();
+        var data={};
+        switch(type){
+            case "1":
+                var mobile = $("#mobile").val();
+                if(empty(mobile)){
+                    $("#ts1").html("请选择发送人！");
+                    send_msg=false;
+                    return;
+                }
+                var msg1 = $("#msg1").val();
+                if(empty(msg1)){
+                    $("#ts1").html("请输入短信内容");
+                    send_msg=false;
+                    return;
+                }
+                data={mobile:mobile,msg:msg1,type:type};
+                break;
+            case "2":
+                var mobiles = $("#mobiles").val();
+                if(empty(mobiles)){
+                    $("#ts2").html("请输入手机号");
+                    send_msg=false;
+                    return;
+                }
+                var msg2 =  $("#msg2").val();
+                if(empty(msg2)){
+                    $("#ts2").html("请输入短信内容");
+                    send_msg=false;
+                    return;
+                }
+                data={mobile:mobiles,msg:msg2,type:type};
+                break;
+            case "3":
+                var choose= $("input[type='radio']:checked").val();
+                var msg3 =  $("#msg3").val();
+                if(empty(msg3)){
+                    $("#ts3").html("请输入短信内容");
+                    send_msg=false;
+                    return;
+                }
+                data={choose:choose,msg:msg3,type:type};
+                break;
+        }
+        if(confirm("是否确定发送")){
+            $("#ts"+type).html("正在发送中....请勿操作！！！");
+            var url="{:U(setting/send_msgs)}";
+            $.ajax({
+                url:url,
+                type:'post',
+                dataType:"json",
+                data:data,
+                success:function(result){
+                    send_msg=false;
+                    $("#ts"+type).html(result.msg);
+                    if(!empty(result.url)){
+                        $("#down"+type).attr("href",result.url);
+                        $("#down"+type).show();
+                    }
+                }
+            });
+        }else{
+            send_msg=false;
+        }
+    });
+</script>
+</body>
+</html>

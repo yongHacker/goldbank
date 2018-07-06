@@ -1,0 +1,113 @@
+<businesstpl file="header"/>
+<head>
+    <style>
+        .table tr th {
+            text-align: center;
+        }
+
+        .ta {
+            overflow-x: auto;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class=" theme-blue">
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('BWarehouse/product_index')}">{:L("BUSINESS_BWAREHOUSE_PRODUCT_INDEX")}</a></li>
+        <button type="button" onclick="history.go( -1 )" class="btn btn-primary " style="float:right">返回</button>
+    </ul>
+    <form class="well form-search search_row" method="post" action="{:U('BWarehouse/product_index')}">
+        <select id="mystore" name="wh_id" data-live-search="true" style="width: 100px;">
+            <option value="0" checked>所有仓库</option>
+            <volist name="warehouse" id="v">
+                <if condition="$v['wh_name'] neq $from_store">
+                    <option value="{$v.id}" in_user="{$v.user_nicename}"<if condition="I('request.wh_id') eq $v['id']">selected="selected"</if>>{$v.wh_name}</option>
+                </if>
+            </volist>
+        </select>
+        <label>状态:</label>
+        <select name="status" style="width: 120px;" data-live-search="true">
+            <option <if
+                condition="$_POST['status'] eq 'all' || $_GET['status'] eq 'all'">
+            selected="selected" </if> value="all" >货品状态
+            </option>
+            <volist name="status_list" id="v">
+                <if condition="!in_array($v['value'],$is_hide)">
+                    <option <if
+                        condition="$_POST['status'] eq $v['value'] || $_GET['status'] eq $v['value']">
+                    selected="selected" </if> value="{$v.value}" >{$v.comment}
+                    </option>
+                </if>
+            </volist>
+        </select>
+        <select id="is_p_detail" name="is_p_detail"
+                style="width: 150px;" data-live-search="true">
+            <if condition="I('request.is_p_detail/s','') eq 1">
+                <option value="1" selected="selected">显示详情</option>
+                <option value="2" checked>隐藏详情</option>
+                <else/>
+                <option value="2" selected="selected">隐藏详情</option>
+                <option value="1" checked>显示详情</option>
+            </if>
+        </select>
+        <input id="search_name" name="search_name" style="width: 200px;" value="<php>echo I('request.search_name');</php>" placeholder="编号/名称/规格" type="text">
+        货品克重：
+        <input id="weight" name="weight" style="width: 200px;" value="<php>echo I('request.weight');</php>" placeholder="请输入货品克重" type="text">
+        <input class="btn btn-primary" value="搜索" type="submit">
+        <input class="btn btn-primary export" url="{:U('product_index',array('export'=>1))}" value="导出" type="button" onclick="export_excel();">
+        <a class="btn btn-danger" href="{:U('BWarehouse/product_index')}">清空</a>
+    </form>
+    <div class="main-content">
+        <if condition="$data">
+            <div class="ta">
+                <table class="table table-bordered  table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>序</th>
+                        <th>仓库</th>
+                        <th>货品名称</th>
+                        <th>规格</th>
+                        <th>货品编号</th>
+                        <th>含金量</th>
+                        <th>克重</th>
+                        <th>销售克工费</th>
+                        <th>销售价</th>
+                        <!--<th>商品编号</th>-->
+                        <if condition="I('request.is_p_detail/s','') eq 1">
+                            <th class="product_detail">货品详情</th>
+                        </if>
+                        <th>状态</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="data" id="v">
+                        <tr>
+                            <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+                            <td class="" style="vertical-align:middle;">{$v.wh_name}</td>
+                            <td style="vertical-align:middle;">{$v.product_name}</td>
+                            <td style="vertical-align:middle;">{$v.goods_spec}</td>
+                            <td class="text-center" style="vertical-align:middle;">{$v.product_code}</td>
+                            <td class="text-right" >{$v.purity}</td>
+                            <td class="text-right" >{$v.weight}</td>
+                            <td class="text-right" >{$v['sell_fee']>0?$v['sell_fee']:$v['g_sell_fee']}</td><!--工费优先显示货品再显示商品-->
+                            <td class="text-right" >{$v.actual_price}</td>
+                            <!--<td class="text-center" style="vertical-align:middle;">{$v.goods_code}</td>-->
+                            <if condition="I('request.is_p_detail/s','') eq 1">
+                                <td style="width:700px;">{$v.product_detail}</td>
+                            </if>
+                            <td class="" style="vertical-align:middle;">{$status[$v['status']]}</td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">{$page}</div>
+            <else/>
+            <include file="./public/common/default_empty.html"/>
+        </if>
+    </div>
+    <include file="./public/common/footer.html"/>
+</div>
+</body>

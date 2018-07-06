@@ -1,0 +1,156 @@
+<businesstpl file="header" />
+<body class="theme-blue" >
+<div class="wrap js-check-wrap"  >
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="{:U('BWholesaleProcure/index_detail')}">{:L('BUSINESS_BWHOLESALEPROCURE_INDEX_DETAIL')}</a></li>
+		<button type="button" onclick="history.go( -1 )" class="btn btn-primary " style="float:right">返回</button>
+	</ul>
+	<table class="table table-bordered " style="white-space:normal;">
+		<tbody >
+		<tr>
+			<td style="background-color:#f5f5f5">供应商</td>
+			<td>{$bwprocure['company_name']}</td>
+			<td style="background-color:#f5f5f5">日期</td>
+			<td>{:date('Y-m-d',$bwprocure['procure_time'])}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">应付总额</td>
+			<td>{$bwprocure['price']}</td>
+			<td style="background-color:#f5f5f5">件数</td>
+			<td style="max-width: 200px;">{$bwprocure['count']}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">发票</td>
+			<td><a href="javascript:parent.image_preview_dialog('{$bwprocure.bill_pic}');">
+				<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$bwprocure.bill_pic}"></a></td>
+			<td style="background-color:#f5f5f5">附件</td>
+			<td style="max-width: 200px;"></td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">开单人</td>
+			<td>{$bwprocure['creator_name']}</td>
+			<td style="background-color:#f5f5f5">备注</td>
+			<td  style="max-width: 200px;">{$bwprocure['memo']}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">审核人</td>
+			<td>{$bwprocure['user_nicename']}</td>
+			<td style="background-color:#f5f5f5">审核时间</td>
+			<td  style="max-width: 200px;"><if condition="$bwprocure['check_time']">{:date('Y-m-d H:i:s',$bwprocure['check_time'])}<else/></if></td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5">审核备注</td>
+			<td  colspan="3">{$bwprocure['check_memo']}</td>
+		</tr>
+		</tbody >
+	</table>
+	<div class="ta">
+		<table class="table table-bordered  table-hover">
+			<thead >
+			<tr>
+				<th>序</th>
+				<th>图片</th>
+				<th>商品编号</th>
+				<th>商品名称</th>
+				<th>规格</th>
+				<th>采购单价</th>
+				<th>采购量</th>
+				<th>采购总价</th>
+			</tr>
+			</thead>
+			<tbody>
+			<volist name="list" id="v">
+				<tr>
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td class="">
+						<if condition="empty($v['product_pic'])">
+							<img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
+							<else />
+							<a href="javascript:parent.image_preview_dialog('{$v['product_pic']}');">
+								<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$v.product_pic}">
+							</a>
+						</if>
+					</td>
+					<td class="text-center">{$v.goods_code}</td>
+					<td>{$v.goods_name}</td>
+					<td>{$v.goods_spec}</td>
+					<td>{$v.procure_price}</td>
+					<td>{$v.goods_stock}</td>
+					<td>{$v.price}</td>
+				</tr>
+			</volist>
+			</tbody>
+		</table>
+	</div>
+	<div class="pagination">{$page}</div>
+	<if condition="in_array($bwprocure['status'],array(0,-1,2,3)) ">
+		<div class="form-actions text-center">
+			<if condition="in_array($bwprocure['status'],array(-1,2,3)) ">
+				<a href="{:U('BWholesaleProcure/edit',array('id'=>$bwprocure['id']))}"><button type="button" class="btn btn-primary" >重新开单</button></a>
+			</if>
+			<if condition="in_array($bwprocure['status'],array(0)) ">
+				<a class="btn btn-danger del" href="#myModal" name="{$bwprocure['id']}" class="del" role="button" data-toggle="modal">撤销</a>
+			</if>
+			<a class="btn" href="javascript:history.back(-1);">返回</a>
+			<span class="tips_error"></span>
+		</div>
+		<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog-div">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h3 id="myModalLabel">撤销警告</h3>
+					</div>
+					<div class="modal-body">
+						<p class="error-text"><i class="fa fa-warning modal-icon"></i>你确定要撤销吗?</p>
+					</div>
+					<div class="modal-footer">
+						<button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+						<button id="del" class="btn btn-primary" data-dismiss="modal">确定</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</if>
+</div>
+<script src="/public/js/cookie.js"></script>
+<script src="/public/js/common.js"></script>
+<script type="text/javascript">
+	$(function(){
+		//构造树
+		setUser();
+	});
+	function setUser(){
+		$(".del").each(function(index, obj) {
+			$(this).click(function(){
+				var id=$(this).attr('name');
+				delUser(id);
+			})
+		});
+	}
+
+	function delUser(id){
+		$('#myModal').find('button').each(function(index, element){
+			$(this).unbind("click").click(function(){
+				if($(this).attr('id')=='del'){
+					$.ajax({
+						url: "{:U('BWholesaleProcure/wprocure_delete')}",
+						type: 'post',
+						data:{id:id},
+						success: function(data) {
+							if(data.status==1){
+								//alert(data.msg);
+								jump_refer();
+							}else{
+								alert(data.msg);
+							}
+
+						}
+					})
+				}
+			})
+		});
+	}
+</script>
+</body>
+

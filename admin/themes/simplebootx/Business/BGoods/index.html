@@ -1,0 +1,114 @@
+<businesstpl file="header" />
+<style>
+	td a.weixin {
+		color: #ddd;
+	}
+	td a.down {
+		color: #2fa4e7;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BGoodsCommon/index')}">{:L('BUSINESS_BGOODS_INDEX')}</a></li>
+		</ul>
+        <form class="well form-search search_row" method="post" action="{:U('BGoods/index')}">
+			综合搜索:
+			<input type="text" autocomplete="off" name="search_name" style="width: 150px;" value="{:I('request.search_name/s','')}" placeholder="请输入商品编码/规格编码/名称">
+            商品分类:
+			<select name="class_id">
+				<option value="0">全部分类</option>
+				{$select_categorys}
+			</select>
+			是否启用:
+			<select name="status" data-value="{:I('request.status')}" style="width: 120px;margin-right: 20px;">
+				<option value="">选择是否启用</option>
+				<option value="1" <if condition="I('request.status') eq 1">selected</if>>已启用</option>
+				<option value="0" <if condition="I('request.status') eq '0'">selected</if>>未启用</option>
+				<option value="2" <if condition="I('request.status') eq 2">selected</if>>下架</option>
+			</select>
+            <input type="submit" class="btn btn-primary" value="搜索" />
+			<input class="btn btn-primary export" url="{:U('BGoods/goods_export')}" value="导出" type="button" onclick="export_excel();">
+            <a class="btn btn-danger" href="{:U('BGoods/index')}">清空</a>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">序</th>
+					<th>图片</th>
+					<th>商品编码</th>
+					<th>名称</th>
+					<th>规格编码</th>
+					<th>规格</th>
+					<th>类型</th>
+					<th>商品分类</th>
+					<th>是否启用</th>
+				</tr>
+			</thead>
+			<tbody>
+				<php>$user_statuses=array("0"=>L('USER_STATUS_BLOCKED'),"1"=>L('USER_STATUS_ACTIVATED'),"2"=>L('USER_STATUS_UNVERIFIED'));</php>
+				<foreach name="goods_list" item="vo">
+					<tr <if condition="$vo['status'] eq 0">style="background:#ccc"</if> >
+					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td>
+						<if condition="empty($vo['pic'])">
+							<img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
+							<else />
+							<a href="javascript:parent.image_preview_dialog('{$vo['pic']}');">
+								<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$vo.pic}">
+							</a>
+						</if>
+					</td>
+					<td class="text-center">{$vo.goods_common_code}</td>
+					<td class="text-left">{$vo.goods_name}</td>
+					<td class="text-center">{$vo.goods_code}</td>
+					<td class="text-center">{$vo.goods_spec}</td>
+					<td>{$type[$vo['type']]}</td>
+					<td class="text-left">{$vo.class_name}</td>
+					<td class="text-center" id="con">
+						<if condition="$vo['status'] eq 0">
+							未启用
+						<elseif condition="$vo['status'] eq 1"/>
+							已启用
+						<elseif condition="$vo['status'] eq 2"/>
+							已下架
+						</if>
+					</td>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+<script>
+	//删除商品公共
+	var del_status=0;
+	$(".delete").each(function(){
+		$(this).click(function(){
+			var id=$(this).attr('name');
+			$(".shanchu").click(function(){
+				if(del_status==0){
+					del_status=1;
+					$.ajax({
+						url: "{:U('BGoodsCommon/delGoodsCommon')}",
+						type: 'post',
+						dataType: 'json',
+						data: {goods_common_id:id},
+						success: function (data) {
+							del_status=0;
+							if(data.code==200){
+								//alert(data.datas.msg);
+								location.reload();
+							}else{
+								alert(data.msg);
+							}
+						}
+					})
+				}
+			})
+		})
+	})
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<businesstpl file="header"/>
+<script src="__PUBLIC__/js/bootstraptree/tree.js?time={:time()}"></script>
+
+<link href="__PUBLIC__/js/bootstraptree/tree.css" rel="stylesheet" type="text/css">
+<style>.expander{margin-left: -20px;}</style>
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('BSectors/index')}">{:L('BUSINESS_BSECTORS_INDEX')}</a></li>
+			<!-- <li ><a href="{:U('BSectors/lists')}">{:L('BUSINESS_BSECTORS_LIST')}</a></li> -->
+			<li ><a href="{:U('BSectors/add')}">{:L('BUSINESS_BSECTORS_ADD')}</a></li>
+		</ul>
+
+		<form class="js-ajax-form" action="{:U('rbac/authorize_post')}" method="post">
+			<div class="tree well">
+				<ul id="ul_tree">
+
+				</ul>
+			</div>
+		</form>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(function(){
+		// 构造树
+		getdata();
+	});
+
+	function getdata(){
+		$("#ul_tree").jqtree({
+			//data: json,
+			url:"/index.php?g=Business&m=BSectors&a=bsectorsData",
+			param: {type:'bm',url:'/index.php?g=Business&m=BJobs',cur_url:'/index.php?g=Business&m=BSectors'},
+			onBeforeLoad: function (param) {},
+			onLoadSuccess: function (data) {
+				add_js();
+			},
+			onClickNode: function (selector) {}
+		});
+	}
+</script>
+<script>
+	function check_bsectors(obj){
+
+	}
+	function add_js(){
+		//所有的删除操作，删除数据后刷新页面
+		if ($('a.js-ajax-delete').length) {
+			Wind.use('artDialog', function () {
+				$('.js-ajax-delete').on('click', function (e) {
+					var id=$(this).prev().prev().prev().attr('id');
+					var leave =$(this).prev().prev().prev().find('i').attr('class');
+					if(leave=='icon-minus-sign'){
+						artdialog_alert('该部门下还有子部门，请先删除子部门');
+						return false;
+					}
+					e.preventDefault();
+					var $_this = this,
+							$this = $($_this),
+							href = $this.data('href'),
+							msg = $this.data('msg');
+					href = href?href:$this.attr('href');
+					art.dialog({
+						title: false,
+						icon: 'question',
+						content:msg?msg: '确定要删除吗？',
+						follow: $_this,
+						close: function () {
+							$_this.focus();; //关闭时让触发弹窗的元素获取焦点
+							return true;
+						},
+						okVal:"确定",
+						ok: function () {
+
+							$.getJSON(href).done(function (data) {
+								if (data.state === 'success') {
+									if (data.referer) {
+										location.href = data.referer;
+									} else {
+										reloadPage(window);
+									}
+								} else if (data.state === 'fail') {
+									//art.dialog.alert(data.info);
+									//alert(data.info);//暂时处理方案
+									art.dialog({
+										content: data.msg,
+										icon: 'warning',
+										ok: function () {
+											this.title(data.info);
+											return true;
+										}
+									});
+								}
+							});
+						},
+						cancelVal: '关闭',
+						cancel: true
+					});
+				});
+
+			});
+		}
+
+	}
+</script>

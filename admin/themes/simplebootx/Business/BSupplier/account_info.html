@@ -1,0 +1,207 @@
+<businesstpl file="header" />
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li <if condition="I('request.type') eq 'procure' or I('request.type') eq ''">class="active"</if>><a href="{:U('BSupplier/account_info',array('type'=>'procure','id'=>I('request.id')))}">采购信息</a></li>
+			<li <if condition="I('request.type') eq 'return'">class="active"</if>><a href="{:U('BSupplier/account_info',array('type'=>'return','id'=>I('request.id')))}">退货信息</a></li>
+			<li <if condition="I('request.type') eq 'settle'">class="active"</if>><a href="{:U('BSupplier/account_info',array('type'=>'settle','id'=>I('request.id')))}">结算信息</a></li>
+			<li <if condition="I('request.type') eq 'flow'">class="active"</if>><a href="{:U('BSupplier/account_info',array('type'=>'flow','id'=>I('request.id')))}">结欠流水</a></li>
+		</ul>
+        <div class="main-content">
+            <div class="ta">
+                <if condition="I('request.type') eq 'procure' and $procure_list or I('request.type') eq '' and $procure_list">
+                <table class="table table-bordered  table-hover table-striped">
+                    <thead>
+                        <tr>
+                        	<th class="text-center">序</th>
+                        	<th class="text-center">采购单号</th>
+                            <th class="text-center">供应商</th>
+                            <th class="text-center">采购类型</th>
+                            <th class="text-center">采购数量/件</th>
+                            <th class="text-center">采购重量/克</th>
+                            <th class="text-center">采购金额/元</th>
+                            <th class="text-center">采购人员</th>
+                            <th class="text-center">采购日期</th>
+                            <th class="text-center">创建时间</th>
+                            <th class="text-center">状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="procure_list" id="v">
+                        <tr>
+                        	<td class="text-center">
+                        		<input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>" />
+	                            <?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+	                        </td>
+                            <td class="text-center">
+                                <a href="{:U('BProcure/detail', array('id'=> $v['id']))}">{$v.batch}</a>
+                            </td>
+                            <td class="coded text-left">{$v.company_name}</td>
+                            <td class="coded text-center"><if condition="$v.pricemode eq 1">计重<else/>计件</if>{$v.show_pricemode}</td>
+                            <td class="jhmc text-right"><!-- 计件0 显示数量，计重1不显示 -->
+                                <php>echo $v['num'] == 0 ? '--': $v['num'];</php>
+                            </td>
+                            <td class="jhmc text-right"><!-- 计件0 不显示重量，计重1显示 -->
+                                <php>echo $v['weight'] == 0?'--':$v['weight'];</php>
+                            </td>
+                            <td class="clrq text-right">{:numberformat($v['price'], 2, '.', ',')}</td>
+                            <td class="text-left">{$v.employee_name}</td>
+                            <td class="clrq text-center">{:date('Y-m-d', $v['procure_time'])}</td>
+                            <td class="clrq text-center">{:date('Y-m-d H:i:s', $v['create_time'])}</td>
+                            <td class="text-center">{$status[$v['status']]}</td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                <elseif condition="I('request.type') eq 'return' and $return_list"/>
+                <table class="table table-bordered  table-hover table-striped">
+                    <thead>
+                        <tr>
+                        	<th class="text-center">序</th>
+                        	<th class="text-center">退货单号</th>
+                            <th class="text-center">供应商</th>
+                            <th class="text-center">退货数量</th>
+                            <th class="text-center">退货克重</th>
+                            <th class="text-center">退货金额</th>
+                            <th class="text-center">制单人</th>
+                            <th class="text-center">退货日期</th>
+                            <th class="text-center">制单时间</th>
+                            <th class="text-center">状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="return_list" id="v">
+                        <tr>
+                        	<td class="text-center">
+                        		<input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>" />
+	                            <?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+	                        </td>
+                            <td class="text-center">
+                                <a href="{:U('BProcureReturn/detail', array('return_id'=> $v['id']))}">{$v.batch}</a>
+                            </td>
+                            <td class="coded text-left">{$v.company_name}</td>
+                            <td class="coded text-right">{$v.num}</td>
+                            <td class="jhmc text-right">{:numberformat($v['weight'], 2, '.', ',')}</td>
+                            <td class="clrq text-right">{:numberformat($v['price'], 2, '.', ',')}</td>
+                            <td class="text-left">{$v.employee_name}</td>
+                            <td class="clrq text-center">{:date('Y-m-d', $v['return_time'])}</td>
+                            <td class="clrq text-center">{:date('Y-m-d H:i:s', $v['create_time'])}</td>
+                            <td class="text-center">{$status[$v['status']]}</td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                <elseif condition="I('request.type') eq 'settle' and $settle_list"/>
+                <table class="table table-bordered  table-hover table-striped">
+                    <thead>
+						<tr>
+							<th>序</th>
+							<th class="text-center">结算单号</th>
+							<th class="text-center">供应商</th>
+							<th class="text-center">来往金额</th>
+							<th class="text-center">来料/去料</th>
+							<th class="text-center">买料/卖料</th>
+							<th class="text-center">结欠克重</th>
+							<th class="text-center">结欠金额</th>
+							<th class="text-center">制单人</th>
+							<th class="text-center">结算日期</th>
+							<th class="text-center">创建时间</th>
+							<th class="text-center">状态</th>
+						</tr>
+					</thead>
+					<tbody>
+						<volist name="settle_list" id="v">
+						<tr>
+							<td class="text-center">
+                                <input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>" />
+    							<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+                            </td>
+							<td class="text-center"><a href="{:U('BSettlement/detail', array('id'=> $v['id']))}">{$v.batch}</a></td>
+							<td class="text-center">{$v.company_name}</td>
+							<td class="text-right">
+								<if condition="$v['price'] eq 0">
+									-
+									<else />
+									{:numberformat($v['price'], 2, '.', ',')}
+								</if>
+							</td>
+							<td class="text-right">
+								<if condition="$v['mt_weight'] gt 0">
+									{:numberformat(abs($v['mt_weight']), 2, '.', ',')}/-
+								<elseif condition="$v['mt_weight'] lt 0"/>
+									-/{:numberformat(abs($v['mt_weight']), 2, '.', ',')}
+								<else/>
+									-/-
+								</if>
+                            </td>
+                            <td class="text-right">
+								<if condition="$v['o_weight'] gt 0">
+									{:numberformat(abs($v['o_weight']), 2, '.', ',')}/-
+								<elseif condition="$v['0_weight'] lt 0"/>
+									-/{:numberformat(abs($v['o_weight']), 2, '.', ',')}
+								<else/>
+									-/-
+								</if>
+                            </td>
+							<td class="text-center">{$v['after_weight']}</td>
+							<td class="text-center">{$v['after_price']}</td>
+							<td class="text-center">{$v['employee_name']}</td>
+							<td class="text-center">{:date('Y-m-d', $v['settle_time'])}</td>
+							<td class="text-center">{:date('Y-m-d H:i:s', $v['create_time'])}</td>
+							<td class="text-center">{$status[$v['status']]}</td>
+						</tr>
+						</volist>
+					</tbody>
+				</table>
+                <elseif condition="I('request.type') eq 'flow' and $flow_list"/>
+                <table class="table table-bordered  table-hover table-striped">
+                    <thead>
+                        <tr>
+                        	<th class="text-center">序</th>
+                        	<th class="text-center">单号</th>
+                            <th class="text-center">金额</th>
+                            <th class="text-center">克重</th>
+                            <th class="text-center">类型</th>
+                            <th class="text-center">时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="flow_list" id="v">
+                        <tr>
+                        	<td class="text-center">
+                                <input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>" />
+    							<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+                            </td>
+                            <td class="text-center">
+                                <a href="{$v.jump_url}">{$v.batch}</a>
+                            </td>
+                            <td class="coded text-right">{:numberformat($v['price'], 2, '.', ',')}</td>
+                            <td class="coded text-right">{:numberformat($v['weight'], 2, '.', ',')}</td>
+                            <td class="text-center">{$v.type_name}</td>
+                            <td class="clrq text-center">{:date('Y-m-d', $v['create_time'])}</td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                </if>
+            </div>
+            <div class="pagination">{$page}</div>
+            <div class="ts" style="display:none;">
+                <include file="./public/common/default_empty.html" />
+            </div>
+        </div>
+    </div>
+
+    <script src="/public/js/cookie.js"></script>
+    <script src="/public/js/common.js"></script>
+    <script>
+    if(empty('{$procure_list}')&&empty('{$return_list}')&&empty('{$settle_list}')&&empty('{$flow_list}')){
+    	$('.ta').hide();
+    	$('.ts').show();
+    }
+    </script>
+</body>
+</html>

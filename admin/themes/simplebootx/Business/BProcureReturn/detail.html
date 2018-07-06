@@ -1,0 +1,164 @@
+<businesstpl file="header" />
+<link href="__PUBLIC__/appertain/business/css/BProcureReturn.css" rel="stylesheet">
+</head>
+<body class="theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BProcureReturn/index')}">{:L('BUSINESS_BPROCURERETURN_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BProcureReturn/detail')}">{:L('BUSINESS_BPROCURERETURN_DETAIL')}</a></li>
+			<span style="float: right">
+				<if condition="$return_info['status'] eq 0 && get_user_id() eq $return_info['creator_id']">
+		            <p class="btn btn-danger js-ajax-submit cancel" data-status="3">撤销</p>
+		        </if>
+		        <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+	        </span>
+		</ul>
+		<table class="table table-bordered" id="order_base">
+			<tr>
+				<td class="sel" width="20%">制单人</td>
+				<td class="sel" width="30%">{$return_info.creator_name}</td>
+				<td class="sel" width="20%">退货日期</td>
+				<td class="sel" width="30%">{:date('Y-m-d', $return_info['return_time'])}</td>
+			</tr>
+			<tr>
+				<td class="sel">供应商</td>
+				<td class="sel">
+					{$return_info.supplier_name}
+				</td>
+				<td class="sel">仓库</td>
+				<td class="sel">
+					{$return_info.wh_name}
+				</td>
+			</tr>
+			<tr>
+				<td class="sel">克重</td>
+				<td class="sel">{:number_format($return_info['weight'], 2, '.', '')}</td>
+				<td class="sel">工费总额</td>
+				<td class="sel">{:number_format($return_info['price'], 2, '.', '')}</td>
+			</tr>
+			<tr>
+				<td class="sel">件数</td>
+				<td class="sel" id="return_num">
+					<empty name="return_info['price']">-<else />{$return_info['num']}</empty>
+				</td>
+				<td class="sel">抹零金额</td>
+				<td class="sel">{:number_format($return_info['extra_price'], 2, '.', '')}</td>
+			</tr>
+			<tr>
+				<td class="sel" width="20%">备注</td>
+				<td colspan="3" width="80%">{$return_info['memo']}</td>
+			</tr>
+            <notempty name="return_info['check_id']">
+				<tr>
+					<td class="sel" width="20%">审核备注</td>
+					<td colspan="3" width="80%">{$return_info['check_memo']}</td>
+				</tr>
+            </notempty>
+		</table>
+
+        <businesstpl file="process" />
+        
+		<div class="main-content">
+			<div class="ta" id="order_product" style="overflow-x: auto;">
+
+				<if condition="$sub_list">
+				<p>其它费用</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">费用类目</th>
+							<th class="text-center">费用金额</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<volist name="sub_list" id="v">
+						<tr>
+							<td class="text-center">{$key+1}</td>
+							<td class="text-center">{$v.name}</td>
+							<td class="text-center">{$v.cost}</td>
+						</tr>
+						</volist>
+					</tbody>
+				</table>
+				</if>
+
+				<if condition="$return_info['product_list']">
+				<table class="table table-bordered  table-hover table-responsive">
+					<thead>
+						<tr>
+							<th class="text-center" style="min-width: 60px;">序</th>
+							<th class="text-center" style="min-width: 200px;">货品编码</th>
+							<th class="text-center" style="min-width: 200px;">附属货品编码</th>
+							<th class="text-center" style="min-width: 200px;">货品名称</th>
+							<th class="text-center" style="min-width: 200px;">商品编号</th>
+							<th class="text-center" style="min-width: 100px;">采购计价方式</th>
+							<th class="text-center" style="min-width: 100px;">克重</th>
+							<th class="text-center" style="min-width: 100px;">工费</th>
+							<th class="text-center" style="min-width: 100px;">采购价</th>
+							<th class="text-center" style="min-width: 100px;">总工费</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
+						<volist name="return_info['product_list']" id="v">
+							<tr class="plus" data-productid="{$v.id}" data-productcode="{$v.product_code}">
+							<td class="text-center">{$key+1}</td>
+							<td class="text-center product_code">{$v.product_code}</td>
+							<td class="text-center product_code">{$v.sub_product_code}</td>
+							<td class="text-center product_name">{$v.goods_name}</td>
+							<td class="text-center goods_code">{$v.goods_code}</td>
+							<td class="text-center pricemode"><if condition="$v.procurement_pricemode eq 1">计重<else />计件</if></td>
+							<td class="text-center weight"><if condition="$v.procurement_pricemode eq 1">{$v.weight}<else />-</if></td>
+							<td class="text-center buy_m_fee"><if condition="$v.procurement_pricemode eq 1">{$v.buy_m_fee}<else />-</if></td>
+							<td class="text-center cost_price"><if condition="$v.procurement_pricemode eq 1">-<else />{$v.cost_price}</if></td>
+							<td class="text-center count_fee"><if condition="$v.procurement_pricemode eq 1">{:round(bcmul($v['weight'], $v['buy_m_fee'], 4), 2)}<else />-</if></td>
+						</tr>
+						</volist>
+					</tbody>
+				</table>
+				</if>
+				
+			</div>
+
+			<if condition="$return_info['status'] eq 4">
+			<p>付款信息</p>
+			<table class="table table-bordered table-hover table-striped">
+				<tbody>
+					<tr class="payment_tr">
+						<td width="15%">付款时间</td>
+						<td width="35%">{:date('Y-m-d H:i', $return_info['payment_time'])}</td>
+						<td width="15%">付款凭证</td>
+						<td width="35%">
+							<notempty name="return_info[payment_pic]">
+							<volist name="return_info.payment_pic" id="v">
+							<p class="click_pic"><img src="{$v}"></p>
+							</volist>
+							</notempty>
+						</if>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</if>
+
+			<businesstpl file="operate" />
+			
+			<div class="form-actions text-center">
+				<input type="hidden" class="return_id" value="{$return_info['id']}">
+				<if condition="$return_info['status'] eq 0 && get_user_id() eq $return_info['creator_id']">
+					<input type="hidden" class="form_url" value="{:U('BProcureReturn/cancel')}">
+		            <p class="btn btn-danger js-ajax-submit cancel" data-status="3">撤销</p>
+		        </if>
+		        <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			</div>
+		</div>
+	</div>
+
+	<form></form>
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/appertain/business/js/BProcureReturn.js"></script>
+	<script>
+		initPicReview();
+	</script>

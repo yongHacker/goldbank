@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图片上传</title>
+    <style>
+        li{
+            list-style: none;
+        }
+        #uploadimgModal{
+            min-height: 600px;
+        }
+        .upload_img {
+            margin:0;
+            padding:10px;
+            overflow:hidden;
+            border-radius:3px;
+            min-height:350px;
+            background:#f6f6f6;
+            border:1px solid #e4e4e4;
+        }
+        .upload_img li {
+            border:1px solid #e1e1e1;
+            padding:10px;
+            width:170px;
+            margin:10px;
+            float:left;
+            line-height:45px;
+            height:200px;
+            text-align:center;
+            border-radius:3px;
+        }
+         .img-add-hide{
+            display: none;
+        }
+        #goods_img_add {
+            position: absolute;
+            left: 0;
+            top:60px;
+            width:170px;
+            float:left;
+            text-align:center;
+            line-height:45px;
+            padding:20px 0;
+            border:0;
+            cursor:pointer;
+        }
+        .goods_pic {cursor:pointer;}
+    </style>
+</head>
+<body>
+<div class="modal small fade auto-adapt" style="width:80%;left: 400px;display:none;top: 2%;" id="uploadimgModal" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog-div">
+        <div class="modal-content">
+            <div class="modal-header" style="cursor:move">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <b style="margin: 0; color: #157ab5;">上传图片</b>
+            </div>
+            <div class="modal-body" style="max-height: 800px;padding: 0;">
+                <input type="file" hidden="hidden" id="img_choose" value="选择图片"  accept="image/*">
+                <div class="wrap js-check-wrap">
+                    <ul class="img-tabs">
+                        <li class="active"><a href="javascript:void(0)">图片</a></li>
+                    </ul>
+                    <p id="img_add"><img src="__PUBLIC__/images/business/default_goods_img.png" width="72" height="72" /><br />添加图片</p>
+                    <ul class="upload_img">
+
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="procure_save" class="btn btn-default" data-dismiss="modal" aria-hidden="true">保存</button>
+                <button id="procure_add" class="btn btn-primary hide" >添加更多</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+     //公用函数： set_default为是否设置主图，more为是否多张图片上传，url为上传路径，max_size为限制图片大小,$img为原始图片数组，$img_show为图片容器
+     function img_upload(set_default,more,url,max_size,$img,$img_show){
+        //定义类名名称
+        var $MORE_IMG_ADD=$("#procure_add");//添加更多
+        var $IMG_ADD=$("#img_add");//添加图片
+        var $IMG_SAVE=$("#procure_save");//保存
+        var $IMG_CHOOSE=$("#img_choose");//触发改变的file选择文件
+        var $IMG_MODAL=$("#uploadimgModal");//模态框
+        var $IMG_UL=$(".upload_img");//图片容纳器ul
+        var $IMG_LI=$(".upload_img li");//图片容纳器li
+        //上传图片
+        $IMG_ADD.unbind("click").click(function(){
+            $MORE_IMG_ADD.click();
+        });
+        //多图时添加更多
+         $MORE_IMG_ADD.unbind("click").click(function(){
+            $(this).addClass("on");
+            $IMG_CHOOSE.click();
+        });
+         //模态框内初始化
+         function uploadInit(){
+             var _html="";
+             if($img.length>0){
+                 $IMG_ADD.addClass("img-add-hide")
+             }
+             if(set_default==true){
+                 $(".set_default").removeClass("hide");
+                 for(var i=0;i<$img.length;i++){
+                     _html+='<li><img src='+$img[i].pic+'><br/>';
+                     if($img[i].is_hot==true){
+                         _html+='<a  name="'+$img[i].id+'" href="#" class="set_default" style="color:#f00;">主图</a>' ;
+                     }
+                     else{
+                         _html+='<a name="'+$img[i].id+'" href="#" class="set_default">设为主图</a>';
+                     }
+                     _html+=' <a href="#myModal" name="'+$img[i].id+'" class="delete fa fa-trash-o" role="button" data-toggle="modal" title="删除"></a></li>';
+                 }
+             }
+             else{
+                 for(var i=0;i<$img.length;i++){
+                     _html+='<li><img src='+$img[i].pic+'><br/>';
+                     _html+=' <a href="#myModal" name="$img[i].id" class="delete fa fa-trash-o" role="button" data-toggle="modal" title="删除"></a></li>';
+                 }
+
+             }
+             if(more==true){
+                 $MORE_IMG_ADD.removeClass("hide");
+             }
+             $IMG_UL.html(_html);
+             $IMG_MODAL.modal("show");//显示模态框
+         }
+        uploadInit();//触发事件时执行该事件
+        $IMG_CHOOSE.change(function(){
+            var file=document.getElementById("img_choose").files[0];
+            if(file.size>parseInt(max_size)){
+                alert("不能上传超过限制的图片")
+            }
+            else{
+                var formdata=new FormData();
+                formdata.append("goods_pic",file);
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: formdata,
+                    processData: false,
+                    contentType: false,
+                    dataType: "json",
+                    success: function (res) {
+                        if(res.datas.code==1){
+                            var html = '<li><img data-hot="0" src="'+res.datas.file_name+'"><br /> ' ;
+                            if(set_default==true){
+                                html+='<a href="#" class="set_default">设为主图</a> <a href="#myModal" class="delete fa fa-trash-o" role="button" data-toggle="modal" title="删除"></a>';
+                            }
+                             html+='</li>';
+                            $IMG_UL.append(html);
+                            if($IMG_UL.length>0){
+                                $IMG_ADD.addClass("img-add-hide")
+                            }
+
+
+                        }
+                        else{
+                            alert("上传失败")
+                        }
+
+                    }
+                })
+            }
+
+        });
+        $IMG_SAVE.click(function () {
+            debugger;
+            var img_htm="";
+            var img_style=$img_show.find("img").attr("style");
+            $(".upload_img li").each(function () {
+                var src=$(this).find("img").attr("src");
+                var is_hot=$(this).find("img").attr("data-hot");
+                img_htm+='<img src='+src+' style="'+img_style+'"/>'
+            });
+            $img_show.html(img_htm);
+            $IMG_UL.html("");
+        })
+         //商品公共图片功能 属性TYPE 值 DEL(删除) LINK(关联) DEFAULT(设为主图)
+         function imgCommon(type,id,goods_img){
+             var params = {};
+             params.type = type;
+             params.id = id;
+             params.goods_img = goods_img;
+             $.post('{:U("BGoodsCommon/common_goods_img")}',params,function(data){
+                 if(data.datas.status > 0){
+                     //成功
+                     if(type == 'link'){
+                         $('.delete').eq($('.delete').length-1).attr('name',data.datas.id);
+                         $('.set_default').eq($('.set_default').length-1).attr('name',data.datas.id);
+                     }
+                 }else{
+                     //失败
+                 }
+                 $("#myModal").modal("hide");
+             },'json');
+         }
+         //商品公共图片设为主图
+         $(document).on('click','.set_default',function(){
+             var $set_default=$('.set_default');
+             imgCommon('default',$(this).attr('name'));
+             $set_default.html('设为主图').css('color','#2fa4e7');
+             $(this).html('主图');
+             $(this).css('color','#f00');
+         })
+         //删除商品公共图片
+         $(document).on('click','.delete',function(){
+             var $del=$("#del");
+             $del.attr('name',$(this).attr('name'));
+             $del.unbind('click');
+             $del.click(function(){
+                 var id=$(this).attr('name');
+                 for(var i=0;i < $('.delete').length;i++){
+                     if(id == $('.delete').eq(i).attr('name')){
+                         $IMG_LI.eq(i).remove();
+                         $('#goods_img_show img').eq(i).remove();
+                     }
+                 }
+                 if($('.delete').length <= 0){
+                     $IMG_ADD.show();
+                 }
+                 imgCommon('del',id);
+             })
+         })
+         //设置主图
+         $(document).on("mousedown",".goods_pic",function(e){
+             if($(this).parent().index()!=$("#spec-detail-tbody tr").length-1){
+                 if(e.which==3){
+                     $("#myModal3").modal('show');
+                     $(".goods_pic").removeClass("active");
+                     $(this).addClass("active");
+                 }
+             }
+         });
+    }
+</script>
+</body>
+</html>

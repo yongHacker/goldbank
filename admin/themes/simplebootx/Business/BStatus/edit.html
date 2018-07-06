@@ -1,0 +1,130 @@
+<businesstpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li ><a href="{:U('BStatus/index')}">{:L('BUSINESS_BSTATUS_INDEX')}</a></li>
+			<li class="active"><a href="#">{:L('BUSINESS_BSTATUS_EDIT')}</a></li>
+
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BStatus/edit')}">
+		<input type="hidden" value="{$info.id}" name='id'>
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">表名:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="table" id="table" value="{$info.table}" readonly>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">字段名:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="field" id="field" value="{$info.field}" readonly>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">值:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="value" id="value" value="{$info.value}">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">注释:</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="comment" id="comment" value="{$info.comment}">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态:</label>
+					<div class="controls">
+						<select name="status">
+							<option <if condition="$info['status'] eq 0">selected="selected"</if> value="0">正常</option>
+							<option <if condition="$info['status'] eq 1">selected="selected"</if> value="1">锁定</option>
+						</select>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<p type="text" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</p>
+				<a class="btn js-ajax-back-btn">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script>
+	get_field();
+	$('select[name=table]').unbind().change(function(){
+		get_field();
+	});
+	function get_field(){
+		var search_table=$('select[name=table]').val();
+		if(!empty(search_table)){
+			$.ajax({
+				url:'{:U("BStatus/add")}',
+				data:{search_table:search_table},
+				type:'post',
+				dataType:'json',
+				success:function(data){
+					htm="";
+					if(!empty(data)){
+						for(var i in data){
+							htm+='<option value="'+data[i].field+'">'+data[i].field+'</option>';
+						}
+					}
+					$('select[name=field]').html(htm);
+				}
+			});
+		}
+	}
+	$('.js-ajax-submit').unbind().click(function(){
+		var id=$('input[name=id]').val();
+		var table=$('input[name=table]').val();
+		var field=$('input[name=field]').val();
+		var value=$('input[name=value]').val();
+		var comment=$('input[name=comment]').val();
+		var status=$('select[name=status]').val();
+		if(empty(table)){
+			error_appear('请选择数据表');
+			return false;
+		}
+		if(empty(field)){
+			error_appear('请选择字段');
+			return false;
+		}
+		if(empty(value)){
+			error_appear('请填写值');
+			return false;
+		}
+		if(empty(comment)){
+			error_appear('请填写注释');
+			return false;
+		}
+		if(empty(status)){
+			error_appear('请选择状态');
+			return false;
+		}
+		$.ajax({
+			url:$('form').attr('action'),
+			data:{id:id,table:table,field:field,value:value,comment:comment,status:status},
+			type:'post',
+			dataType:'json',
+			success:function(result){
+				if(result.status==1){
+					error_appear('操作成功！');
+					setTimeout(function(){jump_refer();},800);
+				}else if(result.status==0){
+					error_appear(result.msg);
+				}
+			}
+		});
+		
+	});
+	</script>
+</body>
+</html>

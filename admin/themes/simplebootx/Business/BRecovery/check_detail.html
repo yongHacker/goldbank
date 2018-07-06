@@ -1,0 +1,174 @@
+<businesstpl file="header" />
+<style> 
+input{width: 163px;margin-bottom:0px;}
+.table {text-overflow: ellipsis;white-space: nowrap;overflow: hidden;}
+.ta {overflow-x: auto;width: 100%;margin-bottom: 20px;}
+.ta input{width: 177px;margin-bottom:0px;border-left:0px;border-top:0px;border-right:0px;border-bottom:0px;padding:8px 1px ; margin-left:0px;width:95%;}
+.ta input:focus{			
+			-webkit-box-shadow: 0px 0px 0px;  
+			  -moz-box-shadow: 0px 0px 0px;  
+box-shadow: 0px 0px 0px;  }
+.ta td{padding: 0px 5px;vertical-align: middle;}
+.td_border{border: solid 1px #157ab5;}
+.sel{background: #f4f4f4;}
+.my_page li{margin-top: 10px;display:none;}
+.table tr th{text-align:center;}
+.dropdown-menu_sell { position: absolute;z-index: 1000;display: none;float: left; min-width: 177px;background-color: rgb(255, 255, 255);box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 10px;
+    -webkit-background-clip: padding-box; background-clip: padding-box;padding: 5px 0px; margin: 2px 0px 0px;list-style: none;
+    border-width: 1px;border-style: solid;border-color: rgba(0, 0, 0, 0.2);border-image: initial;border-radius: 6px;
+}
+.list-2{z-index: 11;height: 80%;width:80%;margin:5% auto;background: #fff;}
+.remark{width: 888px;cursor: not-allowed;background-color: #fff;}
+</style>
+</head>
+<body class=" theme-blue">
+    <div class="wrap js-check-wrap"  >
+		<ul class="nav nav-tabs">
+			<li class="active"><a>{:L('BUSINESS_BRECOVERY_CHECK_DETAIL')}</a></li>
+			<span style="float: right">
+				<if condition="$data['status'] eq 0">
+					<input type="hidden" value="{$data.id}" id="id"/>
+					<button  class="btn btn-danger js-ajax-submit" data-type="-2" >驳回</button>
+					<button  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</button>
+					<button  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</button>
+				</if>
+					 <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			</span>
+		</ul>
+		<table class="table table-bordered" style="white-space:normal">
+			<tr>
+				<td class="sel" width="20%">制单时间</td>
+				<td width="25%">
+					{$data["create_time"]|date="Y-m-d H:i:s",###}
+				</td>
+				<td class="sel" width="20%">会员姓名</td>
+				<if condition='$data["u1"] eq "贵宾"'>
+					<td width="25%">{$data["shop_name"]}<if condition="$data['realname']">{$data['realname']}<else/>{$data['u1']}</if></td>
+					<else />
+					<td width="25%"><if condition="$data['realname']">{$data['realname']}<else/>{$data['recovery_name']}</if></td>
+				</if>
+
+			</tr>
+			<tr width="25%">
+				<td class="sel">回购员</td>
+				<td><if condition="$data['realname']">{$data['realname']}<else/>{$data['user_nicename']}</if></td>
+				<td class="sel">回购总价</td>
+				<td>{$data['price']}</td>
+			</tr>
+			<tr width="25%">
+				<td class="sel">回购总重</td>
+				<td>{$data['total_weight']}</td>
+				<td class="sel">回购金重</td>
+				<td>{$data['gold_weight']}</td>
+			</tr>
+			<tr>
+				<td class="sel">回购单号</td>
+				<td >
+					{$data['batch']}
+				</td>
+				<td class="sel">备注</td>
+				<td colspan="4" style="word-break:break-all;">{$data['memo']}</td>
+			</tr>
+			<!--<tr width="25%">
+				<td class="sel">审核人</td>
+				<td>{$data['check_name']}</td>
+				<td class="sel">审核时间</td>
+				<td>
+					<if condition='$data["check_time"] neq ""'>
+						{$data["check_time"]|date="Y-m-d H:i:s",###}
+					</if>
+				</td>
+			</tr>-->
+			<tr>
+				<td class="sel">审核备注</td>
+				<td style="word-break:break-all;"><textarea  name="check_memo" id="check_memo" rows="2" cols="60" style="width:96%;"></textarea></td>
+				<td class="sel">类型</td>
+				<td >{$data['type']==1?'截金回购':'旧金回购'}</td>
+			</tr>
+		</table>
+		<businesstpl file="process" />
+        <div class="main-content">
+			<div class="ta">
+				<table class="table table-bordered  table-hover">
+					<thead >
+					<tr>
+						<th>序</th>
+						<th>金料名称</th>
+						<th>编码</th>
+						<th style="width: 160px;">总重</th>
+						<th>纯度(‰)</th>
+						<th>金重</th>
+						<th>回购金价</th>
+						<th>当前金价</th>
+						<th>克工费</th>
+						<th >损耗率</th>
+						<th style="width: 80px;">成本价</th>
+						<th >材质</th>
+						<th >颜色</th>
+						<!--<th style="width: 80px;">类型</th>
+						<th >货品编号</th>-->
+					</tr>
+					</thead>
+					<volist name="list" id="v">
+						<tr height="30">
+							<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+							<td class="text-left">{$v.recovery_name}</td>
+							<td class="text-center">{$v.rproduct_code}</td>
+							<td class="text-right">{$v.total_weight}</td>
+							<td class="text-right">{$v.purity}</td>
+							<td class="text-right">{$v.gold_weight}</td>
+							<td class="text-right">{$v.recovery_price}</td>
+							<td class="text-right">{$v.gold_price}</td>
+							<td class="text-right">{$v.service_fee}</td>
+							<td class="text-right">{$v.attrition}</td>
+							<td class="text-right">{$v.cost_price}</td>
+							<td class="">{$v.material}</td>
+							<td class="">{$v.color}</td>
+							<!--<td class="text-right">{$v['type']==1?'截金回购':'回购'}</td>
+							<td class="text-center"><if condition="$v.product_code"><a href="{:U('BProduct/index',array(search_name=>$v['product_code']))}">{$v.product_code}</a><else/>&#45;&#45;</if></td>-->
+						</tr>
+					</volist>
+				</table>
+				<businesstpl file="operate" />
+				<div class="form-actions text-center" style="margin: 0 auto">
+					<if condition="$data['status'] eq 0">
+						<input type="hidden" value="{$data.id}" id="id"/>
+						<button  class="btn btn-danger js-ajax-submit" data-type="-2" >驳回</button>
+						<button  class="btn btn-primary js-ajax-submit"  data-type="1">审核通过</button>
+						<button  class="btn btn-danger js-ajax-submit" data-type="2">审核不通过</button>
+					</if>
+					 <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+					<div  style="color: red;" class="tishi"></div>
+				</div>
+			</div>
+<include file="./Application/Home/View/Public/footer.html" />
+			<script src="__PUBLIC__/js/common.js"></script>
+<script>
+	$('.js-ajax-submit').click(function(){
+		$('.js-ajax-submit').attr('disabled','disabled');
+		var id=$('#id').val();
+		var url ="{:U('BRecovery/check_post')}";
+		var type=$(this).data("type");
+		var check_memo=$('#check_memo').val();
+			$.ajax({
+				type:'post',
+				data:{id:id,check_memo:check_memo,type:type},
+				dataType:'json',
+				url:url,
+				success:function(result){
+					if(result.status=="1"){
+						$('.tishi').html('操作成功');
+						window.location.href = result.url;
+					}else{
+						$('.js-ajax-submit').attr('disabled','');
+						if(result.info){
+							$('.tishi').html(result.info);
+						}else{
+							$('.tishi').html('操作失败');
+						}
+					}
+
+				}
+			});
+	});
+</script>

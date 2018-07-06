@@ -1,0 +1,931 @@
+<businesstpl file="header" />
+<style>
+    .black_overlay{  display: none;  position: fixed;  top: 0%;  left: 0%;  width: 100%;  height: 100%;  background-color: black;  z-index:1001;  -moz-opacity: 0.8;  opacity:.80;  filter: alpha(opacity=80);  }
+    .white_content {  display: none;  position: fixed;  top: 25%;  left: 25%;  width: 50%;  height: 50%;  padding: 16px;  border: 16px solid orange;  background-color: white;  z-index:1002;  overflow: auto;  }
+    #light{z-index: 1049}
+</style>
+<style>
+ .spec-table-info{
+        overflow-x: auto;
+        width: calc(100% - (25px));
+    }
+    @media (max-width: 768px) {
+        .spec-table-info{
+            width: 628px;
+        }
+    }
+    @media (min-width: 768px) {
+        .spec-table-info{
+            width: 628px;
+        }
+    }
+    @media (min-width: 992px) {
+        .spec-table-info{
+            overflow-x: auto;
+            width: 869px;
+        }
+    }
+    @media (min-width: 1200px) {
+        .spec-table-info{
+            overflow-x: auto;
+            width: 1077px;
+        }
+    }
+    @media (min-width: 1400px) {
+        .spec-table-info{
+            width: calc(100% - (25px));
+        }
+    }
+    a,a:hover,a:focus{
+        text-decoration: none;
+    }
+    .btn{
+        margin: 0 10px;
+    }
+    .alert {
+        display: none;
+        border: none;
+        background: #fff;
+        margin: 0;
+        padding:0;
+    }
+    .table tr th{
+        text-align:center;
+        vertical-align: middle;
+    }
+    .main-content>div>table{
+        margin: -1px 0 0 0;
+        border-radius:0;
+        border-collapse:collapse;
+    }
+    .main-content>div>table td:nth-child(odd){
+        /*text-align:right ;*/
+    }
+    .main-content>div>table input,
+    .main-content>div>table select,
+    .main-content>div>table textarea{
+        margin: 0;
+    }
+    .table-info>table input,.table-info>table select{
+        width: 140px;
+    }
+    .table-produce{
+        position: relative;
+    }
+
+    .fa.fa-toggle-on,
+    .fa.fa-toggle-off{
+        display: inline-block;
+        font-size:24px;
+
+    }
+    .fa.fa-toggle-on{
+        color:#2ecc71;
+    }
+    .fa.fa-toggle-off{
+        color:#ccc;
+    }
+    .table-spec>table td:nth-child(1) input{
+        width:60%;
+        height:20px;
+        padding: 2px;
+        text-align: right;
+
+    }
+    .spec-set{
+        width: 100%;
+        overflow: scroll;
+    }
+    .spec-set tr td{
+        border-left:1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+    .spec-set tr .goods_pic{
+        cursor:pointer;
+        text-align: center!important;
+        line-height: 30px;
+        font-size: 16px;
+        font-weight: 600;
+        color:#aaa;
+    }
+    .edit-value{
+        width:80px!important;
+    }
+    #spec-detail-tbody td select,
+    #spec-detail-tbody td input{
+        width:90%;
+        /*margin-left: -5%;*/
+        padding-left:0;
+    }
+    .batch{
+        display: none;
+        position: relative;
+        float: left;
+    }
+    .batch-set {
+        position: absolute;
+        top:28px;
+        left:-8px;
+        width:140px;
+        border: solid 1px #BCE8F1;
+        box-shadow: 3px 3px 0 rgba(153,153,153,0.25);
+        background-color: #FFF;
+        z-index: 1;
+    }
+    .batch-set>.bat-cont{
+        padding: 5px;
+
+    }
+    .batch-set>h6 {
+        width: 100%;
+        height:24px;
+        line-height:24px;
+        margin: 0;
+        border-bottom:1px solid #ccc;
+        font-size: 12px;
+        text-align: left;
+        text-indent: 10px;
+        color: #555;
+    }
+    .batch-set a.bat-close {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        line-height: 12px;
+        background: #c02b19;
+        color:#fff;
+        text-align: center;
+        border-radius: 7px;
+        top:2px;
+        right:2px;
+
+    }
+    .bat-cont .bat-input,.bat-cont .bat-select{
+        max-width: 60px;!important;
+        height:20px;
+        margin:0;
+        line-height: 20px;
+        padding:0;
+    }
+    .is_hot{
+        border:1px solid #3a4a53!important;
+
+    }
+    /*编辑器*/
+    .pannel{
+        float: left;
+        width:320px;
+        min-height: 380px;
+        border: 1px solid #ccc;
+        margin:0  20px 0 0;
+    }
+    .control-panel{
+        max-height: 300px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 0 15px;
+    }
+    .control-panel .module{
+        background: #fff;
+        width: 290px;
+        margin: 10px 0 0 0;
+        position: relative;
+    }
+    .control-panel .tools{
+        display: none;
+        position: absolute;
+        z-index: 20;
+        top: 10px;
+        right: 10px;
+    }
+    .control-panel .module .text-div {
+        line-height: 150%;
+        white-space:normal;
+        word-wrap: break-word;
+    }
+    .control-panel .cover{
+        background-color: #000;
+        display: none;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        opacity: 0.5;
+        position: absolute;
+        top: 0;
+    }
+
+    .size-tip{
+        line-height: 30px;
+        background-color: #F7F7F7;
+        height: 30px;
+        padding: 0 15px;
+        border-bottom: solid 1px #DDD;
+    }
+    .add-btn{
+        background: none repeat scroll 0 0 #ececec;
+        height: 60px;
+        margin: 10px 15px;
+        overflow: hidden;
+    }
+    .btn-wrap{
+        width:100%;
+        margin: 0;
+    }
+    .btn-wrap>li{
+        float: left;
+        width:50%;
+        height:50px;
+
+    }
+    .btn-wrap>li>a{
+        display: block;
+        height: 50px;
+        line-height: 30px;
+        vertical-align:center;
+        text-align: center;
+        color: #999;
+
+    }
+    .explain{
+        float: left;
+    }
+    .mobile-edit-area{
+        float:left;
+        width:100%;
+        margin: 20px 0 0  0;
+    }
+    .mea-text,.mea-img{
+        width: 320px;
+        border: solid 1px #FFF;
+        position: relative;
+        z-index: 1;
+    }
+    .mea-text .textarea {
+        width: 310px;
+        height: 80px;
+        resize: none;
+    }
+    .mea-text .text-close ,.mea-img .image-close,.control-panel .tools .mp_del{
+        color: #fff;
+        background: #c02b19;
+        text-align: center;
+        width: 16px;
+        height: 16px;
+        line-height: 14px;
+        position: absolute;
+        z-index: 1;
+        top: -10px;
+        right: -10px;
+        border-radius: 7px;
+    }
+    .mea-text .button{
+        margin:10px 100px;
+    }
+
+    .upload_img {
+        margin:0;
+        padding:10px;
+        overflow:hidden;
+        border-radius:3px;
+        min-height:350px;
+        background:#f6f6f6;
+        border:1px solid #e4e4e4;
+    }
+    .upload_img li {
+        border:1px solid #e1e1e1;
+        padding:10px;
+        width:170px;
+        margin:10px;
+        float:left;
+        line-height:45px;
+        height:200px;
+        text-align:center;
+        border-radius:3px;
+    }
+
+    #goods_img_add {
+        wdith:170px;
+        float:left;
+        text-align:center;
+        line-height:45px;
+        padding:50px;
+        border:0;
+        cursor:pointer;
+    }
+    .goods_pic {cursor:pointer;}
+ .modal-footer{
+     position: fixed;
+     width: calc(80% - 30px);
+     bottom: 2%;
+     display: block;
+ }
+ /*规格行隐藏*/
+ .tr-hide{
+     display: none;
+ }
+ .status-select{
+     display: inline-block;
+     width: 200px;
+ }
+ .status-select .status-sel{
+     display: inline-block;
+     width: 60px;
+     height:24px;
+     line-height: 24px;
+     background: #ccc;
+     color:#fff;
+     text-align: center;
+     border-radius: 10px;
+     border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+     cursor: pointer;
+     text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+ }
+ .status-sel.active{
+     background: #3daae9;
+ }
+</style>
+<link href="__PUBLIC__/simpleboot/css/simplebootadmin.css" rel="stylesheet" />
+<script src="__PUBLIC__/js/ueditor/ueditor.config.js"></script>
+<script src="__PUBLIC__/js/ueditor/ueditor.all.min.js"></script>
+<script src="__PUBLIC__/js/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+<body class=" theme-blue">
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('BGoodsCommon/index')}">{:L('BUSINESS_BGOODSCOMMON_INDEX')}</a></li>
+        <li class="active"><a href="{:U('BGoodsCommon/edit')}">{:L('BUSINESS_BGOODSCOMMON_detail')}</a></li>
+        <button type="button" onclick="history.go( -1 )" class="btn btn-primary " style="float:right">返回</button>
+    </ul>
+    <input type="hidden" id="meterage_sml" value="{$meterage.meterage_sml}">
+    <input type="hidden" id="meterage_ans" value="{$meterage.meterage_ans}">
+    <div class="main-content">
+        <div class="table-info">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <td width="8%">商品分类</td>
+                    <td width="42%">
+                        {$goods_class_name}
+                    </td>
+                    <td width="8%">商品编码</td>
+                    <td width="42%">{$goods_detail.goods_code}</td>
+                </tr>
+                <tr>
+                    <td width="8%">商品名称</td>
+                    <td width="42%">{$goods_detail.goods_name}</td>
+                    <td width="8%">销售方式</td>
+                    <td width="25%">
+                        <if condition="$goods_detail['sell_type'] eq 1">
+                        <span>&nbsp;&nbsp;零售&nbsp;&nbsp;</span>
+                        </if>
+                        <if condition="$goods_detail['sell_type'] eq 2">
+                        <span>&nbsp;&nbsp;批发  </span>
+                        </if>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="8%">标签名</td>
+                    <td width="42%">{$goods_detail.tag_name}</td>
+                    <td width="8%">添加图片</td>
+                    <td width="42%" colspan="3">
+                        <span id="goods_img_show">
+                        <volist name="goods_img" id="vo">
+                            <a href="javascript:parent.image_preview_dialog('{$vo.pic}');">
+                                <img  width="40" src="{$vo.pic}">
+                            </a>
+                        </volist>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="8%">商品寓意</td>
+                    <td width="92%" colspan="3"  id="spec-with">{$goods_detail.moral}</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="table-produce">
+            <div id="gold-type-html" style="display:none">
+                <select name="gold_type" style="">
+                    <option value="0">选择贵金属</option>
+                    <volist name="cate_list" id="v" style="width: 60px;">
+                        <option value="{$v.id}">{$v.name}</option>
+                    </volist >
+                </select>
+            </div>
+            <div id="bank-gold-type-html" style="display:none">
+                <select name="bank_gold_type">
+					<option value="0">选择金价</option>
+                    <volist name="bank_gold_type_list" id="v">
+                        <option value="{$v.bgt_id}">{$v.name}</option>
+                    </volist >
+                </select>
+            </div>
+            <table class="table table-bordered">
+                <tbody>
+                <tr class="tr-spec-set">
+                    <td width="100%" class="td-spec-set" style="white-space: normal;" colspan="2">规格配置
+					<span style="color: red">（双击一行查看规格)</span>
+                        <div class="status-select">
+                            <span class="status-sel active" value="1">启用</span>
+                            <span class="status-sel" value="0">停用</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="100%" colspan="2">
+						<div class="spec-table-info">
+							<table class="table table-bordered spec-set">
+								<thead id="spec-detail-thead">
+								<tr>
+									<th class="img">图片</th>
+									<th class="spec">&nbsp;规格&nbsp;</th>
+									<!--<th class="old_spec">规格(旧)</th>-->
+									<th class="spec_code">规格编码</th>
+                                    <if condition="$goods_detail['sell_type'] eq 1">
+                                        <th class="weight">
+                                            <div class="batch">
+                                                <div class="batch-set">
+                                                    <h6>克重</h6>
+                                                    <div class="bat-cont">
+                                                        <input type="text" autocomplete="off" name="weight" class="bat-input"/>
+                                                        <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                    </div>
+                                                    <a href="javascript:void(0)" class="bat-close">x</a>
+                                                </div>
+                                            </div>
+                                            克重
+                                        </th>
+                                    <else/>
+                                        <th class="goods_unit">
+                                            <div class="batch">
+                                                <div class="batch-set">
+                                                    <h6>计量单位</h6>
+                                                    <div class="bat-cont">
+                                                        <input type="text" autocomplete="off" name="goods_unit" class="bat-input"/>
+                                                        <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                    </div>
+                                                    <a href="javascript:void(0)" class="bat-close">x</a>
+                                                </div>
+                                            </div>
+                                            计量单位
+                                        </th>
+                                    </if>
+									<th class="gold_type">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>贵金属种类</h6>
+												<div class="bat-cont">
+													<select name="gold_type" class="bat-select">
+                                                        <option value="0">选择贵金属</option>
+														<volist name="cate_list" id="v" style="width: 60px;">
+															<option value="{$v.id}">{$v.name}</option>
+														</volist >
+													</select>
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										贵金属种类
+									</th>
+									<th class="price_mode">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>采购计价方式</h6>
+												<div class="bat-cont">
+													<select name="price_mode" class="bat-select">
+														<option value="1">计重</option>
+														<option value="0">计件</option>
+													</select>
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										采购计价方式
+									</th>
+                                    <if condition="$goods_detail['sell_type'] eq 1">
+                                        <th class="buy_fee">
+                                            <div class="batch">
+                                                <div class="batch-set">
+                                                    <h6>采购工费</h6>
+                                                    <div class="bat-cont">
+                                                        <input type="text" autocomplete="off" name="buy_fee" class="bat-input"/>
+                                                        <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                    </div>
+                                                    <a href="javascript:void(0)" class="bat-close">x</a>
+                                                </div>
+                                            </div>
+                                            采购工费
+                                        </th>
+                                    </if>
+									<th class="procure_price">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>采购参考价</h6>
+												<div class="bat-cont">
+													<input type="text" autocomplete="off" name="procure_price" class="bat-input"/>
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										采购参考价
+									</th>
+									<th class="sell_pricemode">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>销售计价方式</h6>
+												<div class="bat-cont">
+													<select name="sell_pricemode" class="bat-select">
+														<option value="1">计重</option>
+														<option value="0">计件</option>
+													</select>
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										销售计价方式
+									</th>
+									<th class="sell_fee">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>销售工费</h6>
+												<div class="bat-cont">
+													<input type="text" autocomplete="off" name="sell_fee" class="bat-input"/>
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										销售工费
+									</th>
+									<th class="sell_feemode">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>销售工费方式</h6>
+												<div class="bat-cont">
+													<select name="sell_feemode" class="bat-select">
+														<option value="1">克工费销售</option>
+														<option value="0">件工费销售</option>
+													</select>
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										销售工费方式
+									</th>
+                                    <if condition="$goods_detail['sell_type'] eq 1">
+                                        <th class="sell_price">
+                                            <div class="batch">
+                                                <div class="batch-set">
+                                                    <h6>销售价</h6>
+                                                    <div class="bat-cont">
+                                                        <input type="text" autocomplete="off" name="sell_price" class="bat-input"/>
+                                                        <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                    </div>
+                                                    <a href="javascript:void(0)" class="bat-close">x</a>
+                                                </div>
+                                            </div>
+                                            销售价
+                                        </th>
+                                    </if>
+									<th class="market_price">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>市场价</h6>
+												<div class="bat-cont">
+													<input type="text" autocomplete="off" name="market_price" class="bat-input"/>
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										市场价
+									</th>
+                                    <if condition="$goods_detail['sell_type'] eq 1">
+                                        <th class="bank_gold_type">
+                                            <div class="batch">
+                                                <div class="batch-set">
+                                                    <h6>金价类型</h6>
+                                                    <div class="bat-cont">
+                                                        <select name="bank_gold_type" class="bat-select">
+                                                            <option value="0">选择金价</option>
+                                                            <volist name="bank_gold_type_list" id="v">
+                                                                <option value="{$v.bgt_id}">{$v.name}</option>
+                                                            </volist>
+                                                        </select>
+                                                        <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                    </div>
+                                                    <a href="javascript:void(0)" class="bat-close">x</a>
+                                                </div>
+                                            </div>
+                                            金价类型
+                                        </th>
+                                        <th class="photo_switch">
+                                            <div class="batch">
+                                                <div class="batch-set">
+                                                    <h6>图片展示方式</h6>
+                                                    <div class="bat-cont">
+                                                        <select name="photo_switch" class="bat-select">
+                                                            <option value="1">规格图</option>
+                                                            <option value="0">货品图</option>
+                                                        </select>
+                                                        <a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+                                                    </div>
+                                                    <a href="javascript:void(0)" class="bat-close">x</a>
+                                                </div>
+                                            </div>
+                                            图片展示方式
+                                        </th>
+                                    </if>
+									<th class="market_price">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>含金量</h6>
+												<div class="bat-cont">
+													<input type="text" autocomplete="off" name="purity" class="bat-input"/>‰
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										含金量
+									</th>
+									<th class="memo">
+										<div class="batch">
+											<div class="batch-set">
+												<h6>备注</h6>
+												<div class="bat-cont">
+													<input type="text" autocomplete="off" name="memo" class="bat-input"/>
+													<a href="javascript:void(0)" class="btn btn-primary btn-small bat-set">设置</a>
+												</div>
+												<a href="javascript:void(0)" class="bat-close">x</a>
+											</div>
+										</div>
+										备注
+									</th>
+									<th class="status">
+										是否启用
+									</th>
+								</tr>
+								</thead>
+								<tbody id="spec-detail-tbody">
+								<volist name="goods_detail.goods_list" id="v">
+									<tr goods_type="edit" <if condition="$v['status'] eq 0">class="tr-hide"</if>>
+                                        <input type="hidden" class="goods_id" value="{$v.id}">
+										<td class="goods_pic" is_hot="{$v.is_hot}" <if condition="$v.is_hot eq 1"> class="is_hot"</if>>
+										<if condition="$v.pic eq null">
+                                            <a href="javascript:parent.image_preview_dialog('__TMPL__Public/assets/images/default-thumbnail.png');">
+                                                <img src="__TMPL__Public/assets/images/default-thumbnail.png"  width="60px" />
+                                            </a>
+											<else/>
+                                            <a href="javascript:parent.image_preview_dialog('{$v.pic}');">
+                                                <img width="60px" src="{$v.pic}">
+                                            </a>
+
+										</if>
+										</td>
+										<td class="goods_spec">
+											{$v.goods_spec}
+										</td>
+										<td class="spec_code ">
+                                            {$v.goods_code}
+										</td>
+                                        <if condition="$goods_detail['sell_type'] eq 1">
+                                            <td class="weight text-right">
+                                                {$v.weight}
+                                            </td>
+                                        <else/>
+                                            <td class="goods_unit">
+                                                {$v.goods_unit}
+                                            </td>
+                                        </if>
+										<td class="gold_type">
+												<volist name="cate_list" id="vo" style="width: 60px;">
+													<if condition="$v['gold_type'] eq $vo['id']">{$vo.name}</if>
+												</volist >
+										</td>
+										<td class="price_mode">
+												<if condition="$v.price_mode eq 1">计重<else/>计件</if>
+										</td>
+                                        <if condition="$goods_detail['sell_type'] eq 1">
+                                            <td class="buy_fee text-right">
+                                                {$v.buy_fee}
+                                            </td>
+                                        </if>
+										<td class="procure_price text-right">
+											{$v.procure_price}
+										</td>
+
+										<td class="sell_pricemode">
+                                            <if condition="$v.sell_pricemode eq 1">计重<else/>计件</if>
+										</td>
+										<td class="sell_fee text-right">
+											{$v.sell_fee}
+										</td>
+										<td class="sell_feemode text-center">
+											<if condition="$v.sell_feemode eq 1">克工费销售<else/>件工费销售</if>
+										</td>
+                                        <if condition="$goods_detail['sell_type'] eq 1">
+                                            <td class="sell_price text-right">
+                                                {$v.sell_price}
+                                            </td>
+                                        </if>
+										<td class="market_price text-right">
+											{$v.market_price}
+										</td>
+                                        <if condition="$goods_detail['sell_type'] eq 1">
+                                            <td class="bank_gold_type">
+                                                    <volist name="bank_gold_type_list" id="vo">
+                                                        <if condition="$vo['b_metal_type_id'] eq $v['gold_type']">
+                                                             <if condition="$v['bank_gold_type'] eq $vo['bgt_id']">{$vo.name}</if>
+                                                        </if>
+                                                    </volist >
+                                            </td>
+                                            <td class="photo_switch">
+                                                   <if condition="$v.photo_switch eq 1">规格图<else/>货品图</if>
+                                            </td>
+                                        </if>
+										<td class="purity">
+											{$v.purity}‰
+										</td>
+										<td class="memo">
+											{$v.memo}
+										</td>
+										<td class="text-center" data-status="{$v.status}">
+                                            <if condition="$v.status eq 1">启用<else/>停用</if>
+										</td>
+									</tr>
+								</volist>
+								<tr class="spec-tr">
+								</tr>
+								</tbody>
+							</table>
+						</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="8%">产品介绍</td>
+                    <td width="92%">
+                        <div class="content-panel" style="display: none">
+                            {$goods_detail.description}
+                        </div>
+                        <div id="panel-mobile" class="panel-mobile">
+                            <div class="mobile-editor">
+                                <div class="pannel">
+                                    <div class="size-tip"><span class="img_count_tip">图片总数不得超过<b>20</b>张</span><i>|</i><span class="txt_count_tip">文字不得超过<b>5000</b>字</span></div>
+                                    <div class="control-panel">
+                                        {$goods_detail.description}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mobile-edit-area">
+                                <div  class="mea-img" style="display: none;">
+                                    <button class="btn btn-primary btn-small image-upload" >上传图片</button>
+                                    <a class="image-close"  href="javascript:void(0);">X</a>
+                                </div>
+                                <div class="mea-text" style="display: none;">
+                                    <textarea class="textarea valid meat_content" ></textarea>
+                                    <div class="button"><a class="btn btn-primary btn-small meat_submit" href="javascript:void(0);">确认</a><a class="btn btn-primary btn-small meat_cancel"  href="javascript:void(0);">取消</a></div>
+                                    <a class="text-close"  href="javascript:void(0);">X</a>
+                                </div>
+                            </div>
+                            <input name="m_body" autocomplete="off" type="hidden" value=''>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+<!--tr_edit 编辑规格内容-->
+    <div class="modal hide fade auto-adapt" id="light" style="top:2%;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 class="lightbox_content">对话框标题</h3>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered" id="spec-detail-edit_tbody">
+
+            </table>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">关闭</a>
+        </div>
+    </div>
+    <include file="./public/common/footer.html" />
+</div>
+</div>
+<script src="__PUBLIC__/js/h5pic/zm-canvas-crop.js"></script>
+<script src="__PUBLIC__/js/cookie.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    //价格保留两位数
+    function price_toFixed() {
+        $("#spec-detail-tbody tr").each(function(i){
+            if(i!=$("#spec-detail-tbody tr").length-1) {
+                var buy_fee = parseFloat($(this).find("input[name='buy_fee']").val()).toFixed(2);
+                var weight = parseFloat($(this).find("input[name='weight']").val()).toFixed(3);
+                var sell_fee = parseFloat($(this).find("input[name='sell_fee']").val()).toFixed(2);
+                // var pick_fee = parseFloat($(this).find("input[name='pick_fee']").val()).toFixed(2);
+                var market_price = parseFloat($(this).find("input[name='market_price']").val()).toFixed(2);
+                var sell_price = parseFloat($(this).find("input[name='sell_price']").val()).toFixed(2);
+                // var pick_price = parseFloat($(this).find("input[name='pick_price']").val()).toFixed(2);
+                var procure_price = parseFloat($(this).find("input[name='procure_price']").val()).toFixed(2);
+                $(this).find("input[name='buy_fee']").val(buy_fee);
+                $(this).find("input[name='weight']").val(weight);
+                $(this).find("input[name='sell_fee']").val(sell_fee);
+                // $(this).find("input[name='pick_fee']").val(pick_fee);
+                $(this).find("input[name='market_price']").val(market_price);
+                $(this).find("input[name='sell_price']").val(sell_price);
+                // $(this).find("input[name='pick_price']").val(pick_price);
+                $(this).find("input[name='procure_price']").val(procure_price);
+            }
+        });
+    }
+    price_toFixed();
+</script>
+<script>
+	te_edit();
+    function te_edit(){
+        var light=$('#light');
+        $("#spec-detail-tbody").find("tr").each(function(){
+            if( $(this).hasClass("spec-tr")){
+                return false;
+            }
+            $(this).unbind("dblclick").dblclick(function(){
+                $('#light').modal();
+                var nth=$(this).index()+1;
+                $(".lightbox_save").attr("nth",nth);
+                var str="正在查看第"+nth+"行：";
+                //  str+='<button id="lightbox_save" nth="'+nth+'" type="button" class="btn btn-primary lightbox_save" style="float:right">保存</button>';
+                $(".lightbox_content").html(str);
+                // document.getElementById('light').style.display='block';
+                // document.getElementById('fade').style.display='block';
+                var td_contents=$(this).find("td");
+                var html="";
+                $("#spec-detail-thead").find("th").each(function(k,v){
+                    if($(this).css('display')!='none'){
+                        html+="<tr >"
+                    }else{
+                        html+="<tr style='display: none'>"
+                    }
+                    html+="<td>"
+                    html+=$(this).html();
+                    html+="</td>"
+                    html+="<td class='"+td_contents.eq(k).attr('class')+"'>"
+
+                    if(td_contents.eq(k).find("input").length>0){
+                        td_contents.eq(k).find("input").attr('value',td_contents.eq(k).find("input").val());
+                    }
+                    if(td_contents.eq(k).find("select").length>0){
+                        td_contents.eq(k).find("option:selected").attr("selected","selected");
+                    }
+                    html+=td_contents.eq(k).html();
+                    html+="</td>";
+                    html+="</tr>";
+                });
+                light.find("table").html(html);
+                light.find("table").find(".batch").remove();
+                light.find("table").find("a").remove();
+                lightbox_content_save();
+                changeone_gold_type(2);
+            })
+        })
+
+    }
+
+    function modalBdH($this){
+        var modalH=$this.height();
+        /*  console.log(modalH);
+         var modalHdH=$this.find(".modal-header").outerHeight(true);
+         console.log(modalHdH);
+         var modalFtH=$this.find(".modal-footer").outerHeight(true);
+         console.log(modalFtH);*/
+        $this.find(".modal-body").css("max-height",modalH-150);
+
+    }
+    modalBdH($("#light"));
+    //关于切换规格配置的启用停用事件
+    $(".status-sel").click(function(){
+        var status_sel=$(this).attr("value");
+        $(".status-sel").removeClass("active");
+        $(this).addClass("active");
+        $("#spec-detail-tbody tr").removeClass("tr-hide");
+        $("#spec-detail-tbody tr").each(function(){
+            var status= $(this).find("td:last-child").attr("data-status");
+            if(status!=status_sel){
+                $(this).addClass("tr-hide");
+
+            }
+        })
+    })
+
+</script>
+</body>

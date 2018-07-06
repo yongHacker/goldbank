@@ -1,0 +1,342 @@
+<businesstpl file="header" />
+<style>
+.js-check-wrap>form, .js-check-wrap>form>table { margin-bottom: 10px;}
+.my_page { text-align: left;}
+.my_page a { position: relative; padding: 6px 12px; margin-left: -1px; line-height: 1.42857143; color: #428bca; text-decoration: none; background-color: #fff; border: 1px solid #ddd;}
+.my_page span { position: relative; padding: 6px 12px; margin-left: -1px; line-height: 1.42857143; color: #fff; text-decoration: none; background-color: #6f80a1; border: 1px solid #ddd;}
+.my_page li { margin-top: 10px; display: none;}
+.table tr th { text-align: center;}
+input { width: 163px; margin-bottom: 0px;}
+.table { text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.ta { overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta td { position: relative;}
+.ta input { width: 177px; margin-bottom: 0px; border: none; border-bottom: 0px; padding: 8px 0; box-shadow: none; border-radius: none; width: 90%; text-align: center;}
+.ta input:focus { box-shadow: none; outline: none;}
+.td_border { border: solid 1px #157ab5;}
+.select_goods { display: inline-block; background: #fff url('public/images/icon-select.gif') no-repeat scroll 55% 55%; width: 10%; height: 36px; position: absolute; top: 0; right: 0;}
+tr td img { width: 200px; height: 60px;}
+input.left { text-align: left;}
+input.right { text-align: right;}
+td.left { text-align: left;}
+td.right { text-align: right;}
+.myModal { display: block; position: absolute; width: 100%; height: 100%; left: 0; top: 0; line-height: 35px;}
+.sel { background: #f4f4f4;}
+.now_before_total, .now_after_total { display: none; color: red;}
+</style>
+<script type="text/javascript"
+ src="__PUBLIC__/lib/datepicker/js/laydate.dev.js"></script>
+</head>
+<body class=" theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BSettlement/index')}">结算列表</a></li>
+			<li class="active"><a href="#">结算单详情</a></li>
+			<span style="float: right">
+				<if condition="$info['status'] eq 0">
+					<a href="#my_Modal" url="{:U('BSettlement/cancel', array('id'=>$info['id']))}" class="modal_trigger btn btn-danger" role="button" data-toggle="modal">撤销</a>
+				</if>
+				<p class="btn js-ajax-back-btn" type="text">{:L('BACK')}</p>
+			</span>
+		</ul>
+
+		<div class="main-content">
+			<div class="ta">
+				<p>结算单信息</p>
+				<table class="table table-bordered table-hover">
+					<tr>
+						<td width="25%">状态： 
+							<if condition="$info[status] eq -1">未提交 
+								<elseif condition="$info[status] eq 0" />待审核 
+								<elseif condition="$info[status] eq 1" />审核通过 
+								<elseif condition="$info[status] eq 2" />审核不通过 
+								<elseif condition="$info[status] eq 3" />已撤销 
+								<elseif condition="$info[status] eq 4" />已结算 
+								<else />异常 
+							</if>
+						</td>
+						<td width="25%">类型：<if condition="$info['type'] neq 3">{$info['type']==2 ? '批发采购' : '零售采购'}<else />批发销售</if></td>
+						<td width="25%">结算日期：{:date('Y-m-d', $info['settle_time'])}</td>
+						<td width="25%">创建时间：{:date('Y-m-d H:i:s', $info['create_time'])}</td>
+					</tr>
+					<tr>
+						<td colspan="4">备注：{$info['memo']}</td>
+					</tr>
+				</table>
+
+				<p>供应商信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<tr>
+						<td width="33.3%">供应商：{$info['supplier_info'] ? $info['supplier_info']['company_name'] : ''}</td>
+						<td width="33.3%">
+							<span class="last_before_total g" data-value="{$info[before_weight]}">
+								上次结欠克重： {:numberformat($info[before_weight], 2, '.', ',')} g
+							</span>
+							<span class="now_before_total g" data-value="{$info[supplier_info][weight]}">
+								（实时结欠克重： {:numberformat($info[supplier_info][weight], 2, '.', ',')} g）
+							</span>
+						</td>
+						<td width="33.3%">
+							<span class="last_before_total m" data-value="{$info[before_price]}">
+								上次结欠金额： {:numberformat($info[before_price], 2, '.', ',')} 元
+							</span>
+							<span class="now_before_total m" data-value="{$info[supplier_info][price]}">
+								（实时结欠金额： {:numberformat($info[supplier_info][price], 2, '.', ',')} 元）
+							</span>
+						</td>
+					</tr>
+				</table>
+
+				<p>结算信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<tr>
+						<td width="50%">来往金额：{:numberformat($info['caccount_record']['price'], 2, '.', ',')} 元</td>
+						<td width="50%">抹零金额：{:numberformat($info['caccount_record']['extra_price'], 2, '.', ',')} 元</td>
+					</tr>
+				</table>
+
+				<p>来料信息</p>
+				<table class="table table-bordered table-hover table-striped">
+					<if condition="count($info[material_record_2][mproduct_list]) gt 0">
+					<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">金料编码</th>
+							<th class="text-center">金料名称</th>
+							<th class="text-center">克重</th>
+							<th class="text-center">折纯克重</th>
+						</tr>
+					</thead>
+					</if>
+					<tbody>
+						<volist name="info.material_record_2.mproduct_list" id="v">
+						<tr>
+							<td class="text-center">{$key+1}</td>
+							<td class="text-center">{$v.rproduct_code}</td>
+							<td class="text-left">{$v.recovery_name}</td>
+							<td class="text-right">{$v.total_weight}</td>
+							<td class="text-right">{$v.gold_weight}</td>
+						</tr>
+
+						</volist>
+						<tr>
+							<td colspan="5">总克重：{:numberformat($info['material_record_2']['weight'], 2, '.', ',')} 克</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p>去料信息</p>
+				<table class="table table-bordered table-hover table-striped">
+					<if condition="count($info[material_record][mproduct_list]) gt 0">
+					<thead>
+						<tr>
+							<th class="text-center">序</th>
+							<th class="text-center">货品编码</th>
+							<th class="text-center">商品名称</th>
+							<th class="text-center">克重</th>
+							<th class="text-center">折纯克重</th>
+						</tr>
+					</thead>
+					</if>
+					<tbody>
+						<volist name="info.material_record.mproduct_list" id="v">
+						<tr>
+							<td class="text-center">{$key+1}</td>
+							<td class="text-center">{$v.rproduct_code}</td>
+							<td class="text-left">{$v.recovery_name}</td>
+							<td class="text-right">{$v.total_weight}</td>
+							<td class="text-right">{$v.gold_weight}</td>
+						</tr>
+
+						</volist>
+						<tr>
+							<td colspan="5">总克重：{:numberformat(abs($info['material_record']['weight']), 2, '.', ',')} 克</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p>买卖料信息</p>
+				<table class="table table-bordered table-hover table-striped">
+					<tr>
+						<td>买料：<if condition="$info['material_order']['weight'] gt 0">{:numberformat($info['material_order']['weight'], 2, '.', ',')} 克<else />-</if>
+						</td>
+						<td>买料金价：<if condition="$info['material_order']['weight'] gt 0">{:numberformat($info['material_order']['mgold_price'], 2, '.', ',')} 元/克<else />-</if>
+						</td>
+						<td>总价：<if condition="$info['material_order']['weight'] gt 0">{:numberformat($info['material_order']['weight'] * $info['material_order']['mgold_price'], 2, '.', ',')} 元<else />-</if>
+						</td>
+					</tr>
+					<tr>
+						<td>卖料：<if condition="$info['material_order']['weight'] lt 0">{:numberformat((0-$info['material_order']['weight']), 2, '.', ',')} 克<else />-</if>
+						</td>
+						<td>卖料金价：<if condition="$info['material_order']['weight'] lt 0">{:numberformat($info['material_order']['mgold_price'], 2, '.', ',')} 元/克<else />-</if>
+						</td>
+						<td>总价：<if condition="$info['material_order']['weight'] lt 0">{:numberformat((0-$info['material_order']['weight']) * $info['material_order']['mgold_price'], 2, '.', ',')} 元<else />-</if>
+						</td>
+					</tr>
+				</table>
+				<if condition="in_array($info[status],array(1,2,4))">
+				<p>审核信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<td>审核备注</td>
+					<td colspan="3">{$info.check_memo}</td>
+				</table>
+				</if>
+				<businesstpl file="process" />
+
+				<if condition="$info[status] eq 4">
+				<p>付款信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<td>付款时间</td>
+					<td><if condition="$info[payment_time]"> {:date('Y-m-d H:i:s', $info['payment_time'])} </if></td>
+					<td>付款凭证</td>
+					<td>
+						<if condition="$info[payment_pic] neq ''">
+							<volist name="info.payment_pic_list" id="v">
+							<p class="click_pic">
+								<img src="{$v}">
+							</p>
+							</volist>
+						</if>
+					</td>
+				</table>
+				</if>
+				<p>结算后结欠信息</p>
+				<table class="table table-bordered  table-hover table-striped">
+					<tr>
+						<td>
+							结欠克重： {:numberformat($info[after_weight], 2, '.', ',')} g
+							<span class="now_after_total g">（实时结欠： <span></span> g）</span>
+						</td>
+						<td>
+							结欠金额： {:numberformat($info[after_price], 2, '.', ',')} 元
+							<span class="now_after_total m">（实时结欠： <span></span> 元）</span>
+							
+						</td>
+					</tr>
+				</table>
+				<businesstpl file="operate" />
+			</div>
+			<div class="form-actions text-center">
+				<if condition="$info['status'] eq 0">
+					<a href="#my_Modal" url="{:U('BSettlement/cancel', array('id'=>$info['id']))}" class="modal_trigger btn btn-danger" role="button" data-toggle="modal">撤销</a>
+				</if>
+				<p class="btn js-ajax-back-btn" type="text">{:L('BACK')}</p>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="modal small fade" id="my_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog-div">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h3 id="myModalLabel">撤销警告</h3>
+				</div>
+				<div class="modal-body">
+					<p class="error-text">
+						<i class="fa fa-warning modal-icon"></i>你确定要撤销吗?
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button data-type="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+					<button data-type="del" class="btn btn-danger" data-dismiss="modal">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="__PUBLIC__/lib/bootstrap/js/tree.js"></script>
+	<script src="__PUBLIC__/js/jquery-ui.min.js"></script>
+	<script src="__PUBLIC__/js/jquery-form.js"></script>
+	<script src="__PUBLIC__/js/cookie.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+
+	<script>
+		var now_before_weight = 0;
+		var now_after_weight = 0;
+		var now_before_price = 0;
+		var now_after_price = 0;
+
+		$(function(){
+			var status = '{$info[status]}';
+			if (status != '-1' && status != '0') {
+				return false;
+			}
+
+			// 当时上结欠
+			var last_before_weight = $('.last_before_total.g').data('value');
+			var last_before_price = $('.last_before_total.m').data('value');
+			// 当前上结欠
+			now_before_weight = $('.now_before_total.g').data('value');
+			now_before_price = $('.now_before_total.m').data('value');
+
+			if (last_before_weight != now_before_weight || last_before_price != now_before_price) {
+				// 重新结算下结欠
+				var now_before_total = {
+					weight: now_before_weight,
+					price: now_before_price
+				}
+				var now_after_total = after_total(now_before_total);
+
+				now_after_weight = empty(now_after_total.weight) ? 0 : (isNaN(now_after_total.weight) ? 0 : now_after_total.weight);
+				now_after_price = empty(now_after_total.price) ? 0 : (isNaN(now_after_total.price) ? 0 : now_after_total.price);
+
+				$('.now_after_total.g').find('span').text(parseFloat(now_after_weight).toFixed(2));
+				$('.now_after_total.m').find('span').text(parseFloat(now_after_price).toFixed(2));
+
+				$('.now_before_total').show();
+				$('.now_after_total').show();
+			}
+		});
+
+		// 计算结欠克重
+		function after_total(before_total) {
+			var weight = before_total.weight;
+			var price = before_total.price;
+			// 结算
+			var caccount_record_price = "{$info['caccount_record']['price']}";
+			caccount_record_price = parseFloat(empty(caccount_record_price) ? 0 : (isNaN(caccount_record_price) ? 0 : caccount_record_price));
+			// 抹零
+			var caccount_record_extra_price = "{$info['caccount_record']['extra_price']}";
+			caccount_record_extra_price = parseFloat(empty(caccount_record_extra_price) ? 0 : (isNaN(caccount_record_extra_price) ? 0 : caccount_record_extra_price));
+			// 来料
+			var material_record_come = "{$info['material_record_2']['weight']}";
+			material_record_come = parseFloat(empty(material_record_come) ? 0 : (isNaN(material_record_come) ? 0 : material_record_come));
+			// 去料
+			var material_record_leave = "{$info['material_record']['weight']}";
+			material_record_leave = parseFloat(empty(material_record_leave) ? 0 : (isNaN(material_record_leave) ? 0 : material_record_leave));
+			// 买卖料克重
+			var material_order_weight = "{$info['material_order']['weight']}";
+			material_order_weight = parseFloat(empty(material_order_weight) ? 0 : (isNaN(material_order_weight) ? 0 : material_order_weight));
+			// 买卖料金价
+			var material_order_mgold_price = "{$info['material_order']['mgold_price']}";
+			material_order_mgold_price = parseFloat(empty(material_order_mgold_price) ? 0 : (isNaN(material_order_mgold_price) ? 0 : material_order_mgold_price));
+			// 买卖料金额
+			var material_order_price = parseFloat(material_order_weight * material_order_mgold_price);
+			
+			weight = weight + material_record_come + material_record_leave - material_order_weight;
+			price = price - caccount_record_price - caccount_record_extra_price + material_order_price;
+
+			return {weight: weight, price: price}
+		}
+
+		$(".modal_trigger").unbind().click(function() {
+			var url = $(this).attr('url');
+			$('#my_Modal').find('button[data-type="del"]').unbind().click(function() {
+				$.post(url, null, function(data) {
+					if (data.status == 1) {
+						location.href = data.referer;
+					}
+				})
+			});
+		});
+
+		initPicReview();
+		function initPicReview() {
+			$('.click_pic').unbind('click').click(function() {
+				var img_url = $(this).find('img').attr('src');
+				image_preview_dialog(img_url);
+			})
+		}
+	</script>
+
+	<include file="./Application/Home/View/Public/footer.html" />

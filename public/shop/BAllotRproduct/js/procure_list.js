@@ -1,0 +1,31 @@
+ var procure_list=$("input[name='procure_list']").val();
+    $('.check_tr').unbind().click(function(){
+        var checkbox=$(this).find('input[type=checkbox]');
+        if(checkbox.is(':checked')){
+            checkbox.prop('checked',false);
+        }else{
+            checkbox.prop('checked',true);
+        }
+    });
+    $('.check_box').click(function(){
+        if($(this).is(':checked')){
+            $(this).prop('checked',false);
+        }else{
+            $(this).prop('checked',true);
+        }
+    });
+    $('#check_all').click(function(){
+        if(this.checked){
+            $('.check_box').prop('checked',true);
+            $('.check_box').each(function(){
+            });
+        }else{
+            $('.check_box').prop('checked',false);
+            $('.check_box').each(function(){
+            });
+        }
+    });
+    if(procure_list==''||procure_list==null||typeof(procure_list)=='undefined'){
+        $('.ta').hide();
+        $('.ts').show();
+    }

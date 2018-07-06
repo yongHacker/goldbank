@@ -1,0 +1,62 @@
+<systemtpl file="header"/>
+<script type="text/javascript" src="./public/lib/datepicker/js/laydate.dev.js"></script>
+<style>
+
+    .table tr th {
+        text-align: center;
+    }
+</style>
+</head>
+<body class=" theme-blue">
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <!--<li class="active"><a href="{:U('sells/index')}">销售列表</a></li>-->
+        <li class="active"><a href="{:U('sells/add')}">详情</a></li>
+        <button type="button" onclick="history.go( -1 )" class="btn js-ajax-back-btn" style="float:right">返回</button>
+    </ul>
+    <!--
+        <form class="well form-search" method="post" >
+              <span style="font-size:18px;">当前金价：</span><b >{$gold2[0]['price']}</b>
+                 <button href="#myModal"   role="button" data-toggle="modal" type="button"  class="btn btn-primary " style="float:right">更新金价</button>
+            </form>-->
+
+    <div class="main-content">
+        <div class="ta">
+            <div class="ta">
+                <table class="table table-bordered  table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>分类</th>
+                        <th>最新价</th>
+                        <th>开盘价</th>
+                        <th>最高价</th>
+                        <th>最低价</th>
+                        <th>浮动</th>
+                        <th>昨收价</th>
+                        <th>更新时间</th>
+
+                    </tr>
+                    </thead>
+                    <volist name="list" id="v">
+                        <tr>
+                            <td class="text-center"><input type="hidden"
+                                                           value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>
+                            </td>
+                            <td class="text-left">{$name}</td>
+                            <td class="text-right">{$v.latestprice}</td>
+                            <td class="text-right">{$v.openprice}</td>
+                            <td class="text-right">{$v.maxprice}</td>
+                            <td class="text-right">{$v.minprice}</td>
+                            <td class="text-right">{$v.rose}%</td>
+                            <td class="text-right">{$v.yesprice}</td>
+                            <td class="text-center">{$v.time|date="Y-m-d H:i:s",###}</td>
+                        </tr>
+                    </volist>
+                </table>
+
+            </div>
+            <div class="pagination">{$page}</div>
+
+            <include file="./public/common/footer.html"/>
+

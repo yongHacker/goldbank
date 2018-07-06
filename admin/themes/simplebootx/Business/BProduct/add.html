@@ -1,0 +1,129 @@
+<businesstpl file="header" />
+<style>
+	a .fa{
+		text-decoration:none !important;
+		display: inline-block !important;
+		font-size: 16px !important;
+	}
+	.fa.fa-toggle-on,
+	.fa.fa-toggle-off{
+		text-decoration:none;
+		display: inline-block;
+		font-size:24px;
+
+	}
+	.fa.fa-toggle-on{
+		color:#2ecc71 !important;
+	}
+	.fa.fa-toggle-off{
+		color:#ccc !important;
+	}
+</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('BShop/index')}">{:L('BUSINESS_BSHOP_INDEX')}</a></li>
+			<li class="active"><a href="{:U('BShop/add')}">{:L('BUSINESS_BSHOP_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BShop/add')}">
+			<fieldset>
+				<table class="table table-bordered">
+					<tbody>
+					<tr>
+						<td class="sel">门店名称</td>
+						<td width="25%"><input type="text" autocomplete="off" id="shop_name" name="shop_name" value="">*</td>
+						<td class="sel">编号</td>
+						<td width="25%"><input type="text" autocomplete="off" id="code" name="code" value="">*</td>
+					</tr>
+					<tr>
+						<td class="sel">联系电话</td>
+						<td width="25%"><input name="mobile" type="text" value="">*</td>
+						<td class="sel">是否营业</td>
+						<td width="25%">
+							<a class="open fa fa-toggle-on" href="javascript:void(0)">
+								<input type="hidden" class="val" name="enable" value="1">
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td class="sel">地址</td>
+						<td width="25%" ><textarea name="address" type="text" style="width:90%;    height: 20px;"></textarea></td>
+						<td class="sel">备注</td>
+						<td width="25%" ><textarea name="memo" type="text" style="width:90%;    height: 20px;"></textarea></td>
+					</tr>
+					<tr>
+						<td class="sel">图片</td>
+						<td width="25%" colspan="3">
+							<div style="text-align: left;">
+								<input type="hidden" name="shop_pic" id="thumb" value="">
+								<a href="javascript:upload_one_image('图片上传','#thumb');">
+									<img src="/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png" id="thumb-preview" width="135" style="cursor: hand">
+								</a>
+								<input type="button" class="btn btn-small" onclick="$('#thumb-preview').attr('src','/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png');$('#thumb').val('');return false;" value="取消图片">
+							</div>
+						</td>
+					</tr>
+					</tbody></table>
+				<!--<div class="control-group">
+					<label class="control-label">门店名称</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="shop_name">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">门店编码</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="code">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">门店电话</label>
+					<div class="controls">
+						<input type="text" autocomplete="off" name="mobile">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">门店地址:</label>
+					<div class="controls">
+						<textarea name="address" rows="5" cols="57" style="width: 500px;"></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">门店描述:</label>
+					<div class="controls">
+						<textarea name="memo" rows="5" cols="57" style="width: 500px;"></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">是否营业</label>
+					<div class="controls">
+						<label class="radio inline" for="active_true"><input type="radio" name="enable" value="1" checked="" id="active_true">是</label>
+						<label class="radio inline" for="active_false"><input type="radio" name="enable" value="0" id="active_false">否</label>
+					</div>
+				</div>-->
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/business_common.js"></script>
+</body>
+</html>
+<script>
+	$(".open").click(function (e) {
+		e.preventDefault();
+		if ($(this).hasClass("fa-toggle-off")) {
+			$(this).removeClass("fa-toggle-off");
+			$(this).addClass("fa-toggle-on");
+			$(this).parent("td").find("input.val").val("1");
+		}
+		else {
+			$(this).removeClass("fa-toggle-on");
+			$(this).addClass("fa-toggle-off");
+			$(this).parent("td").find("input.val").val("0")
+		}
+	});
+</script>
