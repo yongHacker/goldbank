@@ -143,6 +143,7 @@ td.right { text-align: right;}
 							<th class="text-center" width="40">序</th>
 							<th class="text-center">金料名称
 							<th class="text-center">金料编号</th>
+							<th class="text-center">外部金料编号</th>
 							<th class="text-center">金价</th>
 							<th class="text-center">金重</th>
 							<th class="text-center">总重</th>
@@ -283,6 +284,7 @@ td.right { text-align: right;}
 							<td class="text-center">{$key+1}</td>
 							<td class="text-center">{$v.recovery_name}</td>
 							<td class="text-center">{$v.rproduct_code}</td>
+							<td class="text-center">{$v.sub_rproduct_code}</td>
 							<td class="text-center">{$v.gold_price}</td>
 							<td class="text-center">{$v.gold_weight}</td>
 							<td class="text-center">{$v.total_weight}</td>
@@ -294,7 +296,7 @@ td.right { text-align: right;}
 						<notempty name="v['memo']">
 						<tr>
 							<td class="text-center">备注</td>
-							<td colspan="6">{$v.memo}</td>
+							<td colspan="10">{$v.memo}</td>
 						</tr>
 						</notempty>
 						</if>

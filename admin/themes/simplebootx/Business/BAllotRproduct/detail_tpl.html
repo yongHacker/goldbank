@@ -106,6 +106,7 @@
         <tr>
             <th>序</th>
             <th>金料编号</th>
+            <th>外部金料编号</th>
             <th>金料名称</th>
             <th>总重</th>
             <th>纯度</th>
@@ -119,6 +120,7 @@
             <tr>
                 <td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
                 <td class="text-center">{$v.rproduct_code}</td>
+                <td class="text-center">{$v.sub_rproduct_code}</td>
                 <td>{$v.recovery_name}</td>
                 <td class="text-right" >{$v.total_weight}</td>
                 <td class="text-right" >{$v.purity}</td>

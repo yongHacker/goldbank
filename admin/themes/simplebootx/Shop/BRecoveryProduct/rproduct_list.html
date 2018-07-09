@@ -8,7 +8,7 @@
 		</ul>
         <form class="well form-search search_row" method="post" action="{:U('BRecoveryProduct/rproduct_list')}">
             综合搜索:
-            <input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="金料名称/金料编号">
+            <input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="金料名称/金料编号/外部金料编号">
 			<label>来源:</label>
 			<select name="type" style="width: 120px;" data-live-search="true">
 				<option <if condition="$_REQUEST['type'] eq 'all'">selected="selected" </if> value="all" >金料来源
@@ -32,47 +32,4 @@
 			<input class="btn btn-primary export" url="{:U('BRecoveryProduct/rproduct_export')}" value="导出" type="button" onclick="export_excel();">
         	<a href="{:U('BRecoveryProduct/rproduct_list')}" class="btn btn-danger">清空</a>
         </form>
-		<table class="table table-hover table-bordered">
-			<thead>
-				<tr>
-					<!--<th width="50">ID</th>-->
-					<th width="50">序</th>
-					<th class="text-center">金料编号</th>
-					<th class="text-center">金料名称</th>
-					<th class="text-center">金价</th>
-					<th class="text-center">金重</th>
-					<th class="text-center">总重</th>
-					<th class="text-center">纯度(‰)</th>
-					<th class="text-center">损耗率</th>
-					<th class="text-center">成本价</th>
-					<th class="text-center">来源</th>
-					<th class="text-center">金料状态</th>
-				</tr>
-			</thead>
-			<tbody>
-				<foreach name="list" item="v">
-				<tr>
-					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
-					<td class="text-left">{$v.rproduct_code}</td>
-					<td class="text-left">{$v.recovery_name}</td>
-					<td class="text-right">{$v.gold_price}</td>
-					<td class="text-right">{$v.gold_weight}</td>
-					<td class="text-right">{$v.total_weight}</td>
-					<td class="text-right">{$v['purity']*1000}</td>
-					<td class="text-center">{$v.attrition}</td>
-					<td class="text-right">{$v.cost_price}</td>
-					<td class="text-center">
-						{$type[$v['type']]}
-					</td>
-					<td class="text-center">
-						{$status[$v['status']]}
-					</td>
-				</tr>
-				</foreach>
-			</tbody>
-		</table>
-		<div class="pagination">{$page}</div>
-	</div>
-	<script src="__PUBLIC__/js/business_common.js"></script>
-</body>
-</html>
+		<businesstpl file="BRecoveryProduct/rproduct_list_tpl" />

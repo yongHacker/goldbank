@@ -73,7 +73,7 @@ class BEmployeeController extends BusinessbaseController {
 			$condition=array("roleuser.user_id"=>$v["user_id"],'role.company_id'=>get_company_id());
 			$join=' join  '.DB_PRE.'b_role role on role.id=roleuser.role_id ';
 			$field='role.name';
-			$roles=D('BRoleUser')->alias('roleuser')->getList($condition,$field,$limit,$join);
+			$roles=D('BRoleUser')->alias('roleuser')->getList($condition,$field,'',$join);
 			$data[$k]["role_name"]=empty($roles)?'':implode(',',array_column($roles, 'name'));
 			$field="bshop.shop_name";
 			$condition=array("bshopemployee.user_id"=>$v["user_id"],"bshopemployee.employee_id"=>$v["id"]);

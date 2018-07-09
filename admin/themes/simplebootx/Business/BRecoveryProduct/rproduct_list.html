@@ -8,7 +8,7 @@
 	</ul>
 	<form class="well form-search search_row" method="post" action="{:U('rproduct_list',array('mystore'=>$_REQUEST['mystore']))}">
 		综合搜索:
-		<input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="金料名称/金料编号">
+		<input type="text" autocomplete="off" name="search_name"  value="{:I('request.search_name/s','')}" placeholder="金料名称/金料编号/外部金料编号">
 		<label>仓库:</label>
 		<select id="mystore" name="wh_id" data-live-search="true" style="width: 100px;">
 			<option value="0" checked>所有仓库</option>

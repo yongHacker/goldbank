@@ -343,25 +343,18 @@
                 <tbody>
                 <tr>
                     <td width="8%">商品分类</td>
-                    <td width="42%" >
+                    <td width="42%" colspan="3">
                         <select name="class_id" style="width:initial;">
                             {$select_categorys}
                         </select>
                         {$goods_class_name}
-                        <!--<select name="class_id" style="width: 150px;" data-live-search="true">
-                            {$select_categorys}
-                        </select>*-->
                     </td>
-                   <!-- <td width="8%">是否上架微信</td>
-                    <td width="42%"><a <if condition="$goods_detail.mobile_show eq 0">class="open fa fa-toggle-off"<else/>class="open fa fa-toggle-on"</if> href="javascript:void(0)">
-                        <input type="hidden" name="mobile_show" value="{$goods_detail.mobile_show}"/></a></td>
                 </tr>
-                <tr>-->
+                <tr>
+                    <td width="8%">所属套系</td>
+                    <td width="42%"><input class="require" type="text" name="belong_type" value="{$goods_detail.belong_type}"/><span class="alert">请输入所属套系！</span></td>
                     <td width="8%">商品编码</td>
                     <td width="42%"><input id="goods-code" type="text" name="goods_code" value="{$goods_detail.goods_code}"/></td>
-                <!--    <td width="8%">是否为标规</td>
-                    <td width="42%"><a <if condition="$goods_detail['is_standard'] eq 0">class="open fa fa-toggle-off"<else/>class="open fa fa-toggle-on"</if> href="javascript:void(0)">
-                        <input type="hidden" name="is_standard" value="{$goods_detail.is_standard}"/></a></td>-->
                 </tr>
                 <tr>
                     <td width="8%">商品名称</td>
@@ -378,11 +371,10 @@
                 </tr>
                 <tr>
                     <td width="8%">标签名</td>
-                    <td width="42%"><input class="require" type="text" name="tag_name" value="{$goods_detail.tag_name}"/><span class="alert">标签名！</span></td>
+                    <td width="42%"><input class="require" type="text" name="tag_name" value="{$goods_detail.tag_name}"/><span class="alert">请输入标签名！</span></td>
                     <td width="8%">添加图片</td>
                     <td width="42%" colspan="3">
                         <span id="goods_img_show">
-                            <input type="hidden" id="img_common_id" value="{$goods_detail['id']}">
                         <volist name="goods_img" id="vo">
                             <img src="{$vo.pic}" height="40" style="height:30px;margin:0px 5px;" />
                         </volist>
@@ -1225,6 +1217,7 @@
         var sell_type=$("input[name='sell_type']").val();;
         var goods_name=$("input[name='goods_name']").val();
         var tag_name=$("input[name='tag_name']").val();
+        var belong_type=$("input[name='belong_type']").val();
         var class_id=$("select[name='class_id'] option:selected").val();
         var class_type=$("select[name='class_id'] option:selected").attr('type');
         /* var is_standard=$("input[name='is_standard']").val(); */
@@ -1244,7 +1237,7 @@
         var description=$(".control-panel").html();//产品介绍内容
         var goods_common_id=getQueryString('goods_common_id');
         var goods_common_info={"type":type,"sell_type":sell_type,"goods_common_id":goods_common_id,"class_id":class_id,"class_type":class_type,
-            "goods_common_code":goods_code,"goods_common_name":goods_name,"moral":moral,"tag_name":tag_name,"mobile_show":mobile_show
+            "goods_common_code":goods_code,"goods_common_name":goods_name,"moral":moral,"tag_name":tag_name,"belong_type":belong_type,"mobile_show":mobile_show
             ,"description":$.trim(description)};
         var goods_list=[];
 
@@ -1450,8 +1443,6 @@
         $('#del').unbind('click');
         $('#del').click(function(){
             var id=$(this).attr('name');
-            //获取点击删除按钮之后对应的图片路径
-            var filename = $(this).attr('data-src');
             for(var i=0;i < $('.delete').length;i++){
                 if(id == $('.delete').eq(i).attr('name')){
                     $('.upload_img li').eq(i).remove();
@@ -1461,7 +1452,7 @@
             if($('.delete').length <= 0){
                 $('#goods_img_add').show();
             }
-            imgCommon('del',id,filename);
+            imgCommon('del',id);
         })
     })
 
@@ -1484,12 +1475,9 @@
             buffer[i] = text.charCodeAt(i);
         }
         var blob = getBlob([buffer], type);
-        var img_common_id = $('#img_common_id').val();
         var xhr = new XMLHttpRequest();
         var formdata = getFormData();
         formdata.append('goods_pic',blob);
-        formdata.append('type','link');
-        formdata.append('id',img_common_id);
         xhr.open('post', '{:U("BGoodsCommon/upload_goods_img")}');
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -1502,7 +1490,7 @@
                 //上传图片走这里
                 if($("#procure_add.on").length){
                     //数据库关联上传的图片
-                    // imgCommon('link',{$goods_detail['id']},imagedata.datas.file_name);
+                    imgCommon('link',{$goods_detail['id']},imagedata.datas.file_name);
 
                     $("#procure_add.on").removeClass("on");
                     var html = '<li><img src="'+imagedata.datas.file_name+'"><br /> <a href="#" class="set_default">设为主图</a> <a href="#myModal" class="delete fa fa-trash-o" role="button" data-toggle="modal" title="删除"></a></li>';

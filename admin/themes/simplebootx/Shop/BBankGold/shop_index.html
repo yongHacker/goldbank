@@ -17,6 +17,7 @@
 				<tr>
 					<!--<th width="50">ID</th>-->
 					<th width="50">序</th>
+					<th>贵金属类型</th>
 					<th>金价类型</th>
 					<th>计算公式</th>
 					<th>当前价格</th>
@@ -30,6 +31,7 @@
 				<tr>
 					<!--<td>{$vo.bgt_id}</td>-->
 					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td>{$vo.bmt_name}</td>
 					<td>{$vo.name}</td>
 					<td>{$vo.b_formula}</td>
 					<td>{$vo.price}</td>

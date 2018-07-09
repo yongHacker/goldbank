@@ -1,4 +1,24 @@
 // <!--收款方式-->
+                var rproduct_code_num=$("input[name='rproduct_code_num']").val();
+                var day=$("input[name='date']").val();
+                function update_rproduct_code(rproduct_code_tr,rproduct_type){
+                    var tbody=rproduct_type==1?$('#old_product_tbody'):$('.recovery_tbody');
+                    if(rproduct_code_tr){
+                        var rproducts_codes=[];
+                        rproduct_code_tr=rproduct_code_tr.split(',');
+                        $.each(rproduct_code_tr,function(i,item){
+                            console.log(i+"--"+item);
+                            if(item){
+                                rproduct_code_num=parseInt(rproduct_code_num)+1;
+                                var str='000'+rproduct_code_num;
+                                var rproduct_code=day+str.substr(str.length-4);
+                                tbody.find('input[name=rproduct_code]').eq(item-1).val(rproduct_code);
+                                rproducts_codes.push(rproduct_code);
+                            }
+                        });
+                        return rproducts_codes.join(',');
+                    }
+                }
                 var pid_str=[];
                 $('input[name="sell_detail_id"]').each(function(){
                     pid_str.push("ck"+$(this).attr('p_id')+"ck");
@@ -98,7 +118,7 @@
                     //默认币种汇率
                     var shop_id=$("select[name='shop_id']").val();
                     //if(shop_id==0){
-                        var default_exchange_rate=$("input[name='currency0_exchange_rate']").val();
+                        var default_exchange_rate=$("input[name='default_exchange_rate']").val();
                         if(!default_exchange_rate){
                             default_exchange_rate=100;
                         }
@@ -148,7 +168,7 @@
                         //默认币种汇率
                         var shop_id=$("select[name='shop_id']").val();
                         //if(shop_id==0){
-                            var default_exchange_rate=$("input[name='currency0_exchange_rate']").val();
+                            var default_exchange_rate=$("input[name='default_exchange_rate']").val();
                             if(!default_exchange_rate){
                                 default_exchange_rate=100;
                             }
@@ -196,7 +216,8 @@
                 add_pay_type();
                 change_exchange_rate();
                 change_pay_price();
-                // change_countprice();
+                change_countprice();
+
                 //统计所有旧金成本价 用于更改总的销售金额
                 function count_old_product_price() {
                     var price = 0;
@@ -405,7 +426,8 @@
                                     html+='<td class="is_cut"><select name="is_cut"><option value="1">是</option><option selected="selected" value="0">否</option></select></td>';
                                     html+='<td class="cut_weight text-right">0.00<input type="hidden" product_code="'+$(this).find(".goods_code").text()+'" name="cut_weight" value="0.00"></td>';
                                 }
-                                // html+='<td class="text-center">'
+                                html+='<td class="text-center">';
+                                html+='<a href="javascript:void(0);" name="{$v.id}"  class="del" role="button" data-toggle="modal">删除</i></a>';
                                 html+='</td>';
                                 html+='</tr>';
                                 $("#last").before(html);
@@ -484,7 +506,7 @@
                             var jjfs = $(this).find(".jijia").text();
                             var sell_g_price = $(this).find(".sell_g_price").val();
                             var gold_type = $(this).attr('gold_type');
-                            var sell_m_fee = $(this).find(".goods_gram_price").text();
+                            var sell_m_fee = $.trim($(this).find(".goods_gram_price").text());
                             var discount_price = $(this).find(".discount_price").find('input').val();
                             var rell_sell_price = $(this).find(".goods_unit_price").find('input').val();
                             var be_onsale_price = $(this).find(".be_onsale_price").text();
@@ -553,8 +575,8 @@
                         sell_date: $('#sell_date').val(),
                         remark: $("#remark").val(),
                         extra_price: $("#extra_price").val(),
-                        main_currency_id:$("input[name='currency0_id']").val(),
-                        main_currency_rate:$("input[name='currency0_exchange_rate']").val(),
+                        main_currency_id:$("input[name='currency_id']").val(),
+                        main_currency_rate:$("input[name='default_exchange_rate']").val(),
                         /*main_currency_id:$("select[name='shop_id']").find("option:selected").attr("currency_id"),
                         main_currency_rate:$("select[name='shop_id']").find("option:selected").attr("default_rate"),*/
                     }
@@ -688,7 +710,12 @@
                                     $('.tishi').html('添加成功');
                                     location.href = data.url;
                                 }else if(data.status == 0){
-                                    $('.tishi').html(data.msg);
+                                    if(data.exist_rproduct_code){
+                                        var rproduct_codes=update_rproduct_code(data.rproduct_code_tr,data.rproduct_type);
+                                        $('.tishi').html(data.msg+'已自动变更为'+rproduct_codes);
+                                    }else {
+                                        $('.tishi').html(data.msg);
+                                    }
                                     $(this).attr("disabled", false);
                                     return false;
                                 }
@@ -718,7 +745,7 @@
                     count();
                     td_change();
                     del_pay_type()
-                // }
+                }
             // <!--截金回购-->
                 cut_init();
                 function cut_init(){
@@ -758,11 +785,14 @@
                     });
                 }
                 function add_recovery_tr(product_code,product_id,purity,recovery_name){
+                    rproduct_code_num=parseInt(rproduct_code_num)+1;
+                    var str='000'+rproduct_code_num;
+                    var rproduct_code=day+str.substr(str.length-4);
                     var html='<tr class="recovery_type_tr" product_code="'+product_code+'">';
                     html+='<td class="text-center"></td>'
                     html+='<td class="text-center product_code">'+product_code+'<input type="hidden" name="product_id" value="'+product_id+'" placeholder="货品id"></td>'
                     html+='<td class="text-center recovery_name"><input type="text" autocomplete="off" name="recovery_name" value="'+recovery_name+'" ></td>'
-                    /*html+='<td class="text-center rproduct_code"><input type="text" autocomplete="off" name="rproduct_code" value="" ></td>'*/
+                    html+='<td class="text-center rproduct_code"><input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" value="'+rproduct_code+'" ></td>'
                     html+='<td class="text-center total_weight"><input type="number" class="no_arrow" autocomplete="off" name="total_weight" value="" placeholder="总重"></td>'
                     /*html+='<td class="text-right gold_weight"><input type="text" autocomplete="off" name="gold_weight" value="" placeholder="金重"></td>'*/
                     html+='<td class="text-center recovery_price" ><input type="number" class="no_arrow"  autocomplete="off" name="recovery_price" value="'+cut_gold_price+'" placeholder="截金金价"></td>'
@@ -770,6 +800,8 @@
                     html+='<td class="text-center purity" >'+purity+'<input type="hidden" name="purity" value="'+(purity/1000)+'" placeholder="纯度"></td>'
                     /* html+='<td class="text-center attrition" ><input type="text" autocomplete="off" name="attrition" value="" placeholder="损耗"></td>'*/
                     html+='<td class="text-center cost_price" ><input type="number" class="no_arrow"  autocomplete="off" name="cost_price" value="" placeholder="抵扣费用"></td>'
+                    html += ' <td class="text-center td_material"><input type="text" autocomplete="off" name="material" class="material" value=""></td>';//材质
+                    html += ' <td class="text-center td_color"><input type="text"  autocomplete="off" name="color" class="color" value=""></td>';//颜色
                     html+='</tr>';
                     $('.recovery_tbody').prepend(html);
                 }
@@ -832,6 +864,8 @@
                         var product_id=$(this).find('input[name="product_id"]').val();
                         var sell_cut_product_id=$(this).find('input[name="sell_cut_product_id"]').val();
                         var recovery_name=$(this).find('input[name="recovery_name"]').val();
+                        var material = $(this).find('input[name="material"]').val();
+                        var color = $(this).find('input[name="color"]').val();
                         product_list.push({
                             'recovery_name':recovery_name,
                             'recovery_product_id':sell_cut_product_id,
@@ -842,6 +876,8 @@
                             'purity': purity,
                             'cost_price': cost_price,
                             'product_id': product_id,
+                            'material' : material,
+                            'color' : color,
                         });
 
                     })
@@ -849,7 +885,8 @@
                 }
                 function recovery_list(){
 
-                // }
+                }
+
             // <!--change by alam 2018/5/8 其它费用 start-->
                 //添加一列其它费用
                 function add_sub_datas(){
@@ -858,7 +895,8 @@
                         var html='<tr>';
                         html+='<td class="text-center"></td>';
                         html+='<td class="text-center expence_id">'+expence_html+'</td>';
-                        // html+='<td class="text-center sub_price"><input type="number" autocomplete="off" class="sub_cost" step="0.01" value="" placeholder="类目金额" style="width:220px;"></td>';
+                        html+='<td class="text-center sub_price"><input type="number" autocomplete="off" class="sub_cost" step="0.01" value="" placeholder="类目金额" style="width:220px;"></td>';
+                        html+='<td class="text-center" id="sub_add" role="button" style="cursor:pointer;"><a href="javascript:void(0);">+</a></td>';
                         html+='</tr>';
                         $("#sub_add").addClass('sub_del');
                         $("#sub_add").find('a').html('删除');
@@ -868,7 +906,7 @@
                         count();
                         add_sub_datas();
                         del_sub_datas();
-                    })
+                    });
                 }
                 //删除其他费用记录
                 function del_sub_datas() {
@@ -894,14 +932,15 @@
                     });
                 }
                 add_sub_datas();
-                // del_sub_datas();
-            <!--change by alam 2018/5/8 其它费用 end-->
+                del_sub_datas();
+            // <!--change by alam 2018/5/8 其它费用 end-->
             // <!--改变门店则改变客户列表-->
                 var client_list_src=$("#goods_index2").attr("src");
                 $('#shop').change(function(){
                     var src=client_list_src+"&shop_id="+$("#shop").val();
                     $("#goods_index2").attr("src",src);
-                // })
+                })
+
                 //门店更改，更改货品列表信息
                 var srcfirst=$("#goods_index").attr("src");//更改货品列表信息
                 // var client_list_src=$("#goods_index2").attr("src");//更改客户列表信息
@@ -930,7 +969,7 @@
                         count_unit="元";
                     }
                     $(".count_unit").text(count_unit);*/
-                // })
+                })
             // <!-- 会员操作弹窗联动js -->
                 function loadFrame(obj){
                     var url = obj.contentWindow.location.href;  
@@ -939,7 +978,7 @@
                     }else if(url.indexOf(API_URL+"&m=BShop&a=add_client")!=-1){
                         $('#clientModalLabel').text('添加会员');
                     }
-                // }  
+                }  
             // <!--以旧换新-->
                 //销售类型切换
                 $('input[name="sell_type"]').unbind('change').change(function(){
@@ -953,11 +992,14 @@
                 $("#add_old_product").unbind("click").click(function() {
                     var gold_price = $("input[name='gold_price']").val();
                     var recovery_price = $("input[name='recovery_price']").val();
+                    rproduct_code_num=parseInt(rproduct_code_num)+1;
+                    var str='000'+rproduct_code_num;
+                    var rproduct_code=day+str.substr(str.length-4);
                     var html = '';
                     html += '<tr class="old_product_tr" id="old_product_tr">';
                     html += '<td class="text-center"></td>';//序
                     html += ' <td class="text-center td_recovery_name"><input type="text" autocomplete="off" name="recovery_name" class="recovery_name" value=""></td>';
-                    /*html += ' <td class="text-center td_rproduct_code"><input type="text" autocomplete="off" name="rproduct_code" class="rproduct_code" value=""></td>';*/
+                    html += ' <td class="text-center td_rproduct_code"><input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" class="rproduct_code" value="'+rproduct_code+'"></td>';
                     html += ' <td class="text-center td_total_weight"><input type="number" step="0.001" autocomplete="off" name="total_weight" class="total_weight input_init no_arrow" value="0.00"></td>';//总重
                     html += ' <td class="text-center td_purity"><input type="number" step="0.001" autocomplete="off" name="purity" class="purity no_arrow" placeholder="999.9"></td>';//纯度
                     html += ' <td class="text-center td_gold_weight"><input type="number" step="0.001"autocomplete="off" name="gold_weight" class="gold_weight input_init no_arrow" value="0.00"></td>';//金重
@@ -966,7 +1008,10 @@
                     html += ' <td class="text-center td_service_fee"><input type="number" step="0.01" autocomplete="off" name="service_fee" class="service_fee input_init no_arrow" value=""></td>';//服务克工费
                     //html += ' <td class="text-center td_attrition"><input type="number" step="0.001" autocomplete="off" name="attrition" class="attrition input_init no_arrow" value="0.00"></td>';//损耗率
                     html += ' <td class="text-center td_cost_price"><input type="number" step="0.01" autocomplete="off" name="cost_price" class="cost_price input_init no_arrow" value="0.00"></td>';//成本价
-                    // html += '<td class="text-center">'
+                    html += ' <td class="text-center td_material"><input type="text" step="0.01" autocomplete="off" name="material" class="material" value=""></td>';//材质
+                    html += ' <td class="text-center td_color"><input type="text" step="0.01" autocomplete="off" name="color" class="color" value=""></td>';//颜色
+                    html += '<td class="text-center">'
+                    html += '<a href="javascript:void(0);"   class="old_product_del" >删除</i></a>';
                     html += '</td>';
                     html += '</tr>';
                     $("#old_product_last").before(html);
@@ -1066,6 +1111,8 @@
                         var cost_price = $(this).find('input[name="cost_price"]').val();
                         var type = $(this).find('select[name="type"]').val();
                         var old_product_id = $(this).find('input[name="old_product_id"]').val();
+                        var material = $(this).find('input[name="material"]').val();
+                        var color = $(this).find('input[name="color"]').val();
                         /*change by alam 2018/5/15 start*/
                         if (purity > 1000) {
                             is_true = false;
@@ -1102,7 +1149,9 @@
                             'purity' : purity,
                             'cost_price' : cost_price,
                             'type' : type,
-                            'recovery_product_id' : old_product_id
+                            'recovery_product_id' : old_product_id,
+                            'material' : material,
+                            'color' : color
                         });
                         total_gold_weight=total_gold_weight+parseFloat(gold_weight);
                     })
@@ -1116,4 +1165,3 @@
                     }
                     return post_data;
                 }
-// 

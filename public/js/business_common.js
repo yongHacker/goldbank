@@ -630,7 +630,6 @@ function upload_one(dialog_title,input_selector,filetype,extra_params,app){
 }
 
 function upload_one_image(dialog_title,input_selector,extra_params,app){
-    debugger
     open_upload_dialog(dialog_title,function(dialog,files){
         $(input_selector).val(files[0].filepath);
         $(input_selector+'-preview').attr('src',files[0].preview_url);

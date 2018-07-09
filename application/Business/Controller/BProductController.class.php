@@ -73,7 +73,7 @@ class BProductController extends BusinessbaseController {
 		$join="left join ".DB_PRE."b_warehouse bwarehouse on bwarehouse.id=bproduct.warehouse_id";
 		$join.=$this->bproduct_model->get_product_join_str();
 		//$join.=" left join ".DB_PRE."b_goods_class b_goods_class on b_goods_class.id=g_common.class_id";
-		$field='bproduct.*,bwarehouse.wh_name,g_common.class_id,bgoods.goods_common_id';
+		$field='bproduct.*,bwarehouse.wh_name,g_common.class_id,g_common.belong_type,bgoods.goods_common_id';
 		$field.=$this->bproduct_model->get_product_field_str();
 		$count=$this->bproduct_model->alias("bproduct")->countList($condition,$field,$join,$order='bproduct.id desc');
 		$page = $this->page($count, $this->pagenum);
@@ -174,7 +174,7 @@ class BProductController extends BusinessbaseController {
 			$field.=$this->bproduct_model->get_product_field_str();
 			$join.=" left join ".DB_PRE."b_bank_gold_type b_g_type on b_g_type.bgt_id=g_detail.bank_gold_type";
 			$join.=" left join ".DB_PRE."b_metal_type metaltype on metaltype.id=g_detail.gold_type";
-			$field.=',g_common.class_id,metaltype.name metal_type_name,b_g_type.name bank_gold_type_name';
+			$field.=',g_common.class_id,g_common.belong_type,metaltype.name metal_type_name,b_g_type.name bank_gold_type_name';
 			$product=$this->bproduct_model->alias("bproduct")->getInfo($condition,$field,$join,$order='bproduct.id desc');
 			$product_detail=$this->bproduct_model->get_product_info($product);//货品基本信息
 			$this->assign("product_detail",$product_detail);

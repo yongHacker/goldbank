@@ -58,7 +58,7 @@ class BRecoveryProductController extends ShopbaseController {
 
         $search_name = trim(I('search_name/s'));
         if(!empty($search_name)){
-            $where['rproduct.recovery_name|rproduct.rproduct_code'] = array('like', '%' . $search_name . '%');
+            $where['rproduct.recovery_name|rproduct.rproduct_code|rproduct.sub_rproduct_code'] = array('like', '%' . $search_name . '%');
         }
         // 状态
         $type = I("request.type");

@@ -11,6 +11,8 @@
     <input type="hidden" name="cut_gold_price" value="{$price['cut_gold_price']}">
     <input type="hidden" name="gold_price" value="{$price['gold_price']}">
     <input type="hidden" name="recovery_price" value="{$price['recovery_price']}">
+    <input type="hidden" name="rproduct_code_num" value=" {:get_rproduct_code_num()}">
+    <input type="hidden" name="date" value=" {:date('ymd')}">
     
     <table class="table table-bordered" id="order_base">
         <tr>
@@ -362,7 +364,7 @@
                             <b id="clientModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">选择会员</b>
                         </div>
                         <div class="modal-body" style="max-height: 500px;padding: 0px;">
-                            <iframe  frameborder="0" class="appiframe" src="{:U('BSell/client_list')}" id="goods_index2" name="goods_index2" onload="loadFrame(this)">
+                            <iframe  frameborder="0" class="appiframe" src="{:U('BSell/client_list')}" id="goods_index2" name="goods_index2" onload='loadFrame(document.getElementById("goods_index2"))'>
 
                             </iframe>
                         </div>
@@ -378,4 +380,4 @@
             <script src="__PUBLIC__/js/common.js"></script>
             <script src="__PUBLIC__/js/jquery-ui.min.js"></script>
             <script src="__PUBLIC__/js/shop_common.js"></script>
-           <script src="__PUBLIC__/shop/BSell/js/add.js"></script>
+            <script src="__PUBLIC__/shop/BSell/js/add.js"></script>

@@ -77,7 +77,7 @@ class BAllotRproductController extends ShopbaseController {
         }
         $join="left join ".DB_PRE."b_recovery_product rproduct on rproduct.id=ballotdetail.p_id";
         $field="ballotdetail.*,rproduct.rproduct_code,rproduct.recovery_name,rproduct.total_weight,rproduct.purity
-        ,rproduct.gold_weight,rproduct.recovery_price,rproduct.cost_price";
+        ,rproduct.gold_weight,rproduct.recovery_price,rproduct.cost_price,rproduct.sub_rproduct_code";
         $count=$this->ballotdetail_model->alias("ballotdetail")->countList($condition,$field,$join,$order='ballotdetail.id desc');
         $page = $this->page($count, 500);
         $limit=$page->firstRow.",".$page->listRows;

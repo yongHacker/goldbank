@@ -113,6 +113,7 @@
 				<tr>
 					<th>序</th>
 					<th style="width:200px;">金料编号</th>
+					<th>外部金料编号</th>
 					<th>金料名称</th>
                     <th>总重</th>
                     <th>纯度</th>
@@ -127,6 +128,7 @@
 					<tr old_data="old_data">
 						<td class="text-center"></td>
 						<td class="text-center" >{$v.rproduct_code}</td>
+						<td class="text-center" >{$v.sub_rproduct_code}</td>
 						<td>{$v.recovery_name}</td>
                         <td class="text-right" >{$v.total_weight}</td>
                         <td class="text-right" >{$v.purity}</td>
@@ -140,6 +142,7 @@
 					</tr>
 				</volist>
 				<tr id="last">
+					<td class="text-center"></td>
 					<td class="text-center"></td>
 					<td class="text-center"></td>
 					<td></td>
@@ -438,6 +441,7 @@
                     html+="<tr>";
                     html+='<td class="text-center"></td>';
                     html += '<td class="text-center product_code" >' + $(this).find(".product_code").text() + '</td>';
+                    html += '<td class="text-center sub_rproduct_code" >' + $(this).find(".sub_rproduct_code").text() + '</td>';
                     html += ' <td style="padding-left:10px;">' + $(this).find(".goodsname").text() + '</td>';
                     html += '<td class="text-right" >' + $.trim($(this).find(".total_weight").text()) + '</td>';
                     html += ' <td  class="text-right">' + $.trim($(this).find(".purity").text()) + '</td>';

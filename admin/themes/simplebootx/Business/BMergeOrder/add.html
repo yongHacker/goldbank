@@ -64,6 +64,7 @@ input[type="number"] { text-align: right;}
 					<tr>
 						<th style="width:50px;">序</th>
 						<th style="width:200px;">金料编号</th>
+						<th >外部金料编号</th>
 						<th style="width: 160px;">金料名称</th>
                         <th>总重</th>
                         <th>纯度(‰)</th>
@@ -75,6 +76,7 @@ input[type="number"] { text-align: right;}
 					</thead>
 					<tbody id="tbody">
 					<tr id="last">
+						<td class="text-center"></td>
 						<td class="text-center"></td>
 						<td class="text-center"></td>
                         <td class="text-center"></td>
@@ -100,6 +102,7 @@ input[type="number"] { text-align: right;}
                     <tr>
                         <th style="width:50px;">序</th>
                         <th style="width: 200px;">金料编号</th>
+                        <th >外部金料编号</th>
                         <th style="width: 160px;">金料名称</th>
                         <th style="width: 160px;">总重</th>
                         <th>纯度(‰)</th>
@@ -114,6 +117,7 @@ input[type="number"] { text-align: right;}
                     </thead>
                     <tbody id="recovery_tbody">
                     <tr id="add_product_last">
+                        <td class="text-center"></td>
                         <td class="text-center"></td>
                         <td class="text-center"></td>
                         <td class="text-center"></td>
@@ -333,6 +337,7 @@ input[type="number"] { text-align: right;}
 	                    html+="<tr>";
 	                    html+='<td class="text-center"></td>';
                         html += '<td class="text-left" >' + $.trim($(this).find(".product_code").text()) + '</td>';
+                        html += '<td class="text-left" >' + $.trim($(this).find(".sub_product_code").text()) + '</td>';
                         html += ' <td style="padding-left:10px;">' + $.trim($(this).find(".goodsname").text()) + '</td>';
                         html += ' <td class="text-right total_weight">' + $.trim($(this).find(".total_weight").text()) + '</td>';
                         html += ' <td class="text-right purity">' + $.trim($(this).find(".purity").text()) + '</td>';
@@ -424,6 +429,7 @@ input[type="number"] { text-align: right;}
             html += '<tr id="zz">';
             html += '<td class="text-center"></td>';//序
             html += ' <td class="text-center td_rproduct_code"><input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" class="rproduct_code" value="'+rproduct_code+'"></td>';
+            html += ' <td class="text-center td_sub_rproduct_code"><input type="text"  autocomplete="off" name="sub_rproduct_code" class="sub_rproduct_code" value=""></td>';
             html += ' <td class="text-center td_recovery_name"><input type="text" autocomplete="off" name="recovery_name" class="recovery_name" value=""></td>';
             html += ' <td class="text-center td_total_weight"><input type="number" step="0.001" autocomplete="off" name="total_weight" class="total_weight input_init no_arrow" value="0.00"></td>';//总重
             html += ' <td class="text-center td_purity"><input type="number" step="0.001" autocomplete="off" name="purity" class="purity no_arrow" placeholder="999.9"></td>';//纯度
@@ -486,7 +492,7 @@ input[type="number"] { text-align: right;}
                 i++;
                 var recovery_name = $(this).find('input[name="recovery_name"]').val();
                 var rproduct_code = $(this).find('input[name="rproduct_code"]').val();
-
+                var sub_rproduct_code = $(this).find('input[name="sub_rproduct_code"]').val();
                 var total_weight = $(this).find('input[name="total_weight"]').val();
                 var gold_weight = $(this).find('input[name="gold_weight"]').val();
                 var recovery_price = $(this).find('input[name="recovery_price"]').val();
@@ -538,6 +544,7 @@ input[type="number"] { text-align: right;}
                 product_list.push({
                     'recovery_name' : recovery_name,
                     'rproduct_code' : rproduct_code,
+                    'sub_rproduct_code' : sub_rproduct_code,
                     'total_weight' : total_weight,
                     'gold_weight' : gold_weight,
                     'recovery_price' : recovery_price,

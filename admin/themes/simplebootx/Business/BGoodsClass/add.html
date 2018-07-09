@@ -59,7 +59,7 @@
 							<a href="javascript:upload_one_image('图片上传','#thumb');">
 								<img src="/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png" id="thumb-preview" width="135" style="cursor: hand">
 							</a>
-							<input type="button" class="btn btn-small" onclick="$('#thumb-preview').attr('src','/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png');$('#thumb').val('');return false;" value="取消图片">
+							<input type="button" class="btn btn-small" onclick="cancel_img(this)" value="取消图片">
 							<span class="tips" style="color:#ff5500;">上传图片不能超过1M</span>
 						</div>
 					</div>
@@ -81,4 +81,25 @@
 		var type = $(this).find("option:selected").attr("type");
 		$("input[name='type']").val(type);
 	})
+
+	function cancel_img(obj) {
+	    var file_name = $(obj).prev().find('img').attr('src');
+        if (file_name === '/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png') {
+            file_name = '';
+        }
+	    $.ajax({
+			type:'post',
+			url:"{:U('Asset/plhandle')}",
+			data:{
+			    'file_name':file_name,
+			    'type':'del',
+			},
+			dataType:'json',
+			success:function (res) {
+                $('#thumb-preview').attr('src','/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png');
+                $('#thumb').val('');
+                return false;
+            }
+		});
+    }
 </script>

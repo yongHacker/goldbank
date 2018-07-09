@@ -60,6 +60,7 @@
                 html += '<td class="text-center"></td>';//序
                 html += ' <td class="text-center td_recovery_name"><input type="text" autocomplete="off" name="recovery_name" class="recovery_name" value=""></td>';
                 html += ' <td class="text-center td_rproduct_code"><input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" class="rproduct_code" value="'+rproduct_code+'"></td>';
+                html += ' <td class="text-center td_sub_rproduct_code"><input type="text"  autocomplete="off" name="sub_rproduct_code" class="sub_rproduct_code" value=""></td>';
                 html += ' <td class="text-center td_total_weight"><input type="number" step="0.001" autocomplete="off" name="total_weight" class="total_weight input_init no_arrow" value="0.00"></td>';//总重
                 html += ' <td class="text-center td_purity"><input type="number" step="0.001" autocomplete="off" name="purity" class="purity no_arrow" placeholder="999.9"></td>';//纯度
                 html += ' <td class="text-center td_gold_weight"><input type="number" step="0.001" autocomplete="off" name="gold_weight" class="gold_weight input_init no_arrow" value="0.00"></td>';//金重
@@ -222,6 +223,7 @@
                 i++;
                 var recovery_name = $(this).find('input[name="recovery_name"]').val();
                 var rproduct_code = $(this).find('input[name="rproduct_code"]').val();
+                var sub_rproduct_code = $(this).find('input[name="sub_rproduct_code"]').val();
                 var total_weight = $(this).find('input[name="total_weight"]').val();
                 var gold_weight = $(this).find('input[name="gold_weight"]').val();
                 var recovery_price = $(this).find('input[name="recovery_price"]').val();
@@ -272,6 +274,7 @@
                 product_list.push({
                     'recovery_name' : recovery_name,
                     'rproduct_code' : rproduct_code,
+                    'sub_rproduct_code' : sub_rproduct_code,
                     'total_weight' : total_weight,
                     'gold_weight' : gold_weight,
                     'recovery_price' : recovery_price,

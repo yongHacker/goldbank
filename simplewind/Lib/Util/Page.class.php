@@ -315,6 +315,11 @@ class Page {
                 $pJump .= ' onkeydown="javascript:if(event.charCode==13||event.keyCode==13){if(!isNaN(' . $pJumpValue . ')){';
                 $pJump .= ($cfg ['jumpaction'] == '' ? ((strtolower(substr($cfg ['link'], 0, 11)) == 'javascript:') ? str_replace('*', $pJumpValue, substr($cfg ['link'], 12)) : " document.location.href='" . str_replace('*', '\'+' . $pJumpValue . '+\'', $cfg ['link']) . '\';') : str_replace("*", $pJumpValue, $cfg ['jumpaction']));
                 $pJump .= '}return false;}" />';
+                $pJumpValue = 'this.previousSibling.previousSibling.value';
+                $pJump .= '页<a style="cursor:pointer;float:inherit;border-width: 1px 1px 1px 1px;" ' . ($cfg ['jumpplus'] == '' ? ' onclick="javascript:' : $cfg ['jumpplus']);
+                $pJump .= ($cfg ['jumpaction'] == '' ? ((strtolower(substr($cfg ['link'], 0, 11)) == 'javascript:') ? str_replace('*', $pJumpValue, substr($cfg ['link'], 12)) : " document.location.href='" . str_replace('*', '\'+' . $pJumpValue . '+\'', $cfg ['link']) . '\';') : str_replace("*", $pJumpValue, $cfg ['jumpaction']));
+                $pJump .= '" title="点击跳转到的页数"> go </';
+                $pJump .= 'a>';
                 break;
             case 'select' :
                 $pJumpValue = "this.options[this.selectedIndex].value";

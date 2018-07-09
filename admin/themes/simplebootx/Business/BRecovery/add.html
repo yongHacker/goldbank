@@ -78,6 +78,7 @@ input[type="number"] { text-align: right;}
 							<th>序</th>
 							<th style="width: 160px;">金料名称</th>
 							<th style="width: 160px;">金料编号</th>
+							<th style="width: 160px;">外部金料编号</th>
 							<th style="width: 160px;">总重</th>
 							<th>纯度(‰)</th>
 							<th>金重</th>
@@ -93,6 +94,7 @@ input[type="number"] { text-align: right;}
 					</thead>
 					<tbody id="tbody">
 						<tr id="last">
+							<td class="text-center"></td>
 							<td class="text-center"></td>
 							<td class="text-center"></td>
 							<td class="text-center"></td>
@@ -122,27 +124,6 @@ input[type="number"] { text-align: right;}
 			</div>
 		</div>
 	</div>
-	<!--<div class="modal small fade" style="width:80%;left:400px;top:2%;bottom: 2%;display:none" id="myModal2" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <b id="myModalLabel" style="margin: 0;font-family: 'Microsoft Yahei', verdana;color: #157ab5;">货品列表</b>
-                </div>
-                <div class="modal-body" style="max-height: 500px;padding: 0px;margin:0px">
-                    <iframe  frameborder="0" class="appiframe" src="{:U('BRecovery/product_list')}" id="goods_index" name="goods_index">
-
-                    </iframe>
-                </div>
-                <div class="modal-footer">
-                    <button id="check" class="btn btn-primary pull-left" >选中</button>
-                    <button id="cancel" class="btn btn-default" data-dismiss="modal" aria-hidden="true">返回</button>
-                    <button id="add" class="btn btn-primary" data-dismiss="modal">选中并关闭</button>
-                </div>
-            </div>
-        </div>
-    </div>-->
-
 	<div class="modal small fade" style="width: 80%; left: 400px; top: 2%; bottom: 2%; display: none" id="myModal3" hidden=hidden tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -234,6 +215,7 @@ input[type="number"] { text-align: right;}
     			html += '<td class="text-center"></td>';//序
     			html += ' <td class="text-center td_recovery_name"><input type="text" autocomplete="off" name="recovery_name" class="recovery_name" value=""></td>';
     			html += ' <td class="text-center td_rproduct_code"><input  type="text" readonly="readonly" autocomplete="off" name="rproduct_code" class="rproduct_code" value="'+rproduct_code+'"></td>';
+				html += ' <td class="text-center td_sub_rproduct_code"><input  type="text"  autocomplete="off" name="sub_rproduct_code" class="sub_rproduct_code" value=""></td>';
     			html += ' <td class="text-center td_total_weight"><input type="number" step="0.001" autocomplete="off" name="total_weight" class="total_weight input_init no_arrow" value="0.00"></td>';//总重
 				html += ' <td class="text-center td_purity"><input type="number" step="0.001" autocomplete="off" name="purity" class="purity no_arrow" placeholder="999.9"></td>';//纯度
 				html += ' <td class="text-center td_gold_weight"><input type="number" step="0.001"autocomplete="off" name="gold_weight" class="gold_weight input_init no_arrow" value="0.00"></td>';//金重
@@ -404,7 +386,7 @@ input[type="number"] { text-align: right;}
 				i++;
 				var recovery_name = $(this).find('input[name="recovery_name"]').val();
 				var rproduct_code = $(this).find('input[name="rproduct_code"]').val();
-
+				var sub_rproduct_code = $(this).find('input[name="sub_rproduct_code"]').val();
 				var total_weight = $(this).find('input[name="total_weight"]').val();
 				var gold_weight = $(this).find('input[name="gold_weight"]').val();
 				var recovery_price = $(this).find('input[name="recovery_price"]').val();
@@ -456,6 +438,7 @@ input[type="number"] { text-align: right;}
 				product_list.push({
 					'recovery_name' : recovery_name,
 					'rproduct_code' : rproduct_code,
+					'sub_rproduct_code' : sub_rproduct_code,
 					'total_weight' : total_weight,
 					'gold_weight' : gold_weight,
 					'recovery_price' : recovery_price,

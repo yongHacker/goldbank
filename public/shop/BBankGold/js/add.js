@@ -1,24 +1,12 @@
+	change_gold_type();
+	function change_gold_type(){
+		$('select[name=bg_id]').change(function(){
+			var bmt_name=$(this).find("option:selected").attr('bmt_name');
+			$('input[name=bmt_name]').val(bmt_name);
+		})
+	}
 	var expression=$('input[name=expression]');
-	/*$('p.save').click(function(){
-		var url=$('form').attr('action');
-		$.ajax({
-			url:url,
-			type:'post',
-			data:{expression:expression.val()},
-			dataType:"json",
-			success:function(result){
-				var code=result.code;
-				var str="";
-				if(code==200){
-					str="操作成功！";
-				}else{
-					str="操作失败！";
-				}
-				$(".form-actions").append('<p class="tips" style="display:inline;margin-left:20px;color:red;">'+str+'</p>');
-				setTimeout(function(){$('.form-actions .tips').remove();},1000);
-			}
-		});
-	});*/
+
 	$('#del').click(function(){
 		expression.val("");
 	});

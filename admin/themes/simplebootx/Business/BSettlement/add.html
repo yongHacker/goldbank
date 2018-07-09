@@ -44,8 +44,8 @@ td.right { text-align: right;}
 			<table class="table table-bordered">
 				<tbody>
 					<tr>
-						<td class="sel">供应商</td>
-						<td>
+						<td class="sel" width="20%">供应商</td>
+						<td width="30%">
 							<select id="company_name">
 								<option value="">--请选择--</option>
 								<volist name="supplier_info" id="v">
@@ -54,8 +54,8 @@ td.right { text-align: right;}
 							</select>
 							<span class="form-required">*</span>
 						</td>
-						<td class="sel">结算日期</td>
-						<td>
+						<td class="sel" width="20%">结算日期</td>
+						<td width="30%">
 							<div class="input-prepend input-group">
 								<span class="add-on input-group-addon">
 									<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
@@ -71,8 +71,8 @@ td.right { text-align: right;}
 						<td id="account_info_price"></td>
 					</tr>
 					<tr>
-						<td style="line-height: 30px;">料结克重</td>
-						<td style="line-height: 30px;"><span id="d_weights">0.00</span>克</td>
+						<td>料结克重</td>
+						<td><span id="d_weights">0.00</span>克</td>
 						<td>来料克重</td>
 						<td><span id="r_gold_weights">0.00</span>克</td>
 					</tr>
@@ -83,14 +83,14 @@ td.right { text-align: right;}
 						<td class="sell_w">0.00克</td>
 					</tr>
 					<tr>
-						<td style="line-height: 30px;">来往金额</td>
+						<td>来往金额</td>
 						<td colspan="">
 							<div class="input-append">
 								<input type="number" class="span2 no_arrow" step="0.01" name="price">
 								<span class="add-on">元</span>
 							</div>
 						</td>
-						<td style="line-height: 30px;">抹零金额</td>
+						<td>抹零金额</td>
 						<td colspan="">
 							<div class="input-append">
 								<input type="number" class="span2 no_arrow" step="0.01" name="extra_price">
@@ -99,9 +99,9 @@ td.right { text-align: right;}
 						</td>
 					</tr>
 					<tr>
-						<td style="line-height: 60px;">备注</td>
+						<td>备注</td>
 						<td colspan="3">
-							<textarea name="memo" style="width: 220px;"></textarea>
+							<textarea name="memo" style="width: 80%;"></textarea>
 						</td>
 					</tr>
 					<tr class="fomular_tr hide">
@@ -617,7 +617,7 @@ td.right { text-align: right;}
 			var supplier_id = $('#company_name').val();
 			var memo = $('[name="memo"]').val();
 
-			var type = $("input[type=radio]:checked").data("value");
+			var sn_type = $("input[type=radio]:checked").data("value");
 
 			var buy_weight = parseFloat(empty($('input[name="buy_weight"]').val()) ? 0 : $('input[name="buy_weight"]').val());
 			var buy_price = parseFloat(empty($('input[name="buy_price"]').val()) ? 0 : $('input[name="buy_price"]').val());
@@ -629,6 +629,7 @@ td.right { text-align: right;}
 			var price = $("input[name='price']").val();
 			price = price == '' ? 0 : price;
 			price = parseFloat(price);
+			
 			//抹零金额
 			var extra_price = $("input[name='extra_price']").val();
 			extra_price = extra_price == '' ? 0 : extra_price;
@@ -663,7 +664,7 @@ td.right { text-align: right;}
 				return;
 			}
 
-			if ((type == 'buy' && (buy_weight == 0 || buy_price == 0) && (p_id == '' || p_id == null) && price == 0 && rproduct_counts == 0) || (type == 'sell' && (sell_weight == 0 || sell_price == 0) && (p_id == '' || p_id == null) && price == 0 && rproduct_counts == 0)) {
+			if ((sn_type == 'buy' && (buy_weight == 0 || buy_price == 0) && (p_id == '' || p_id == null) && price == 0 && rproduct_counts == 0) || (sn_type == 'sell' && (sell_weight == 0 || sell_price == 0) && (p_id == '' || p_id == null) && price == 0 && rproduct_counts == 0)) {
 				artdialog_alert('这是一张空的结算单！');
 				return;
 			}
@@ -757,7 +758,7 @@ td.right { text-align: right;}
 				material_g_price : buy_price,
 				sell_weight : sell_weight,
 				sell_price : sell_price,
-				type : type,
+				sn_type : sn_type,
 				// 去料
 				mrecord_weight : d_weights,
 				p_id : p_id,

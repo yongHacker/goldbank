@@ -19,20 +19,15 @@
                 <tbody>
                 <tr>
                     <td width="6%">商品分类</td>
-                    <td width="44%" >
+                    <td width="44%" colspan="3">
                         {$goods_class_name}
-                       <!-- <select name="class_id" style="width: 150px;" data-live-search="true">
-                            {$select_categorys}
-                        </select>*-->
                     </td>
-                  <!--  <td width="6%">是否上架微信</td>
-                    <td width="44%"><a class="open fa fa-toggle-off" href="javascript:void(0)"><input type="hidden" name="mobile_show" value="0"/></a></td>
                 </tr>
-                <tr>-->
+                <tr>
+                    <td width="6%">所属套系</td>
+                    <td width="42%"><input class="require" type="text" name="belong_type" value="{$goods_detail.belong_type}"/><span class="alert">请输入所属套系！</span></td>
                     <td width="6%">商品编码</td>
                     <td width="44%"><input class="require" id="goods-code" type="text" name="goods_code" value=""/>*<span class="alert">请输入商品编码！</span></td>
-                   <!-- <td width="6%">是否为标规</td>
-                    <td width="44%"><a class="open fa fa-toggle-off" href="javascript:void(0)"><input type="hidden" name="is_standard" value="0"/></a></td>-->
                 </tr>
                 <tr>
                     <td width="8%">商品名称</td>
@@ -46,7 +41,7 @@
                 </tr>
                 <tr>
                     <td width="8%">标签名</td>
-                    <td width="42%"><input class="require" type="text" name="tag_name" value="{$goods_detail.tag_name}"/><span class="alert">标签名！</span></td>
+                    <td width="42%"><input class="require" type="text" name="tag_name" value="{$goods_detail.tag_name}"/><span class="alert">请输入标签名！</span></td>
                     <td width="8%">添加图片</td>
                     <td width="42%" colspan="3">
                         <span id="goods_img_show">
@@ -786,6 +781,7 @@
         var sell_type=$("input[name='sell_type']:checked").val();
         var goods_name=$("input[name='goods_name']").val();
         var tag_name=$("input[name='tag_name']").val();
+        var belong_type=$("input[name='belong_type']").val();
         var class_id="{$_GET['class_id']}";//$("select[name='class_id'] option:selected").val();
         /* var is_standard=$("input[name='is_standard']").val(); */
         var mobile_show=$("input[name='mobile_show']").val();
@@ -808,7 +804,7 @@
         }
         var description=$(".control-panel").html();//产品介绍内容
         var goods_common_info={"type":type,"sell_type":sell_type,"class_id":class_id,"goods_common_code":goods_code,
-            "goods_common_name":goods_name,"moral":moral,"tag_name":tag_name,"mobile_show":mobile_show,
+            "goods_common_name":goods_name,"moral":moral,"tag_name":tag_name,"belong_type":belong_type,"mobile_show":mobile_show,
             "description":description,"goods_default_img":goods_default_img};
         var goods_list=[];
 

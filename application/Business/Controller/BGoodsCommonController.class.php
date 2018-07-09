@@ -15,7 +15,6 @@ class BGoodsCommonController extends BusinessbaseController {
 		$this->bmetaltype_model = D("BMetalType");
 		$this->bbankgoldtype_model = D("BBankGoldType");
 		$this->astatus_model = D("AStatus");
-		$this->bgoodspic = D("BGoodsPic");
 	}
 	// 处理列表表单提交的搜索关键词
 	private function handleSearch(&$ex_where = NULL){
@@ -145,6 +144,7 @@ class BGoodsCommonController extends BusinessbaseController {
 				$data["goods_code"]=trim($goods_common_info["goods_common_code"]);
 				$data["goods_name"]=$goods_common_info["goods_common_name"];
 				$data["tag_name"]=$goods_common_info["tag_name"];
+				$data["belong_type"]=$goods_common_info["belong_type"];
 				$data["moral"]=$goods_common_info["moral"];
 				$data["description"]=$goods_common_info["description"];
 				//$data["is_standard"]=$goods_common_info["is_standard"];
@@ -413,31 +413,18 @@ class BGoodsCommonController extends BusinessbaseController {
 	 * @author change by lzy 2018.6.30
 	 */
 	public function upload_goods_img(){
+	    $dir = I('dir','goods');
 	    $type=explode('/',$_FILES['goods_pic']['type']);
-	    $result=b_upload_pic('goods',$_FILES['goods_pic']['tmp_name'],'thumb',$type[1]);
+	    $result=b_upload_pic($dir,$_FILES['goods_pic']['tmp_name'],'thumb',$type[1]);
 	    if ($result['status']==1) {
-            $data['type'] = trim($_POST['type']);
-            $data['id'] = empty($_POST['id']) ? intval($_GET['goods_common_id']) : intval($_POST['id']);
-            $data['pic'] = $result['filename'];
-            $res = $this->bgoodscommon_model->common_goods_img($data);
-            if($res){
-                output_data ( array (
-                    'file_name' => $result['filename'],
-                    'id' => $res,
-                    'code' => 1,
-                    'msg' => '文件上传成功'
-                ) );
-            }else{
-                output_data(array(
-                    'code' => 0,
-                    'msg' => '文件写入数据库失败！',
-                ));
-            }
-
+	        output_data ( array (
+	            'file_name' => $result['filename'],
+	            'code' => 1
+	        ) );
 	    } else {
 	        output_data ( array (
 	            'code' => 0,
-	            'msg' => $result['msg'].'(文件写入服务器失败！)'
+	            'msg' => $result['msg']
 	        ) );
 	    }
 	}
@@ -516,19 +503,6 @@ class BGoodsCommonController extends BusinessbaseController {
         }
         return $class_status;
     }
-
-    /**
-     *产品介绍图片删除
-     * @author dengzs @date 2018/7/6 14:38
-     */
-    public function del_pic(){
-	    $filename = I('post.filename');
-        if(b_del_pic($filename)){
-            $this->ajaxReturn(['status'=>1,'msg'=>'图片文件删除成功']);
-        }
-        $this->ajaxReturn(['status'=>0,'msg'=>'图片文件删除失败']);
-    }
-
 
 }
 

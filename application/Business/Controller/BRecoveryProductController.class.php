@@ -18,7 +18,7 @@ class BRecoveryProductController extends BusinessbaseController {
         $condition=array();
         $search_name = trim(I('search_name/s'));
         if(!empty($search_name)){
-            $condition['rproduct.recovery_name|rproduct.rproduct_code'] = array('like', '%' . trim($search_name) . '%');
+            $condition['rproduct.recovery_name|rproduct.rproduct_code|rproduct.sub_rproduct_code'] = array('like', '%' . trim($search_name) . '%');
         }
         //仓库
         $wh_id = I("wh_id");

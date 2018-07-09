@@ -147,8 +147,6 @@ class BSellController extends BusinessbaseController {
 
             $this->assign("user_nicename", $this->MUser["employee_name"]);
             $this->assign("data", $data);
-            $today = date('Y-m-d', time());
-            $this->assign("today", $today);
             $this->display();
         }else{
             if (IS_POST) {
@@ -264,7 +262,7 @@ class BSellController extends BusinessbaseController {
             // 销售收款明细
             $saccount_list = $this->bsell_model->getsaccount_list($data['id']); 
             // 销售其他费用明细
-            $sell_sub = $this->bexpencesub_model->getSublist(array('ticket_id' => $data['id'], 'ticket_type' => 1));
+            $sub_list = $this->bexpencesub_model->getSublist(array('ticket_id' => $data['id'], 'ticket_type' => 1));
             // 操作流程和日志
             $this->get_operate_info($data['id']);
             // 以旧换新信息
@@ -272,7 +270,7 @@ class BSellController extends BusinessbaseController {
             
             $this->b_show_status('b_sell_detail');
             $this->assign('sell_recovery_product_list', $sell_recovery_product_list);
-            $this->assign('sell_sub', $sell_sub);
+            $this->assign('sub_list', $sub_list);
             $this->assign('saccount_list', $saccount_list);
             $this->assign('sell_cut_product_list', $sell_cut_product_list);
             $this->assign('sell_recovery_product_list', $sell_recovery_product_list);
@@ -380,26 +378,19 @@ class BSellController extends BusinessbaseController {
             );
             $currency = $this->bcurrency_model->getList($where, $field='*', $limit=null, $join='', $order='is_main desc');
             //其他费用类型
-            $condition = array(
-                'deleted' => 0,
-                'company_id' => get_company_id(),
-                'type' => 1
-            );
-            $expence_list = $this->bexpence_model->getList($condition);
+            A('BExpence')->_expenceList(1);
             //销售单信息
             $data=$this->bsell_model->getInfo_detail();
             //销售单货品信息
             $detail_data=$this->bselldetail_model->getList_detail($data["id"]);
             //销售单截金信息
             $sell_cut_product_list = D('BRecoveryProduct')->getList_detail(array("brecoverydetail.order_id"=>$data["id"],'brecoverydetail.type'=>1));
-            //D('BSellCutProduct')->getSellProductCutList($data["id"]);
             //销售单收款信息
             $saccount_list = $this->bsell_model->getsaccount_list($data["id"]);
             //销售其他费用信息
-            $sell_sub = $this->bexpencesub_model->getSublist(array('ticket_id' => $data["id"], 'ticket_type' => 1));
+            $sub_list = $this->bexpencesub_model->getSublist(array('ticket_id' => $data["id"], 'ticket_type' => 1));
             //以旧换新信息
             $sell_recovery_product_list = D('BRecoveryProduct')->getList_detail(array("brecoverydetail.order_id"=>$data["id"],'brecoverydetail.type'=>4));
-            //D('BSellRecoveryProduct')->getProductList($data["id"]);
             //收款方式
             if($data['show_common_payment']==0||$data['shop_id']==0){
                 $shopids=$data['shop_id'];
@@ -407,10 +398,9 @@ class BSellController extends BusinessbaseController {
                 $shopids=array('in','0,'.$data['shop_id']);
             }
             $payment = $this->bpayment_model->getList(array('company_id'=> get_company_id(), 'deleted'=> 0, 'status'=> 1,'shop_id'=>$shopids));
-            $this->assign('expence_list', $expence_list);
             $this->assign("payment", $payment);
             $this->assign("currency", $currency);
-            $this->assign('sell_sub', $sell_sub);
+            $this->assign('sub_list', $sub_list);
             $this->assign('saccount_list', $saccount_list);
             $this->assign('sell_cut_product_list', $sell_cut_product_list);
             $this->assign('sell_recovery_product_list', $sell_recovery_product_list);
@@ -456,11 +446,11 @@ class BSellController extends BusinessbaseController {
         $detail_data=$this->bselldetail_model->getList_detail($data["id"]);
         $sell_cut_product_list =D('BRecoveryProduct')->getList_detail(array("brecoverydetail.order_id"=>$data["id"],'brecoverydetail.type'=>1));
         $saccount_list = $this->bsell_model->getsaccount_list($data["id"]);
-        $sell_sub = $this->bexpencesub_model->getSublist(array('ticket_id' => $data["id"], 'ticket_type' => 1));
+        $sub_list = $this->bexpencesub_model->getSublist(array('ticket_id' => $data["id"], 'ticket_type' => 1));
         $this->get_operate_info($data["id"]);
         $sell_recovery_product_list =D('BRecoveryProduct')->getList_detail(array("brecoverydetail.order_id"=>$data["id"],'brecoverydetail.type'=>4));
         $this->assign('sell_recovery_product_list', $sell_recovery_product_list);
-        $this->assign('sell_sub', $sell_sub);
+        $this->assign('sub_list', $sub_list);
         $this->assign('saccount_list', $saccount_list);
         $this->assign('sell_cut_product_list', $sell_cut_product_list);
         $this->assign("list", $detail_data);

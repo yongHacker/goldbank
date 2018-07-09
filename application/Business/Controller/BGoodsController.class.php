@@ -42,7 +42,7 @@ class BGoodsController extends BusinessbaseController {
             $status = I('status',1,'intval');
             $condition["gb_b_goods.status"]=array($status);
         }
-	    $field='gb_b_goods_pic.`pic`,gb_b_goods.id,gb_b_goods_class.`class_name`,gb_b_goods_common.type,gb_b_goods_common.`goods_code` AS goods_common_code,gb_b_goods.`goods_code`,gb_b_goods.`goods_name`,gb_b_goods.`goods_spec`,gb_b_goods.`status`';
+	    $field='gb_b_goods_pic.`pic`,gb_b_goods.id,gb_b_goods_class.`class_name`,gb_b_goods_common.type,gb_b_goods_common.belong_type,gb_b_goods_common.`goods_code` AS goods_common_code,gb_b_goods.`goods_code`,gb_b_goods.`goods_name`,gb_b_goods.`goods_spec`,gb_b_goods.`status`';
 	    $join='JOIN gb_b_goods_common ON gb_b_goods_common.`id`=gb_b_goods.`goods_common_id`
             	JOIN gb_b_goods_class ON gb_b_goods_class.id=gb_b_goods_common.`class_id`
             	left JOIN gb_b_goods_pic ON gb_b_goods.id=gb_b_goods_pic.`goods_id` AND gb_b_goods_pic.type=0';

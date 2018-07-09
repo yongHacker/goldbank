@@ -218,6 +218,7 @@ class BRecoveryProductModel extends BCommonModel{
             $data['order_id'] = $order_id;
             $data['company_id'] = get_company_id();
             $data['rproduct_code'] =empty($v['rproduct_code'])?$this->get_rproduct_code():trim($v['rproduct_code']);
+            $data['sub_rproduct_code'] = trim($v['sub_rproduct_code']);
             $data['recovery_name'] = $v['recovery_name'];
             $data['recovery_price'] = $v['recovery_price'];
             $data['gold_price'] = $gold_price;//empty($v['gold_price'])?$v['recovery_price']:$v['gold_price'];
@@ -265,6 +266,7 @@ class BRecoveryProductModel extends BCommonModel{
             if(empty($v['recovery_product_id'])) {
                 $data['rproduct_code'] =empty($v['rproduct_code'])?$this->get_rproduct_code():trim($v['rproduct_code']); //trim($v['rproduct_code']);
             }
+            $data['sub_rproduct_code'] = trim($v['sub_rproduct_code']);
             $data['recovery_name'] = $v['recovery_name'];
             $data['recovery_price'] = $v['recovery_price'];
             $data['gold_price'] = $gold_price;//empty($v['gold_price'])?$v['recovery_price']:$v['gold_price'];

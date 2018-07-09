@@ -206,17 +206,21 @@ class BGoodsCommonModel extends BCommonModel{
     function common_goods_img($data){
         $m = M('b_goods_pic');
         if($data['type'] == 'del'){
-            $m->id = $data['id'];
-            $m->deleted = 1;
-            $res = $m->save();
-            $filename = $m->where('id='.$data['id'])->field('pic')->find();
-            b_del_pic($filename['pic']);
-            $res = $m->where('id='.$data['id'])->delete();
+            if ($data['id']){
+                $m->id = $data['id'];
+                $m->deleted = 1;
+                $res = $m->save();
+                if ($res){
+                    $res = b_del_pic($data['goods_img']);
+                }
+            }else{
+                $res = b_del_pic($data['goods_img']);
+            }
         }
         if($data['type'] == 'link'){
             $m->type = 1;
             $m->goods_id = $data['id'];
-            $m->pic = $data['pic'];
+            $m->pic = $data['goods_img'];
             $res = $m->add();
         }
         if($data['type'] == 'default'){
@@ -328,6 +332,7 @@ class BGoodsCommonModel extends BCommonModel{
             'goods_code'=>$data['goods_common_code'],
             'goods_name' => $data ['goods_common_name'],
             'tag_name' => $data ['tag_name'],
+            'belong_type' => $data ['belong_type'],
             'moral' => $data ['moral'],
             //'is_standard' => $data ['is_standard'],
            // 'mobile_show' => $data ['mobile_show'],
@@ -708,6 +713,5 @@ class BGoodsCommonModel extends BCommonModel{
         $goodscommom_info = $this->getInfo($condition);
         return (!empty($goodscommom_info));
     }
-
 
 }

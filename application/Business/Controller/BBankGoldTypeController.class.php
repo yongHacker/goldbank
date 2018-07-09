@@ -64,9 +64,9 @@ class BBankGoldTypeController extends BusinessbaseController {
 					if(empty($postdata["name"])){
 						$this->error("价格类型名称不能为空！");
 					}
-					$info=$this->bbankgoldtype_model->getInfo(array("name"=>$postdata["name"],'company_id'=>get_company_id()));
+					$info=$this->bbankgoldtype_model->getInfo(array("b_metal_type_id"=>$postdata["b_metal_type_id"],"name"=>$postdata["name"],'company_id'=>get_company_id()));
 					if($info){
-						$this->error("添加失败,价格类型名称不能重复！");
+						$this->error("添加失败,同一贵金属价格类型名称不能重复！");
 					}
 					$bgoodsclass=$this->bbankgoldtype_model->insert($data);
 					if ($bgoodsclass!==false) {
@@ -104,12 +104,13 @@ class BBankGoldTypeController extends BusinessbaseController {
 					$where['name']=$postdata["name"];
 					$where['company_id']=get_company_id();
 					$where['bgt_id']=array("neq",$postdata['bgt_id']);
+					$where["b_metal_type_id"]=$postdata["b_metal_type_id"];
 					if(empty($postdata["name"])){
 						$this->error("价格类型名称不能为空！");
 					}
 					$info=$this->bbankgoldtype_model->getInfo($where);
 					if($info){
-						$this->error("编辑失败,价格类型名称不能重复！");
+						$this->error("编辑失败,同一贵金属价格类型名称不能重复！");
 						die();
 					}
 					$bgoodsclass=$this->bbankgoldtype_model->update($conditon,$data);

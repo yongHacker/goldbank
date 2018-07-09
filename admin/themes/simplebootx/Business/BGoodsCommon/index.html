@@ -37,6 +37,7 @@
 					<th>商品名称</th>
 					<th>标签名</th>
 					<th>商品分类</th>
+					<th>所属套系</th>
 					<!-- <th>销售类型</th> -->
 					<th>规格数量</th>
 					<th width="120">{:L('ACTIONS')}</th>
@@ -60,6 +61,7 @@
 					<td>{$vo.goods_name}</td>
 					<td>{$vo.tag_name}</td>
 					<td>{$vo.class_name}</td>
+					<td>{$vo.belong_type}</td>
 					<!-- <td class="text-center">{$vo['sell_type']==1?'零售':'批发'}</td> -->
 					<td class="text-center"><a href="{:U('BGoods/index',array('goods_common_id'=>$vo['id']))}">{$vo.goods_num}</a></td>
 					<td class="text-center" id="con">

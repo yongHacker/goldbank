@@ -44,7 +44,7 @@ class BBankGoldController extends ShopbaseController {
 		$join="left join ".DB_PRE."b_bank_gold_type bbankgoldtype on bbankgoldtype.bgt_id=bbankgold.bgt_id";
 		$join.="  left join ".DB_PRE."b_metal_type metaltype on metaltype.id=bbankgoldtype.b_metal_type_id";
 		$join.="  left join ".DB_PRE."b_shop bshop on bshop.id=bbankgold.shop_id";
-		$field='bbankgoldtype.name,bbankgoldtype.bgt_id,metaltype.id bmt_id,bbankgold.*,bshop.shop_name';
+		$field='bbankgoldtype.name,bbankgoldtype.bgt_id,metaltype.id bmt_id,metaltype.name bmt_name,bbankgold.*,bshop.shop_name';
 		$count=$this->bbankgold_model->alias("bbankgold")->countList($condition,$field,$join,$order='bg_id desc');
 		$page = $this->page($count, $this->pagenum);
 		$limit=$page->firstRow.",".$page->listRows;
@@ -69,7 +69,7 @@ class BBankGoldController extends ShopbaseController {
 		$join.=" left join ".DB_PRE."b_bank_gold_type bbankgoldtype on bbankgoldtype.bgt_id=p_bank_gold.bgt_id";
 		$join.="  left join ".DB_PRE."b_metal_type metaltype on metaltype.id=bbankgoldtype.b_metal_type_id";
 		$join.="  left join ".DB_PRE."b_shop bshop on bshop.id=bbankgold.shop_id";
-		$field='p_bank_gold.*,bbankgold.bg_id id,bbankgold.formula b_formula,bbankgoldtype.name,bbankgoldtype.bgt_id,metaltype.id bmt_id,bshop.shop_name';
+		$field='p_bank_gold.*,bbankgold.bg_id id,bbankgold.formula b_formula,bbankgoldtype.name,bbankgoldtype.bgt_id,metaltype.id bmt_id,metaltype.name bmt_name,bshop.shop_name';
 		$count=$this->bbankgold_model->alias("bbankgold")->countList($condition,$field,$join,$order='bbankgold.bg_id desc');
 		$page = $this->page($count, $this->pagenum);
 		$limit=$page->firstRow.",".$page->listRows;
@@ -100,7 +100,7 @@ class BBankGoldController extends ShopbaseController {
 			$join="left join ".DB_PRE."b_bank_gold_type bbankgoldtype on bbankgoldtype.bgt_id=bbankgold.bgt_id";
 			$join.="  left join ".DB_PRE."b_metal_type metaltype on metaltype.id=bbankgoldtype.b_metal_type_id";
 			$join.="  left join ".DB_PRE."b_shop bshop on bshop.id=bbankgold.shop_id";
-			$field='bbankgoldtype.name,bbankgoldtype.bgt_id,metaltype.id bmt_id,bbankgold.*,bshop.shop_name';
+			$field='bbankgoldtype.name,bbankgoldtype.bgt_id,metaltype.id bmt_id,metaltype.name bmt_name,bbankgold.*,bshop.shop_name';
 			$data=$this->bbankgold_model->alias("bbankgold")->getList($condition,$field,$limit="",$join,$order='bg_id desc');
 			$this->assign("gold_type", $data);
 			$condition=array("bshop.deleted"=>0,"bshop.company_id"=>$this->MUser["company_id"]);
@@ -163,8 +163,9 @@ class BBankGoldController extends ShopbaseController {
 			$bg_id=I("bg_id");
 			$condition=array("bbankgoldtype.company_id"=>$this->MUser['company_id'],"bbankgoldtype.deleted"=>0,"bbankgold.bg_id"=>$bg_id);
 			$join="left join ".DB_PRE."b_bank_gold_type bbankgoldtype on bbankgoldtype.bgt_id=bbankgold.bgt_id";
+			$join.="  left join ".DB_PRE."b_metal_type metaltype on metaltype.id=bbankgoldtype.b_metal_type_id";
 			$join.=" left join ".DB_PRE."b_shop bshop on bshop.id=bbankgold.shop_id";
-			$bbankgold=$this->bbankgold_model->alias("bbankgold")->getInfo($condition,$field="bbankgold.*,bbankgoldtype.name,bshop.shop_name",$join);
+			$bbankgold=$this->bbankgold_model->alias("bbankgold")->getInfo($condition,$field="bbankgold.*,bbankgoldtype.name,bshop.shop_name,metaltype.name bmt_name",$join);
 			$this->assign("data", $bbankgold);
 			$this->display();
 		}else{

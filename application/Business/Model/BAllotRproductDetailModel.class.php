@@ -14,7 +14,7 @@ class BAllotRproductDetailModel extends BCommonModel{
         }
         $join="left join ".DB_PRE."b_recovery_product rproduct on rproduct.id=ballotdetail.p_id";
         $field="ballotdetail.*,rproduct.rproduct_code,rproduct.recovery_name,rproduct.total_weight,rproduct.purity
-        ,rproduct.gold_weight,rproduct.recovery_price,rproduct.cost_price";
+        ,rproduct.gold_weight,rproduct.recovery_price,rproduct.cost_price,rproduct.sub_rproduct_code";
         $detail_data=$this->alias("ballotdetail")->getList($condition,$field,$limit="",$join,$order='ballotdetail.id desc');
 
         return $detail_data;

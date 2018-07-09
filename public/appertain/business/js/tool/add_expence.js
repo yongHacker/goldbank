@@ -49,9 +49,10 @@ function expence_table_order(){
 }
 
 // 其它费用表格删除行方法绑定
+expence_del_input();
 function expence_del_input(){
-    $('.del').each(function(){
-        $(this).click(function(){
+    $('#expence_table').find('.del').each(function(){
+        $(this).unbind('click').click(function(){
             $(this).parent('td').parent('tr').remove();
             expence_table_order();
         });

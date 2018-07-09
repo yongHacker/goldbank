@@ -61,6 +61,7 @@
 					<th>仓库</th>
 					<th>类型</th>
 					<th>商品分类</th>
+					<th>所属套系</th>
 					<th>货品编号</th>
 					<th>商品名称</th>
 					<th>规格</th>
@@ -97,6 +98,7 @@
 					<td>{$vo.wh_name}</td>
 					<td>{$vo.type_name}</td>
 					<td>{$vo.class_name}</td>
+					<td>{$vo.belong_type}</td>
 					<!--<td>{$vo.product_code}</td>-->
 					<td class="text-center"><a href="{:U('BProduct/product_detail',array(search_name=>$vo['product_code']))}">{$vo.product_code}</a></td>
 					<!--<td><a href="{:U('BGoodsCommon/index',array('search_name'=>$vo['common_goods_name']))}">{$vo.common_goods_name}</a></td>-->

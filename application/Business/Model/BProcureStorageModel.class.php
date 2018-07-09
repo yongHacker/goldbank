@@ -969,6 +969,7 @@ class BProcureStorageModel extends BCommonModel {
 						'company_id'=> $procure_info['company_id'],
 						// 'rproduct_code'=> b_order_number('b_recovery_product', 'rproduct_code'),
 						'rproduct_code'=> 'temp_' . $value['rproduct_code'],
+						'sub_rproduct_code'=>$value['sub_rproduct_code'],
 						'order_id'=> $new_storage_id,
 						'buy_time'=> $nowtime,
 						'gold_price'=> $gold_price,//decimalsformat($value['gold_price'], 2),

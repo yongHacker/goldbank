@@ -131,6 +131,7 @@
                     <th style="width:220px;">关联货号</th>
                     <th >金料名称</th>
                     <th >金料编号</th>
+                    <th >外部金料编号</th>
                     <th >金料总重</th>
                     <th style="width:220px;">纯度(‰)</th>
                      <th style="width:220px;">金料金重</th>
@@ -149,6 +150,7 @@
                         <td class="text-center product_code">{$v.product_code}<input type="hidden" name="product_id" value="{$v.product_id}" placeholder="货品id"></td>
                         <td class="text-center recovery_name"><input type="text" autocomplete="off" name="recovery_name" value="{$v.recovery_name}" ></td>
                         <td class="text-center rproduct_code"><input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" value="{$v.rproduct_code}" ></td>
+                        <td class="text-center sub_rproduct_code"><input type="text" autocomplete="off" name="sub_rproduct_code" value="{$v.sub_rproduct_code}" ></td>
                         <td class="text-right total_weight"><input  type="number" class="no_arrow"  autocomplete="off" name="total_weight" value="{$v.total_weight}" placeholder="总重"></td>
                         <td class="text-center purity" >{$v['purity']}<input type="hidden" name="purity" value="{$v['purity']/1000}" placeholder="纯度"></td>
                         <td class="text-right gold_weight"><input  type="number" class="no_arrow"  autocomplete="off" name="gold_weight" value="{$v.gold_weight}" placeholder="金重"></td>
@@ -574,6 +576,7 @@
         html+='<td class="text-center product_code">'+product_code+'<input type="hidden" name="product_id" value="'+product_id+'" placeholder="货品id"></td>'
         html+='<td class="text-center recovery_name"><input type="text" autocomplete="off" name="recovery_name" value="'+goodsname+'" ></td>'
         html+='<td class="text-center rproduct_code"><input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" value="'+rproduct_code+'" ></td>'
+        html+='<td class="text-center sub_rproduct_code"><input type="text"  autocomplete="off" name="sub_rproduct_code" value="" ></td>'
         html+='<td class="text-center total_weight"><input type="number" class="no_arrow" autocomplete="off" name="total_weight" value="" placeholder="总重"></td>'
         html+='<td class="text-center purity" >'+purity+'<input type="hidden" name="purity" value="'+(purity/1000)+'" placeholder="纯度"></td>'
         html+='<td class="text-right gold_weight"><input  type="number" class="no_arrow"  autocomplete="off" name="gold_weight" value="" placeholder="金重"></td>'
@@ -637,6 +640,7 @@
             var total_weight=$(this).find('input[name="total_weight"]').val();
             var gold_weight=$(this).find('input[name="gold_weight"]').val();
             var rproduct_code = $(this).find('input[name="rproduct_code"]').val();
+            var sub_rproduct_code = $(this).find('input[name="sub_rproduct_code"]').val();
             var recovery_price=$(this).find('input[name="recovery_price"]').val();
             var service_fee=$(this).find('input[name="service_fee"]').val();
             var purity=$(this).find('input[name="purity"]').val();
@@ -650,6 +654,7 @@
                 'gold_weight': gold_weight,
                 'total_weight': total_weight,
                 'rproduct_code': rproduct_code,
+                'sub_rproduct_code': sub_rproduct_code,
                 'recovery_price': recovery_price,
                 'gold_price': recovery_price,
                 'attrition':0,

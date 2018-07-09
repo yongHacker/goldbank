@@ -1,14 +1,5 @@
 <shoptpl file="header" />
-<style type="text/css">
-.table .search_input { margin: 0; padding: 0; position: relative;}
-#mobile { margin: 8px 5px; text-indent: 20px;}
-#product_code { margin: 8px 5px; text-indent: 20px;}
-.myModal3.leave { position: absolute; top: 12px; left: 15px; font-size: 14px;}
-.ta select, .ta input { width: 90%;}
-input[type="number"] { text-align: right;}
-.no_arrow::-webkit-outer-spin-button, .no_arrow::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0;}
-.no_arrow { -moz-appearance: textfield;}
-</style>
+<link rel="stylesheet" href="__PUBLIC__/shop/BRecovery/css/add.css">
 </head>
 <body class=" theme-blue">
 	<div class="wrap js-check-wrap">
@@ -74,6 +65,7 @@ input[type="number"] { text-align: right;}
 							<th>序</th>
 							<th style="width: 160px;">金料名称</th>
 							<th style="width: 160px;">金料编号</th>
+							<th>外部金料编号</th>
 							<th style="width: 160px;">总重</th>
 							<th>纯度(‰)</th>
 							<th>金重</th>
@@ -89,6 +81,7 @@ input[type="number"] { text-align: right;}
 					</thead>
 					<tbody id="tbody">
 						<tr id="last">
+							<td class="text-center"></td>
 							<td class="text-center"></td>
 							<td class="text-center"></td>
 							<td class="text-center"></td>
@@ -125,7 +118,7 @@ input[type="number"] { text-align: right;}
 					<b id="clientModalLabel" style="margin: 0; font-family: 'Microsoft Yahei', verdana; color: #157ab5;">选择会员</b>
 				</div>
 				<div class="modal-body" style="max-height: 500px; padding: 0px;">
-					<iframe frameborder="0" class="appiframe" src="{:U('BRecovery/client_list')}" id="goods_index2" name="goods_index2" onload="loadFrame(this)">
+					<iframe frameborder="0" class="appiframe" src="{:U('BRecovery/client_list')}" id="goods_index2" name="goods_index2" onload="loadFrame(document.getElementById("goods_index2"))">
 						
 					</iframe>
 				</div>

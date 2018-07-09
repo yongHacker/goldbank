@@ -744,26 +744,27 @@ class BStorageController extends BusinessbaseController {
                             if(empty($val[1])){
                                 $rproduct_num=$rproduct_num+1;
                             }
-							$cost_price = floatval($val[2]) * floatval($val[3]);
-                            $val[3] = floor($val[3] * 100) / 100;
+							$cost_price = floatval($val[3]) * floatval($val[4]);
+                            $val[4] = floor($val[3] * 100) / 100;
                             
-                            $purity = decimalsformat($val[3], 2) / decimalsformat($val[4], 2);
-                            $purity = floatval($val[3]) > floatval($val[4]) ? 0 : decimalsformat($purity, 6);
+                            $purity = decimalsformat($val[4], 2) / decimalsformat($val[5], 2);
+                            $purity = floatval($val[4]) > floatval($val[5]) ? 0 : decimalsformat($purity, 6);
                             $val[1]=empty($val[1])?date('ymd').sprintf("%04d", $rproduct_num):$val[1];
 
                             $text .= '<tr class="p_num add_product is_jl">
                                 <td class="text-center"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>
                                 <td><input class="recovery_name" type="text" value="' . $val[0] . '"></td>
                                 <td><input class="rproduct_code" type="text" value="' . $val[1] . '"></td>
-                                <td><input class="gold_price no_arrow" type="number" step="0.001" value="' . numberformat($val[2], 2, ".", "") . '"></td>
-                                <td><input class="gold_weight no_arrow" type="number" step="0.001" value="' . numberformat($val[3], 3, ".", "") . '"></td>
-                                <td><input class="total_weight no_arrow" type="number" step="0.001" value="' . numberformat($val[4], 3, ".", "") . '"></td>
+                                <td><input class="sub_rproduct_code" type="text" value="' . $val[2] . '"></td>
+                                <td><input class="gold_price no_arrow" type="number" step="0.001" value="' . numberformat($val[3], 2, ".", "") . '"></td>
+                                <td><input class="gold_weight no_arrow" type="number" step="0.001" value="' . numberformat($val[4], 3, ".", "") . '"></td>
+                                <td><input class="total_weight no_arrow" type="number" step="0.001" value="' . numberformat($val[5], 3, ".", "") . '"></td>
                                 <td><input class="purity no_arrow" type="number" step="0.001" value="' . numberformat($purity, 2, ".", "") . '"></td>
                                 <td><input class="cost_price no_arrow" type="number" step="0.001" value="' . numberformat($cost_price, 2, ".", "") . '"></td>
-                                <td><input class="material" type="text" value="' . $val[5] . '"></td>
-                                <td><input class="color" type="text" value="' . $val[6] . '"></td>
+                                <td><input class="material" type="text" value="' . $val[6] . '"></td>
+                                <td><input class="color" type="text" value="' . $val[7] . '"></td>
                                 <td class="text-center">
-                                    <a href="javascript:;" onclick="init_memo_iframe(this)" title="' . $val[7] . '">备注
+                                    <a href="javascript:;" onclick="init_memo_iframe(this)" title="' . $val[8] . '">备注
                                         <span class="memo" hidden>' . $val[7] . '</span>
                                     </a>&nbsp;&nbsp;
                                     <a class="del" href="javascript:;">删除</a>

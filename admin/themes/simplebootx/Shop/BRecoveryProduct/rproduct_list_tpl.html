@@ -9,6 +9,7 @@
 					<th width="50">序</th>
 					<th class="text-center">仓库</th>
 					<th class="text-center">金料编号</th>
+					<th class="text-center">外部金料编号</th>
 					<th class="text-center">金料名称</th>
 					<th class="text-center">金价</th>
 					<th class="text-center">金重</th>
@@ -33,6 +34,7 @@
 					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
 					<td class="text-left wh_name">{$v.wh_name}</td>
 					<td class="text-left product_code">{$v.rproduct_code}</td>
+					<td class="text-left sub_rproduct_code">{$v.sub_rproduct_code}</td>
 					<td class="text-left goodsname">{$v.recovery_name}</td>
 					<td class="text-right recovery_price">{$v.recovery_price}</td>
 					<td class="text-right gold_weight">{$v.gold_weight}</td>

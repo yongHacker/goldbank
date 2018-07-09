@@ -480,7 +480,7 @@ class BProcureSettleModel extends BCommonModel {
 		// 抹零金额
 		$extra_price = decimalsformat(floatval($postdata['extra_price']), 2);
 
-		$type = $postdata['type'];
+		$sn_type = $postdata['sn_type'];
 		$p_id = $postdata['p_id'];
 
 		$where = array(
@@ -521,17 +521,17 @@ class BProcureSettleModel extends BCommonModel {
 			$bmaterialrecord_model = D('BMaterialRecord');
 
 			// 买料数据，确保数据为正数
-			if ($type == "buy" && $material_weight > 0 && $material_g_price > 0) {
+			if ($sn_type == "buy" && $material_weight > 0 && $material_g_price > 0) {
 				$weight = abs($material_weight);
 				$mgold_price = $material_g_price;
-				$type = 1;
+				$sn_type = 1;
 			}
 
 			// 卖料数据，确保数据为负数
-			if ($type == "sell" && $sell_weight > 0 && $sell_price > 0) {
+			if ($sn_type == "sell" && $sell_weight > 0 && $sell_price > 0) {
 				$weight = bcsub(0, abs($sell_weight), 2);
 				$mgold_price = $sell_price;
-				$type = 2;
+				$sn_type = 2;
 			}
 
 			M()->startTrans();
@@ -559,7 +559,7 @@ class BProcureSettleModel extends BCommonModel {
 			$settle_info['morder_id'] = empty($morder_info['id']) ? 0 : $morder_info['id'];
 
 			// 更新material_order 数据
-			if ($type == 1 || $type == 2) {
+			if ($sn_type == 1 || $sn_type == 2) {
 				// 首次提交有买卖料则更新数据
 				if($settle_info['morder_id'] > 0){
 					$where = array(
@@ -568,7 +568,8 @@ class BProcureSettleModel extends BCommonModel {
 
 					$update_data = array(
 						'weight' => $weight,
-						'mgold_price' => $mgold_price
+						'mgold_price' => $mgold_price,
+						'sn_type' => $sn_type
 					);
 					$rs = $bmaterialorder_model->update($where, $update_data);
 				}else{
@@ -580,7 +581,8 @@ class BProcureSettleModel extends BCommonModel {
 						'mgold_price' => $mgold_price,
 						'creator_id' => get_user_id(),
 						'status' => 0,
-						'create_time' => $nowtime
+						'create_time' => $nowtime,
+						'sn_type' => $sn_type
 					);
 
 					$rs = $bmaterialorder_model->insert($insert_m_record_data);
@@ -678,11 +680,12 @@ class BProcureSettleModel extends BCommonModel {
 					if($settle_info['mrecord_id'] == 0){
 						$mr_data = array(
 							'company_id' => get_company_id(),
-							'account_id'=> $ca_info['id'],
-							'weight'=> bcsub(0, abs($mrecord_weight), 2),
-							'memo'=> '去料 '.abs($mrecord_weight).'g',
-							'creator_id'=> get_user_id(),
-							'create_time'=> $nowtime
+							'account_id' => $ca_info['id'],
+							'weight' => bcsub(0, abs($mrecord_weight), 2),
+							'memo' => '去料 '.abs($mrecord_weight).'g',
+							'creator_id' => get_user_id(),
+							'create_time' => $nowtime,
+							'sn_type' => 2
 						);
 						$rs = $bmaterialrecord_model->insert($mr_data);
 						if($rs === false){
@@ -760,10 +763,11 @@ class BProcureSettleModel extends BCommonModel {
 				if($settle_info['mrecord_id_2'] == 0){
 					$mr_data = array(
 						'company_id' => get_company_id(),
-						'account_id'=> $ca_info['id'],
-						'weight'=> 0,
-						'creator_id'=> get_user_id(),
-						'create_time'=> $nowtime
+						'account_id' => $ca_info['id'],
+						'weight' => 0,
+						'creator_id' => get_user_id(),
+						'create_time' => $nowtime,
+						'sn_type' => 1
 					);
 					$rs = $bmaterialrecord_model->insert($mr_data);
 					$mr_id_2 = $rs;
@@ -885,7 +889,7 @@ class BProcureSettleModel extends BCommonModel {
 					$where = array(
 						'id'=> $settle_info['mrecord_id_2']
 					);
-					$update_data = array('weight'=> 0, 'memo'=> '保存没有来料记录，清0');
+					$update_data = array('weight'=> 0, 'memo'=> '保存没有来往料记录，清0');
 					$rs = $bmaterialrecord_model->update($where, $update_data);
 					if($rs === false){
 						return $info;
@@ -924,18 +928,23 @@ class BProcureSettleModel extends BCommonModel {
 					if($settle_info['ca_record_id'] > 0){
 						$where = array('id'=> $settle_info['ca_record_id']);
 
-						$c_a_r_data = array('price'=> $price,'extra_price'=> $extra_price);
+						$c_a_r_data = array(
+							'price'=> $price,
+							'extra_price'=> $extra_price,
+							'sn_type' => ($price < 0) ? 1 : 2
+						);
 
 						$rs = $bcaccountrecord_model->update($where, $c_a_r_data);
 					}else{
 						// 首次保存没有结算金额时，新增来往钱记录
 						$c_a_r_data = array(
 							'company_id' => get_company_id(),
-							'account_id'=> $ca_info['id'],
-							'price'=> $price,
-							'extra_price'=> $extra_price,
-							'creator_id'=> get_user_id(),
-							'create_time'=> $nowtime
+							'account_id' => $ca_info['id'],
+							'price' => $price,
+							'extra_price' => $extra_price,
+							'creator_id' => get_user_id(),
+							'create_time' => $nowtime,
+							'sn_type' => ($price < 0) ? 1 : 2
 						);
 						$rs = $bcaccountrecord_model->insert($c_a_r_data);
 						$new_ca_record_id = $rs;
@@ -957,12 +966,10 @@ class BProcureSettleModel extends BCommonModel {
 					'type'=> 1,
 					'memo' => $postdata['memo'],
 					'status'=> $settle_status,
-					/*change by alam 11:00 2018/5/4 start*/
 					'before_weight'=> $postdata['before_weight'],
 					'before_price'=> $postdata['before_price'],
 					'after_weight'=> $postdata['after_weight'],
 					'after_price'=> $postdata['after_price']
-					/*change by alam 11:00 2018/5/4 end*/
 				);
 
 				$where = array('id'=> $settle_info['id']);
@@ -994,7 +1001,6 @@ class BProcureSettleModel extends BCommonModel {
 						$rs = D("BRecoveryProduct")->update($where, $data);//编辑结算单，更新在库的去料金料为结算中
 					}
 
-					/* add by alam 2018/06/11 start */
 					// 将买卖料、来往料、来往钱sn_id填入
 					if ($rs) {
 						$update_1 = $update_2 = $update_3 = $update_4 = true;
@@ -1018,7 +1024,6 @@ class BProcureSettleModel extends BCommonModel {
 							$rs = false;
 						}
 					}
-					/* add by alam 2018/06/11 end */
 				}
 			}
 
@@ -1059,14 +1064,12 @@ class BProcureSettleModel extends BCommonModel {
 		$sell_price = decimalsformat(floatval($postdata['sell_price']), 2);
 		// 来往料总重
 		$mrecord_weight = decimalsformat(floatval($postdata['mrecord_weight']), 2);
-		// $settle_weight = decimalsformat(floatval($postdata['settle_weight']), 2);
-		// $settle_price = decimalsformat(floatval($postdata['settle_price']), 2);
 		// 结算金额
 		$price = decimalsformat(floatval($postdata['price']), 2);
 		// 抹零金额
 		$extra_price = decimalsformat(floatval($postdata['extra_price']), 2);
 
-		$type = $postdata['type'];
+		$sn_type = $postdata['sn_type'];
 		$p_id = $postdata['p_id'];
 
 		$where = array(
@@ -1081,7 +1084,6 @@ class BProcureSettleModel extends BCommonModel {
 			return $info;
 		}
 
-		/*change by alam 9:58 2018/5/4 start*/
 		// 结算开单限制仅一个未审核单据存在
 		if ($postdata['submit_type'] != 'save') {
 			$where = array(
@@ -1096,7 +1098,6 @@ class BProcureSettleModel extends BCommonModel {
 				return $info;
 			}
 		}
-		/*change by alam 11:00 2018/5/4 start*/
 
 		$nowtime = time();
 
@@ -1108,23 +1109,23 @@ class BProcureSettleModel extends BCommonModel {
 			$bmaterialrecord_model = D('BMaterialRecord');//来往料记录
 
 			// 买料数据，保证数据为正数
-			if ($type == "buy" && $material_weight > 0 && $material_g_price > 0) {
+			if ($sn_type == "buy" && $material_weight > 0 && $material_g_price > 0) {
 				$weight = abs($material_weight);
 				$mgold_price = $material_g_price;
-				$type = 1;
+				$sn_type = 1;
 			}
 			// 卖料数据，保证数据为负数
-			if ($type == "sell" && $sell_weight > 0 && $sell_price > 0) {
+			if ($sn_type == "sell" && $sell_weight > 0 && $sell_price > 0) {
 				$weight = bcsub(0, abs($sell_weight), 2);
 				$mgold_price = $sell_price;
-				$type = 2;
+				$sn_type = 2;
 			}
 
 			M()->startTrans();
 
 			$morder_id = 0;
-			// 添加买卖料记录 type=1 买料| type=2 卖料
-			if ($type == 1 || $type == 2) {
+			// 添加买卖料记录 sn_type 1-买料 2-卖料
+			if ($sn_type == 1 || $sn_type == 2) {
 				$insert_m_record_data = array(
 					'company_id' => get_company_id(),
 					'account_id'=> $ca_info['id'],
@@ -1132,7 +1133,8 @@ class BProcureSettleModel extends BCommonModel {
 					'mgold_price' => $mgold_price,
 					'creator_id' => get_user_id(),
 					'status' => 0,
-					'create_time' => $nowtime
+					'create_time' => $nowtime,
+					'sn_type' => $sn_type
 				);
 				$rs = $bmaterialorder_model->insert($insert_m_record_data);
 				$morder_id = $rs;
@@ -1184,7 +1186,8 @@ class BProcureSettleModel extends BCommonModel {
 						'weight' => bcsub(0, abs($mrecord_weight), 2),
 						'memo' => '去料 '.abs($mrecord_weight).'g',
 						'creator_id' => get_user_id(),
-						'create_time' => $nowtime
+						'create_time' => $nowtime,
+						'sn_type' => 2
 					);
 					$rs = $bmaterialrecord_model->insert($mr_data);
 					$mr_id = $rs;
@@ -1224,7 +1227,8 @@ class BProcureSettleModel extends BCommonModel {
 					'account_id'=> $ca_info['id'],
 					'weight'=> 0,
 					'creator_id'=> get_user_id(),
-					'create_time'=> $nowtime
+					'create_time'=> $nowtime,
+					'sn_type' => 1
 				);
 				$rs = $bmaterialrecord_model->insert($mr_data);
 				$mr_id_2 = $rs;
@@ -1312,7 +1316,8 @@ class BProcureSettleModel extends BCommonModel {
 						'price'=> $price,
 						'extra_price'=> $extra_price,
 						'creator_id'=> get_user_id(),
-						'create_time'=> $nowtime
+						'create_time'=> $nowtime,
+						'sn_type' => ($price < 0) ? 1 : 2
 					);
 					$rs = $bcaccountrecord_model->insert($c_a_r_data);
 					$c_a_r_id = $rs;

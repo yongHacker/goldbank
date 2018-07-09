@@ -616,7 +616,7 @@ class BProductModel extends BCommonModel {
      */
     public function get_product_info($v,$type=1,$is_show_null=1){
         $common_base=array('product_code'=>'货品编码','p_sub_product_code'=>'附属货品编码','common_goods_name'=>'货品名称','goods_class_name'=>'货品分类',
-            'goods_code'=>'商品编码','goods_spec'=>'规格','wh_name'=>'仓库',
+            'belong_type'=>'所属套系','goods_code'=>'商品编码','goods_spec'=>'规格','wh_name'=>'仓库',
             'p_certify_type_name'=>'证书类型','p_certify_code'=>'证书号','qc_code'=>'质检编号');
         $common_procure=array();
         $procure_info=array();

@@ -1085,3 +1085,31 @@ ALTER TABLE `gb_b_recovery_product` MODIFY COLUMN `total_weight` decimal(15,2) N
 ALTER TABLE `gb_b_recovery_product` MODIFY COLUMN `gold_weight` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT '总重';
 -- 20180703 alam 外部货品编号
 ALTER TABLE `gb_b_product` ADD COLUMN `sub_product_code` varchar(30) NULL COMMENT '外部货品编号' AFTER `product_code`;
+-- 20180705 alam 来往钱 来往料 买卖料 标识
+ALTER TABLE `gb_b_material_record` ADD COLUMN `sn_type` tinyint(4) DEFAULT '0' COMMENT '交易类型 0-无来往 1-来料 2-往料' AFTER `type`;
+ALTER TABLE `gb_b_caccount_record` ADD COLUMN `sn_type` tinyint(4) DEFAULT '0' COMMENT '交易类型 0-无来往 1-来钱 2-往钱' AFTER `type`;
+ALTER TABLE `gb_b_material_order` ADD COLUMN `sn_type` tinyint(4) DEFAULT '0' COMMENT '交易类型 0-无买卖 1-买料 2-卖料' AFTER `type`;
+ALTER TABLE `gb_b_material_record` MODIFY COLUMN `weight` decimal(12,2) DEFAULT '0.00' COMMENT '克重';
+
+update `gb_b_material_order` set sn_type = 1 where weight > 0;
+update `gb_b_material_order` set sn_type = 2 where weight < 0;
+update `gb_b_material_order` set sn_type = 0 where weight = 0;
+
+update `gb_b_material_record` set sn_type = 1 where weight > 0;
+update `gb_b_material_record` set sn_type = 2 where weight < 0;
+update `gb_b_material_record` set sn_type = 0 where weight = 0;
+
+update `gb_b_caccount_record` set sn_type = 1 where price < 0;
+update `gb_b_caccount_record` set sn_type = 2 where price > 0;
+update `gb_b_caccount_record` set sn_type = 0 where price = 0;
+-- 20180705 alam 供应商结欠信息流水中新增创建时间
+ALTER TABLE `gb_b_company_account_flow` ADD COLUMN `create_time` varchar(12) NOT NULL COMMENT '创建时间';
+
+-- 20180709 chenzy
+ALTER TABLE `gb_b_goods_common` ADD COLUMN `tag_name`  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '标签名' AFTER `goods_code`;
+ALTER TABLE `gb_b_sell` ADD COLUMN `sn_id`  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '外部订单号' AFTER `order_id`;
+ALTER TABLE `gb_b_recovery_product` ADD COLUMN `sub_rproduct_code`  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '外部金料编号' AFTER `rproduct_code`;
+ALTER TABLE `gb_b_recovery_product` ADD COLUMN `end_gold_price`  decimal(7,2) NULL DEFAULT NULL COMMENT '结束金价' AFTER `gold_price`;
+ALTER TABLE `gb_b_goods_common`
+ADD COLUMN `belong_type`  varchar(50) NULL COMMENT '所属套系' AFTER `class_id`;
+

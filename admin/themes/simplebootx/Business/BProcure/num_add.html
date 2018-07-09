@@ -139,6 +139,7 @@ td.right { text-align: right !important;}
 							<th class="text-center" width="40">序</th>
 							<th class="text-center">金料名称</th>
 							<th class="text-center">金料编号</th>
+							<th class="text-center">外部金料编号</th>
 							<th class="text-center">金价</th>
 							<th class="text-center">金重</th>
 							<th class="text-center">总重</th>
@@ -269,6 +270,7 @@ td.right { text-align: right !important;}
 						</tr>
 						<tr class="type" data-type="type2" id="last_tr" style="display: none">
 							<td class="text-center"></td>
+							<td></td>
 							<td></td>
 							<td></td>
 							<td></td>
@@ -667,6 +669,7 @@ td.right { text-align: right !important;}
 						if (type == 2) {
 							var recovery_name = $(this).find('.recovery_name').val();
 							var rproduct_code = $(this).find('.rproduct_code').val();
+							var sub_rproduct_code = $(this).find('.sub_rproduct_code').val();
 							var gold_price = parseFloat($(this).find('.gold_price').val());
 							var gold_weight = parseFloat($(this).find('.gold_weight').val());
 							var total_weight = parseFloat($(this).find('.total_weight').val());
@@ -847,6 +850,7 @@ td.right { text-align: right !important;}
 						if (type == '2') {
 							data.recovery_name = tr_.find('.recovery_name').val();
 							data.rproduct_code = tr_.find('.rproduct_code').val();
+							data.sub_rproduct_code = tr_.find('.sub_rproduct_code').val();
 							data.gold_price = tr_.find('.gold_price').val();
 							data.gold_weight = tr_.find('.gold_weight').val();
 							data.total_weight = tr_.find('.total_weight').val();
@@ -1132,6 +1136,7 @@ td.right { text-align: right !important;}
 					+ '<td class="text-center" style="padding: 8px 3px"><?php echo ($_GET["p"]?($_GET["p"]-1)*$numpage+$key+1:$key+1);?></td>'
 					+ '<td><input class="recovery_name" type="text" value=""></td>'
 					+ '<td><input class="rproduct_code" type="text" value="'+rproduct_code+'"></td>'
+					+ '<td><input class="sub_rproduct_code" type="text" value=""></td>'
 					+ '<td><input class="gold_price no_arrow" type="number" step="0.01" value="'+ parseFloat(recovery_price).toFixed(2) +'"></td>'
 					+ '<td><input class="gold_weight no_arrow" type="number" step="0.001" value=""></td> '
 					+ '<td><input class="total_weight no_arrow" type="number" step="0.001" value=""></td> '

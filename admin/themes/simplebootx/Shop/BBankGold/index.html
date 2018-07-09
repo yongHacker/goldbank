@@ -17,6 +17,7 @@
 				<tr>
 					<!--<th width="50">ID</th>-->
 					<th width="50">序</th>
+					<th>贵金属类型</th>
 					<th>金价类型</th>
 					<!--<th>门店</th>
 					<th>计算公式</th>-->
@@ -29,6 +30,7 @@
 				<tr>
 					<!--<td>{$vo.bgt_id}</td>-->
 					<td class="text-center"><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+					<td>{$vo.bmt_name}</td>
 					<td>{$vo.name}</td>
 				<!--	<td>{$vo['shop_name']?$vo['shop_name']:'总部'}</td>
 					<td>{$vo.formula}</td>-->

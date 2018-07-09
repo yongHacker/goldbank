@@ -81,6 +81,7 @@ input[type="number"] { text-align: right;}
 							<th>序</th>
 							<th style="width: 160px;">金料名称</th>
 							<th style="width: 160px;">金料编号</th>
+							<th >外部金料编号</th>
 							<th style="width: 160px;">总重</th>
 							<th>纯度(‰)</th>
 							<th>金重</th>
@@ -104,6 +105,9 @@ input[type="number"] { text-align: right;}
 							<td class="text-center td_rproduct_code">
                                 <input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" class="rproduct_code" value="{$v.rproduct_code}">
                             </td>
+							<td class="text-center td_sub_rproduct_code">
+								<input type="text" autocomplete="off" name="sub_rproduct_code" class="sub_rproduct_code" value="{$v.sub_rproduct_code}">
+							</td>
 							<td class="text-center td_total_weight">
                                 <input type="number" step="0.001" autocomplete="off" name="total_weight" class="total_weight no_arrow" value="{$v.total_weight}">
                             </td>
@@ -141,6 +145,7 @@ input[type="number"] { text-align: right;}
 						</tr>
 						</volist>
 						<tr id="last">
+							<td class="text-center"></td>
 							<td class="text-center"></td>
 							<td class="text-center"></td>
 							<td class="text-center"></td>
@@ -262,6 +267,7 @@ input[type="number"] { text-align: right;}
 			html += '<td class="text-center"></td>';//序
 			html += ' <td class="text-center td_recovery_name"><input type="text" autocomplete="off" name="recovery_name" class="recovery_name" value=""></td>';
 			html += ' <td class="text-center td_rproduct_code"><input type="text" readonly="readonly" autocomplete="off" name="rproduct_code" class="rproduct_code" value="'+rproduct_code+'"></td>';
+			html += ' <td class="text-center td_sub_rproduct_code"><input type="text"  autocomplete="off" name="sub_rproduct_code" class="sub_rproduct_code" value=""></td>';
 			html += ' <td class="text-center td_total_weight"><input type="number" step="0.001" autocomplete="off" name="total_weight" class="total_weight input_init no_arrow" value="0.00"></td>';//总重
 			html += ' <td class="text-center td_purity"><input type="number" step="0.001" autocomplete="off" name="purity no_arrow" class="purity no_arrow" value="0.000"></td>';//纯度
 			html += ' <td class="text-center td_gold_weight"><input type="number" step="0.001" autocomplete="off" name="gold_weight" class="gold_weight input_init no_arrow" value="0.00"></td>';//金重
@@ -448,6 +454,7 @@ input[type="number"] { text-align: right;}
 				i++;
 				var recovery_name = $(this).find('input[name="recovery_name"]').val();
 				var rproduct_code = $(this).find('input[name="rproduct_code"]').val();
+				var sub_rproduct_code = $(this).find('input[name="sub_rproduct_code"]').val();
 				var recovery_product_id = $(this).find('input[name="recovery_product_id"]').val();
 				if (recovery_product_id) {
 					//用于货品编号检测的方法，如果是已经添加的则不用判断
@@ -507,6 +514,7 @@ input[type="number"] { text-align: right;}
 					'is_old' : is_old,
 					'recovery_name' : recovery_name,
 					'rproduct_code' : rproduct_code,
+					'sub_rproduct_code' : sub_rproduct_code,
 					'total_weight' : total_weight,
 					'gold_weight' : gold_weight,
 					'recovery_price' : recovery_price,

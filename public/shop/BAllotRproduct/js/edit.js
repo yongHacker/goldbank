@@ -239,6 +239,7 @@
                     html+="<tr>";
                     html+='<td class="text-center"></td>';
                     html += '<td class="text-center" >' + $(this).find(".product_code").text() + '</td>';
+                    html += '<td class="text-center" >' + $(this).find(".sub_rproduct_code").text() + '</td>';
                     html += ' <td style="padding-left:10px;">' + $(this).find(".goodsname").text() + '</td>';
                     html += '<td class="text-right" >' + $.trim($(this).find(".total_weight").text()) + '</td>';
                     html += ' <td  class="text-right">' + $.trim($(this).find(".purity").text()) + '</td>';

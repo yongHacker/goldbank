@@ -71,6 +71,7 @@
 				<tr>
 					<th>序</th>
 					<th style="width:200px;">金料编号</th>
+					<th>外部金料编号</th>
 					<th>金料名称</th>
                     <th>总重</th>
                     <th>纯度</th>
@@ -85,6 +86,7 @@
 					<tr old_data="old_data">
 						<td class="text-center"></td>
 						<td class="text-center" >{$v.rproduct_code}</td>
+						<td class="text-center" >{$v.sub_rproduct_code}</td>
 						<td>{$v.recovery_name}</td>
                         <td class="text-right" >{$v.total_weight}</td>
                         <td class="text-right" >{$v.purity}</td>
@@ -98,6 +100,7 @@
 					</tr>
 				</volist>
 				<tr id="last">
+					<td class="text-center"></td>
 					<td class="text-center"></td>
 					<td class="text-center"></td>
 					<td></td>

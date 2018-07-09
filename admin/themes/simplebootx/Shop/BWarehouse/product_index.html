@@ -70,7 +70,8 @@
                         <th>货品编号</th>
                         <th>含金量</th>
                         <th>克重</th>
-                        <th>销售克工费</th>
+                        <th>销售工费方式</th>
+                        <th>销售工费</th>
                         <th>销售指导价</th>
                         <th>销售价</th>
                         <!--<th>商品编号</th>-->
@@ -92,6 +93,7 @@
                             <td class="text-center" style="vertical-align:middle;">{$v.product_code}</td>
                             <td class="text-center" >{$v.purity}</td>
                             <td class="text-right" >{$v.weight}</td>
+                            <td class="text-right" ><if condition="$v['sell_feemode'] eq 1">克工费销售<else/>件工费销售</if></td>
                             <td class="text-right" >{$v['sell_fee']>0?$v['sell_fee']:$v['g_sell_fee']}</td><!--工费优先显示货品再显示商品-->
                             <td class="text-right" >{$v.sell_price}</td>
                             <td class="text-right" >{$v.actual_price}</td>

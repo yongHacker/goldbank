@@ -61,7 +61,7 @@
 									<img src="{:sp_get_image_preview_url($data['photo'])}" id="thumb-preview" width="135" style="cursor: hand"/>
 								</if>
 							</a>
-							<input type="button" class="btn btn-small" onclick="del_pic(this)" value="取消图片">
+							<input type="button" class="btn btn-small" onclick="cancel_img(this)" value="取消图片">
 							<span class="tips" style="color:#ff5500;">上传图片不能超过1M</span>
 						</div>
 					</div>
@@ -69,31 +69,41 @@
 			</fieldset>
 			<div class="form-actions">
 				<input type="hidden" value="{$data.id}" name="id">
-				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<button type="submit" class="btn btn-primary js-ajax-submit" id="sub">{:L('SAVE')}</button>
 				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
 			</div>
 		</form>
 	</div>
 	<script src="__PUBLIC__/js/business_common.js"></script>
 	<script>
-		function del_pic(obj) {
-		    debugger
-            $('#thumb-preview').attr('src','__UPLOAD__{$data.photo}');
-            $('#thumb').val('');
-            return false;
-		    var filename = $('#thumb-preview').attr('src');
-		    $.ajax({
-				type:"post",
-				url:"{:U('BGoodsClass/del_pic')}}",
-				data:{filename:filename},
-				dataType:"json",
+        function cancel_img(obj) {
+            var file_name = $(obj).prev().find('img').attr('src');
+			if (file_name === '/admin/themes/simplebootx/Public/assets/images/default-thumbnail.png') {
+			    file_name = '';
+			}
+            $.ajax({
+                type:'post',
+                url:"{:U('Asset/plhandle')}",
+                data:{
+                    'file_name':file_name,
+                    'type':'del',
+                },
+                dataType:'json',
 				success:function (res) {
-				    alert('删除成功');
-
+                    $('#thumb-preview').attr('src','__TMPL__Public/assets/images/default-thumbnail.png');
+                    $('#thumb').val('');
+                    return false;
                 }
-			});
-
+            });
         }
+        
+        // $('#sub').click(function () {
+        //     $("[disabled]").each(function() {//移除disable,后台方可取值
+        //         if (parseInt($(this).val()) != -1) {
+        //             $(this).attr("disabled", false);
+        //         }
+        //     });
+        // })
 	</script>
 </body>
 </html>

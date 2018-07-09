@@ -1,67 +1,61 @@
 <businesstpl file="header" />
-<style> 
-input{width: 163px;margin-bottom:0px;}
-.table {text-overflow: ellipsis;white-space: nowrap;overflow: hidden;}
-.ta {overflow-x: auto;width: 100%;margin-bottom: 20px;}
-.ta input{width: 177px;margin-bottom:0px;border-left:0px;border-top:0px;border-right:0px;border-bottom:0px;padding:8px 1px ; margin-left:0px;width:95%;}
-.ta input:focus{			
-			-webkit-box-shadow: 0px 0px 0px;  
-			  -moz-box-shadow: 0px 0px 0px;  
-box-shadow: 0px 0px 0px;  }
-.ta td{padding: 0px 5px;vertical-align: middle;}
-.td_border{border: solid 1px #157ab5;}
-.sel{background: #f4f4f4;}
-.my_page li{margin-top: 10px;display:none;}
-.table tr th{text-align:center;}
-.dropdown-menu_sell { position: absolute;z-index: 1000;display: none;float: left; min-width: 177px;background-color: rgb(255, 255, 255);box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 10px;
-    -webkit-background-clip: padding-box; background-clip: padding-box;padding: 5px 0px; margin: 2px 0px 0px;list-style: none;
-    border-width: 1px;border-style: solid;border-color: rgba(0, 0, 0, 0.2);border-image: initial;border-radius: 6px;
-}
-.list-2{z-index: 11;height: 80%;width:80%;margin:5% auto;background: #fff;}
-.remark{width: 888px;cursor: not-allowed;background-color: #fff;}
+<style>
+input { width: 163px; margin-bottom: 0px;}
+.table { text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.ta { overflow-x: auto; width: 100%; margin-bottom: 20px;}
+.ta input { width: 177px; margin-bottom: 0px; border-left: 0px; border-top: 0px; border-right: 0px; border-bottom: 0px; padding: 8px 1px; margin-left: 0px; width: 95%;}
+.ta input:focus { -webkit-box-shadow: 0px 0px 0px; -moz-box-shadow: 0px 0px 0px; box-shadow: 0px 0px 0px;}
+.ta td { vertical-align: middle;}
+.td_border { border: solid 1px #157ab5;}
+.sel { background: #f4f4f4;}
+.my_page li { margin-top: 10px; display: none;}
+.table tr th { text-align: center;}
+.dropdown-menu_sell { position: absolute; z-index: 1000; display: none; float: left; min-width: 177px; background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 10px; -webkit-background-clip: padding-box; background-clip: padding-box; padding: 5px 0px; margin: 2px 0px 0px; list-style: none; border-width: 1px; border-style: solid; border-color: rgba(0, 0, 0, 0.2); border-image: initial; border-radius: 6px;}
+.list-2 { z-index: 11; height: 80%; width: 80%; margin: 5% auto; background: #fff;}
+.remark { width: 888px; cursor: not-allowed; background-color: #fff;}
 </style>
 </head>
-<body class=" theme-blue">
-    <div class="wrap js-check-wrap">
-       	<ul class="nav nav-tabs">
+<body class="theme-blue">
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
 			<li class="active"><a>{:L('BUSINESS_BSELL_CHECK_DETAIL')}</a></li>
 			<span style="float: right">
 				<if condition="$data['status'] eq 0">
-					<input type="hidden" value="{$data.id}" id="id"/>
-					<button  class="btn btn-primary js-ajax-submit" >审核通过</button>
-					<button  class="btn btn-danger js-ajax-submitno" >审核不通过</button>
+					<input type="hidden" value="{$data.id}" id="id" />
+					<button class="btn btn-primary js-ajax-submit">审核通过</button>
+					<button class="btn btn-danger js-ajax-submitno">审核不通过</button>
 				</if>
-					 <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+				<button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
 			</span>
 		</ul>
 
-		<table class="table table-bordered" style="white-space:normal">
+		<table class="table table-bordered" style="white-space: normal">
 			<tr>
 				<td class="sel" width="20%">销售日期（制单时间）</td>
-				<td width="25%">{$data["sell_time"]|date="Y-m-d",###}({$data["create_time"]|date="Y-m-d H:i:s",###})</td>
+				<td width="25%">{$data["sell_time"]|date="Y-m-d",###}（{$data["create_time"]|date="Y-m-d H:i:s",###}）</td>
 				<td class="sel" width="20%">会员姓名</td>
 				<if condition='$data["u1"] eq "贵宾"'>
-					<td width="25%">{$data["shop_name"]}<if condition="$data['realname']">{$data['realname']}<else/>{$data['u1']}</if></td>
-					<else />
-					<td width="25%"><if condition="$data['realname']">{$data['realname']}<else/>{$data['buy_name']}</if></td>
+					<td width="25%">{$data["shop_name"]}<if condition="$data['realname']">{$data['realname']}<else />{$data['u1']}</if></td>
+				<else />
+					<td width="25%"><if condition="$data['realname']">{$data['realname']}<else />{$data['buy_name']}</if></td>
 				</if>
 
 			</tr>
 			<tr>
 				<td class="sel">销售方式</td>
-				<td width="25%" >
+				<td width="25%">
 					<if condition="$data['sell_type'] eq 1">
-						零售
-					<elseif condition="$data['sell_type'] eq 2"/>
+						零售 
+					<elseif condition="$data['sell_type'] eq 2" />
 						以旧换新
 					</if>
 				</td>
 				<td class="sel">外部订单号</td>
-				<td >{$data['sn_id']}</td>
+				<td>{$data['sn_id']}</td>
 			</tr>
 			<tr>
 				<td class="sel">销售员</td>
-				<td><if condition="$data['realname']">{$data['realname']}<else/>{$data['user_nicename']}</if></td>
+				<td><if condition="$data['realname']">{$data['realname']}<else />{$data['user_nicename']}</if></td>
 				<td class="sel">销售总价</td>
 				<td>{$data['real_sell_price']}</td>
 			</tr>
@@ -73,219 +67,229 @@ box-shadow: 0px 0px 0px;  }
 			</tr>
 			<tr>
 				<td class="sel">备注</td>
-				<td colspan="3" style="word-break:break-all;">{$data['memo']}</td>
+				<td colspan="3" style="word-break: break-all;">{$data['memo']}</td>
 			</tr>
 			<if condition="$data['check_id']">
 			<tr>
 				<td class="sel">审核人</td>
 				<td>{$data['check_name']}</td>
 				<td class="sel">审核时间</td>
-				<td>
-					<if condition='$data["check_time"] neq ""'>
-						{$data["check_time"]|date="Y-m-d H:i:s",###}
-					</if>
-				</td>
+				<td><if condition='$data["check_time"] neq ""'>{$data["check_time"]|date="Y-m-d H:i:s",###} </if></td>
 			</tr>
 			<tr>
 				<td class="sel">审核备注</td>
-				<td colspan="4" style="word-break:break-all;"><textarea  name="check_memo" id="check_memo" rows="2" cols="60" style="width:96%;"></textarea></td>
+				<td colspan="4" style="word-break: break-all;"><textarea name="check_memo" id="check_memo" rows="2" cols="60" style="width: 96%;"></textarea></td>
 			</tr>
 			</if>
 		</table>
-		<businesstpl file="process" />
-        <div class="main-content">
-			<div class="ta">
-				<if condition="$list">
-				<ul class="nav nav-tabs">
-					<li class="active"><a>货品列表</a></li>
-				</ul>
-				<table class="table table-bordered  table-hover">
-					<thead >
-					<tr>
-						<th>序</th>
-						<th>图片</th>
-						<th>品目</th>
-						<!--  <th>规格</th>-->
-						<th>商品编号</th>
-						<th>货品编号</th>
-						<th>重量</th>
-						<th>含金量</th>
-						<th>金重</th>
-						<th>销售工费方式</th>
-						<th>工费</th>
-						<th>克单价</th>
-						<th>建议售价</th>
-						<th>优惠金额</th>
-						<th>实际售价</th>
-						<th>计价方式</th>
-						<input type="hidden" class="weight" value="{$sun[0]['sun']}">
-					</tr>
-					</thead>
-					<volist name="list" id="v">
-						<tr height="30">
-							<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>"/><?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
-							<td class="">
-								<if condition="empty($v['product_pic'])">
-									<img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd;border-radius: 6px;" width="40" />
-									<else />
-									<a href="javascript:parent.image_preview_dialog('{$v['product_pic']}');">
-										<img style="border: 1px solid #ddd;border-radius: 6px;" width="40" src="{$v.product_pic}">
-									</a>
-								</if>
-							</td>
-							<!-- <td class="text-center">{$v.order_id}<input type="hidden" value="{$v.order_id}" id="id"/></td>-->
-							<td class="text-left">{$v.goods_name}</td>
-							<!--  <td class="text-left">{$v.gg}</td>-->
-							<td class="text-center">{$v.goods_code}</td>
-							<td class="text-center">{$v.product_code}</td>
-							<!--<td class="text-center"><a href="{:U('BProduct/index',array(search_name=>$v['product_code']))}">{$v.product_code}</a></td>-->
-							<td class="text-right">
-								{$v.p_total_weight}
-							</td>
-							<td class="text-center"><if condition ="$v['sell_pricemode'] eq 1">{$v['purity']}‰<else/>--</if></td>
-							<td class="text-right">
-								{$v.p_gold_weight}
-							</td>
-							<td class="text-center"><if condition="$v.sell_feemode eq 0">件工费销售<else/>克工费销售</if></td>
-							<td class="text-right">{$v.detail_sell_fee}</td>
-							<td class="text-right"><if condition="$v['sell_pricemode'] eq 0">0<else/>{$v.gold_price}</if></td>
-							<td class="text-right">{:numberformat($v['sell_price'],2,'.',',')}</td>
-							<td class="text-right">{:numberformat($v['discount_price'],2,'.',',')}</td>
-							<td class="text-right">{:numberformat($v['actual_price'],2,'.',',')}</td>
-							<td class="text-center"><if condition='$v.sell_pricemode eq 0'>计件<else/>计重</if></td>
-						</tr>
-						<tr height="30" style="color: #f90000">
-							<td  class=""></td>
-							<td  class="product_detail text-left">详情</td>
-							<td class="product_detail text-left" colspan="13" style=" white-space: normal;">{:strip_tags($v['product_detail'])}</td>
-						</tr>
-					</volist>
-				</table>
-				</if>
-				<if condition="$sell_recovery_product_list">
-					<ul class="nav nav-tabs">
-						<li class="active"><a>以旧换新记录</a></li>
-					</ul>
 
+		<businesstpl file="process" />
+
+		<if condition="$sub_list">
+			<ul class="nav nav-tabs">
+				<li class="active"><a>其它费用</a></li>
+			</ul>
+			<div class="main-content">
+				<div class="ta">
+					<table class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>序</th>
+								<th>类目名称</th>
+								<th>类目费用</th>
+							</tr>
+						</thead>
+						<tbody id="tbody" class="recovery_tbody">
+							<volist name="sub_list" id='v'>
+							<tr class="recovery_type_tr">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.name}</td>
+								<td class="text-center">{$v.cost}</td>
+							</tr>
+							</volist>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</if>
+
+		<if condition="$list">
+			<ul class="nav nav-tabs">
+				<li class="active"><a>货品列表</a></li>
+			</ul>
+			<div class="main-content">
+				<div class="ta">
 					<table class="table table-bordered  table-hover">
-						<thead >
-						<tr>
-							<th>序</th>
-							<th style="width:220px;">金料名称</th>
-							<th>金料编号</th>
-							<th>金重</th>
-							<th>回购金价</th>
-							<th>服务克工费</th>
-							<th style="width:220px;">纯度</th>
-							<th>抵扣费用</th>
-							<th >材质</th>
-							<th >颜色</th>
-						</tr>
+						<thead>
+							<tr>
+								<th>序</th>
+								<th>图片</th>
+								<th>品目</th>
+								<th>商品编号</th>
+								<th>货品编号</th>
+								<th>附属货品编号</th>
+								<th>重量</th>
+								<th>含金量</th>
+								<th>金重</th>
+								<th>销售工费方式</th>
+								<th>工费</th>
+								<th>克单价</th>
+								<th>建议售价</th>
+								<th>优惠金额</th>
+								<th>实际售价</th>
+								<th>计价方式</th>
+								<input type="hidden" class="weight" value="{$sun[0]['sun']}">
+							</tr>
+						</thead>
+						<volist name="list" id="v">
+							<tr height="30">
+								<td class="text-center"><input type="hidden" value="<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?>" />
+								<?php echo ($_GET['p']?($_GET['p']-1)*$numpage+$key+1:$key+1);?></td>
+								<td class="text-center" style="padding: 0 5px;">
+									<if condition="empty($v['product_pic'])">
+										<img src="__TMPL__Public/assets/images/default-thumbnail.png" style="border: 1px solid #ddd; border-radius: 6px;" width="40" />
+									<else />
+										<a href="javascript:parent.image_preview_dialog('{$v['product_pic']}');"><img style="border: 1px solid #ddd; border-radius: 6px;"width="40" src="{$v.product_pic}"></a>
+									</if>
+								</td>
+								<td class="text-left">{$v.goods_name}</td>
+								<td class="text-center">{$v.goods_code}</td>
+								<td class="text-center">{$v.product_code}</td>
+								<td class="text-center">{$v.sub_product_code}</td>
+								<td class="text-right">{$v.p_total_weight}</td>
+								<td class="text-center"><if condition="$v['sell_pricemode'] eq 1">{$v['purity']}‰<else />--</if></td>
+								<td class="text-right">{$v.p_gold_weight}</td>
+								<td class="text-center"><if condition="$v.sell_feemode eq 0">件工费销售<else />克工费销售</if></td>
+								<td class="text-right">{$v.detail_sell_fee}</td>
+								<td class="text-right"><if condition="$v['sell_pricemode'] eq 0">0<else />{$v.gold_price}</if></td>
+								<td class="text-right">{:numberformat($v['sell_price'],2,'.',',')}</td>
+								<td class="text-right">{:numberformat($v['discount_price'],2,'.',',')}</td>
+								<td class="text-right">{:numberformat($v['actual_price'],2,'.',',')}</td>
+								<td class="text-center"><if condition='$v.sell_pricemode eq 0'>计件<else />计重</if></td>
+							</tr>
+							<tr height="30" style="color: #f90000">
+								<td class=""></td>
+								<td class="product_detail text-left">详情</td>
+								<td class="product_detail text-left" colspan="14" style="white-space: normal;">{:strip_tags($v['product_detail'])}</td>
+							</tr>
+						</volist>
+					</table>
+				</div>
+			</div>
+		</if>
+				
+		<if condition="$sell_recovery_product_list">
+			<ul class="nav nav-tabs">
+				<li class="active"><a>以旧换新记录</a></li>
+			</ul>
+			<div class="main-content">
+				<div class="ta">
+					<table class="table table-bordered  table-hover">
+						<thead>
+							<tr>
+								<th>序</th>
+								<th style="width: 220px;">金料名称</th>
+								<th>金料编号</th>
+								<th>外部金料编号</th>
+								<th>金重</th>
+								<th>回购金价</th>
+								<th>服务克工费</th>
+								<th style="width: 220px;">纯度</th>
+								<th>抵扣费用</th>
+								<th>材质</th>
+								<th>颜色</th>
+							</tr>
 						</thead>
 						<tbody id="tbody" class="recovery+old_product_tbody">
-						<volist name="sell_recovery_product_list" id='v'>
+							<volist name="sell_recovery_product_list" id='v'>
 							<tr class="recovery_type_tr">
 								<td class="text-center">{$key+1}</td>
 								<td class="text-center">{$v.recovery_name}</td>
 								<td class="text-center">{$v.rproduct_code}</td>
+								<td class="text-center">{$v.sub_rproduct_code}</td>
 								<td class="text-right">{$v.gold_weight}</td>
 								<td class="text-right">{$v.recovery_price}</td>
 								<td class="text-right">{$v.service_fee}</td>
 								<td class="text-right">{$v['purity']}‰</td>
 								<td class="text-right">{$v.cost_price}</td>
-								<td class=" " >{$v['material']}</td>
-								<td class=" " >{$v['color']}</td>
+								<td class=" ">{$v['material']}</td>
+								<td class=" ">{$v['color']}</td>
 							</tr>
-						</volist>
+							</volist>
 						</tbody>
 					</table>
-				</if>
-				<if condition="$sell_cut_product_list">
-				<ul class="nav nav-tabs">
-					<li class="active"><a>截金记录</a></li>
-				</ul>
-				<table class="table table-bordered  table-hover">
-	                <thead >
-		                <tr>
-		                    <th>序</th>
-		                    <th style="width:220px;">关联货号</th>
-		                    <th >金料编号</th>
-		                    <th >截金总重</th>
-		                    <th >截金金价</th>
-		                    <th >服务克工费</th>
-		                    <th style="width:220px;">纯度</th>
-		                    <th >抵扣费用</th>
-							<th >材质</th>
-							<th >颜色</th>
-		                </tr>
-	                </thead>
-	                <tbody id="tbody" class="recovery_tbody">
-	                	<volist name="sell_cut_product_list" id='v'>
-	                		<tr class="recovery_type_tr">
-						        <td class="text-center">{$key+1}</td>
-						        <td class="text-center">{$v.product_code}</td>
-						        <td class="text-center">{$v.rproduct_code}</td>
-						        <td class="text-right">{$v.gold_weight}</td>
-						        <td class="text-right">{$v.recovery_price}</td>
-						        <td class="text-right">{$v.service_fee}</td>
-						        <td class="text-right">{$v['purity']}‰</td>
-						        <td class="text-right">{$v.cost_price}</td>
-								<td class=" " >{$v['material']}</td>
-								<td class=" " >{$v['color']}</td>
-					        </tr>
-	                	</volist>
-	                </tbody>
-	            </table>
-				</if>
+				</div>
+			</div>
+		</if>
 
-				<if condition="$sell_sub">
-				<ul class="nav nav-tabs">
-					<li class="active"><a>其它费用</a></li>
-				</ul>
-
-				<table class="table table-bordered table-hover">
-			        <thead>
-			            <tr>
-			                <th>序</th>
-			                <th>类目名称</th>
-			                <th>类目费用</th>
-			            </tr>
-			        </thead>
-			        <tbody id="tbody" class="recovery_tbody">
-			        	<volist name="sell_sub" id='v'>
-			        		<tr class="recovery_type_tr">
-						        <td class="text-center">{$key+1}</td>
-						        <td class="text-center">{$v.name}</td>
-						        <td class="text-center">{$v.cost}</td>
-					        </tr>
-			        	</volist>
-			        </tbody>
-			    </table>
-				</if>
-
-				<if condition="$saccount_list">
-					<ul class="nav nav-tabs">
-						<li class="active"><a>付款信息</a></li>
-					</ul>
+		<if condition="$sell_cut_product_list">
+			<ul class="nav nav-tabs">
+				<li class="active"><a>截金记录</a></li>
+			</ul>
+			<div class="main-content">
+				<div class="ta">
 					<table class="table table-bordered  table-hover">
-						<thead >
-						<tr>
-							<th>序</th>
-							<th>收款类型</th>
-							<th style="width:220px;">收款方式</th>
-							<th style="width:220px;">流水号</th>
-							<th>收款金额</th>
-							<th>默认币种</th>
-							<th style="width:220px;">默认汇率％</th>
-							<th>币种</th>
-							<th style="width:220px;">汇率％</th>
-							<!--<th style="width:220px;">计算单位</th>-->
-							<th style="width:220px;">计算金额</th>
-							<th>状态</th>
-						</tr>
+						<thead>
+							<tr>
+								<th>序</th>
+								<th style="width: 220px;">关联货号</th>
+								<th>金料编号</th>
+								<th>外部金料编号</th>
+								<th>截金总重</th>
+								<th>截金金价</th>
+								<th>服务克工费</th>
+								<th style="width: 220px;">纯度</th>
+								<th>抵扣费用</th>
+								<th>材质</th>
+								<th>颜色</th>
+							</tr>
+						</thead>
+						<tbody id="tbody" class="recovery_tbody">
+							<volist name="sell_cut_product_list" id='v'>
+							<tr class="recovery_type_tr">
+								<td class="text-center">{$key+1}</td>
+								<td class="text-center">{$v.product_code}</td>
+								<td class="text-center">{$v.rproduct_code}</td>
+								<td class="text-center">{$v.sub_rproduct_code}</td>
+								<td class="text-right">{$v.gold_weight}</td>
+								<td class="text-right">{$v.recovery_price}</td>
+								<td class="text-right">{$v.service_fee}</td>
+								<td class="text-right">{$v['purity']}‰</td>
+								<td class="text-right">{$v.cost_price}</td>
+								<td class=" ">{$v['material']}</td>
+								<td class=" ">{$v['color']}</td>
+							</tr>
+							</volist>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</if>
+
+		<if condition="$saccount_list">
+			<ul class="nav nav-tabs">
+				<li class="active"><a>付款信息</a></li>
+			</ul>
+			<div class="main-content">
+				<div class="ta">
+					<table class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>序</th>
+								<th>收款类型</th>
+								<th style="width: 220px;">收款方式</th>
+								<th style="width: 220px;">流水号</th>
+								<th>收款金额</th>
+								<th>默认币种</th>
+								<th style="width: 220px;">默认汇率％</th>
+								<th>币种</th>
+								<th style="width: 220px;">汇率％</th>
+								<th style="width: 220px;">计算金额</th>
+								<th>状态</th>
+							</tr>
 						</thead>
 						<tbody class="pay_tbody">
-						<volist name="saccount_list" id="v">
+							<volist name="saccount_list" id="v">
 							<tr class="pay_type_tr">
 								<td class="text-center">{$key+1}</td>
 								<td class="text-center pay_type"><if condition="$v[pay_type] eq 1">系统内支付<else />系统外支付</if></td>
@@ -296,77 +300,86 @@ box-shadow: 0px 0px 0px;  }
 								<td class="text-center main_exchange_rate">{$v.main_currency_rate}</td>
 								<td class="text-center currency">{$v.currency_name}</td>
 								<td class="text-center exchange_rate">{$v.currency_rate}</td>
-								<!--<td class="text-center unit">{$v.unit}</td>-->
 								<td class="text-center actual_price">{$v.receipt_price}</td>
 								<td class="text-center">{$v.show_status}</td>
 							</tr>
-						</volist>
+							</volist>
 						</tbody>
 					</table>
-				</if>
-				<businesstpl file="operate" />
-				<div class="form-actions text-center" style="margin: 0 auto">
-					<if condition="$data['status'] eq 0">
-						<input type="hidden" value="{$data.id}" id="id"/>
-						<button  class="btn btn-primary js-ajax-submit" >审核通过</button>
-						<button  class="btn btn-danger js-ajax-submitno" >审核不通过</button>
-					</if>
-					 <button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
-					<div  style="color: red;" class="tishi"></div>
 				</div>
 			</div>
-			<script src="/public/js/cookie.js"></script>
-			<script src="__PUBLIC__/js/common.js"></script>
-			<script>
-				//审核通过
-				$('.js-ajax-submit').click(function(){
-					$('.js-ajax-submit').attr('disabled','disabled');
-					$('.js-ajax-submitno').attr('disabled','disabled');
-					var id=$('#id').val();
-					var url ="{:U('BSell/check_post')}";
-					var check_memo=$('#check_memo').val();
-					$.ajax({
-						type:'post',
-						data:{id:id,check_memo:check_memo,type:1},
-						dataType:'json',
-						url:url,
-						success:function(result){
-							if(result.status=="1"){
-								$('.tishi').html('操作成功');
-								window.location.href = result.url;
-								//self.location=document.referrer;
-							}else{
-								$('.js-ajax-submit').attr('disabled','');
-								$('.js-ajax-submitno').attr('disabled','');
-								$('.tishi').html('操作失败');
-							}
-							
+		</if>
+		
+		<businesstpl file="operate" />
+		
+		<div class="form-actions text-center" style="margin: 0 auto">
+			<if condition="$data['status'] eq 0">
+				<input type="hidden" value="{$data.id}" id="id" />
+				<button class="btn btn-primary js-ajax-submit">审核通过</button>
+				<button class="btn btn-danger js-ajax-submitno">审核不通过</button>
+			</if>
+			<button class="btn btn-default" onclick="javascript:history.go(-1);">返回</button>
+			<div style="color: red;" class="tishi"></div>
+		</div>
+		<script src="/public/js/cookie.js"></script>
+		<script src="__PUBLIC__/js/common.js"></script>
+		<script>
+			//审核通过
+			$('.js-ajax-submit').click(function() {
+				$('.js-ajax-submit').attr('disabled', 'disabled');
+				$('.js-ajax-submitno').attr('disabled', 'disabled');
+				var id = $('#id').val();
+				var url = "{:U('BSell/check_post')}";
+				var check_memo = $('#check_memo').val();
+				$.ajax({
+					type : 'post',
+					data : {
+						id : id,
+						check_memo : check_memo,
+						type : 1
+					},
+					dataType : 'json',
+					url : url,
+					success : function(result) {
+						if (result.status == "1") {
+							$('.tishi').html('操作成功');
+							window.location.href = result.url;
+						} else {
+							$('.js-ajax-submit').attr('disabled', '');
+							$('.js-ajax-submitno').attr('disabled', '');
+							$('.tishi').html('操作失败');
 						}
-					});
+
+					}
 				});
-				//审核不通过
-				$('.js-ajax-submitno').click(function(){
-					$(this).attr('disabled','disabled');
-					$('.js-ajax-submit').attr('disabled','disabled');
-					var id=$('#id').val();
-					var url ="{:U('BSell/check_post')}";
-					var check_memo=$('#check_memo').val();
-					$.ajax({
-						type:'post',
-						data:{id:id,check_memo:check_memo,type:2},
-						dataType:'json',
-						url:url,
-						success:function(result){
-							if(result.status=="1"){
-								$('.tishi').html('操作成功');
-								window.location.href = result.url;
-							}else{
-								$(this).attr('disabled','');
-								$('.js-ajax-submit').attr('disabled','');
-								$('.tishi').html('操作失败');
-							}
+			});
+			//审核不通过
+			$('.js-ajax-submitno').click(function() {
+				$(this).attr('disabled', 'disabled');
+				$('.js-ajax-submit').attr('disabled', 'disabled');
+				var id = $('#id').val();
+				var url = "{:U('BSell/check_post')}";
+				var check_memo = $('#check_memo').val();
+				$.ajax({
+					type : 'post',
+					data : {
+						id : id,
+						check_memo : check_memo,
+						type : 2
+					},
+					dataType : 'json',
+					url : url,
+					success : function(result) {
+						if (result.status == "1") {
+							$('.tishi').html('操作成功');
+							window.location.href = result.url;
+						} else {
+							$(this).attr('disabled', '');
+							$('.js-ajax-submit').attr('disabled', '');
+							$('.tishi').html('操作失败');
 						}
-					});
+					}
 				});
-			</script>
-<include file="./Application/Home/View/Public/footer.html" />
+			});
+		</script>
+		<include file="./Application/Home/View/Public/footer.html" />

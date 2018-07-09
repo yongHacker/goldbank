@@ -225,7 +225,7 @@ class BusinessbaseController extends AppframeController {
 		}
 
 		$page = new \Page($total_size, $page_size, $current_page, $listRows, $pageParam, $pageLink, $static);
-        $page->SetPager('Admin', '{first}{prev}&nbsp;{liststart}{list}{listend}&nbsp;{next}{last}<span>共{recordcount}条数据</span>跳转到{jump}页', array("listlong" => "4", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => "","jump" => "input"));
+        $page->SetPager('Admin', '{first}{prev}&nbsp;{liststart}{list}{listend}&nbsp;{next}{last}<span>共{recordcount}条数据</span>跳转到{jump}', array("listlong" => "4", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => "","jump" => "input"));
 		return $page;
 	}
 

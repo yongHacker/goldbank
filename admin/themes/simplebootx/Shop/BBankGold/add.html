@@ -10,11 +10,17 @@
 		<form method="post" class="form-horizontal js-ajax-form" action="{:U('BBankGold/add')}">
 			<fieldset>
 				<div class="control-group">
+					<label class="control-label">贵金属类型</label>
+					<div class="controls">
+						<input type="text" name="bmt_name" readonly="readonly" value="{$gold_type[0]['bmt_name']}"/>
+					</div>
+				</div>
+				<div class="control-group">
 					<label class="control-label">金价类型名称</label>
 					<div class="controls">
 						<select name="bg_id"  >
 							<volist name="gold_type" id="v">
-								<option value="{$v.bg_id}" bgt_id="{$v.bgt_id}">{$v.name}</option>
+								<option value="{$v.bg_id}" bgt_id="{$v.bgt_id}" bmt_name="{$v.bmt_name}">{$v.name}</option>
 							</volist>
 						</select>*
 					</div>

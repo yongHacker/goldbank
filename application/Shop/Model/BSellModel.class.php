@@ -475,13 +475,13 @@ class BSellModel extends BCommonModel {
     //获取一条销售的所有信息
     public function getInfo_detail(){
         $condition=array("bsell.company_id"=>get_company_id(),"bsell.deleted"=>0,"bsell.id"=>I("get.id",0,"intval"));
-        $join=" left join ".DB_PRE."b_employee  create_musers on create_musers.user_id=bsell.creator_id and create_musers.deleted=0 and create_musers.company_id=bsell.company_id";
-        $join.=" left join ".DB_PRE."b_employee  check_musers on check_musers.user_id=bsell.check_id  and check_musers.deleted=0 and check_musers.company_id=bsell.company_id";
-        $join.=" left join ".DB_PRE."b_employee  buy_musers on buy_musers.user_id=bsell.buyer_id  and buy_musers.deleted=0 and buy_musers.company_id=bsell.company_id";
+        $join=" left join ".DB_PRE."b_employee create_musers on create_musers.user_id=bsell.creator_id and create_musers.deleted=0 and create_musers.company_id=bsell.company_id";
+        $join.=" left join ".DB_PRE."b_employee check_musers on check_musers.user_id=bsell.check_id  and check_musers.deleted=0 and check_musers.company_id=bsell.company_id";
+        $join.=" left join ".DB_PRE."b_employee buy_musers on buy_musers.user_id=bsell.buyer_id  and buy_musers.deleted=0 and buy_musers.company_id=bsell.company_id";
         $join.=" left join ".DB_PRE."b_shop b_shop on b_shop.id=bsell.shop_id";
         $join.=" left join ".DB_PRE."b_client b_client on b_client.id=bsell.client_id";
         $field="bsell.*";
-        $field.=",create_musers.employee_name user_nicename,check_musers.employee_name check_name,b_client.client_name buy_name,b_shop.shop_name";
+        $field.=",create_musers.employee_name user_nicename, check_musers.employee_name check_name, b_client.client_name buy_name, b_client.client_moblie mobile, b_shop.shop_name, b_shop.show_common_payment";
         $bsell_data=$this->alias("bsell")->getInfo($condition,$field,$join,$order='bsell.id desc');
         return $bsell_data;
     }

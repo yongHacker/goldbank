@@ -30,13 +30,14 @@ class BCompanyAccountFlowModel extends BCommonModel {
 
 		if(!empty($ca_info)){
 			$insert_data = array(
-				'sn_id'=> $sn_id,
-				'company_id'=> get_company_id(),
-				'account_id'=> $account_id,
-				'weight'=> $weight,
-				'price'=> $price,
-				'type'=> $type,
-				'sn_type' => $sn_type
+				'sn_id' => $sn_id,
+				'company_id' => get_company_id(),
+				'account_id' => $account_id,
+				'weight' => $weight,
+				'price' => $price,
+				'type' => $type,
+				'sn_type' => $sn_type,
+				'create_time' => time()
 			);
 
 			$rs = $this->insert($insert_data);
